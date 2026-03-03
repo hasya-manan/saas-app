@@ -15,11 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Always seed roles first so users have something to link to!
+        $this->call([
+            RoleSeeder::class,
         ]);
+
+        // 2. Create your SuperAdmin account
+        User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@kakitangan.com',
+            'password' => bcrypt('password123'),
+            'role_id' => 1,
+            'tenant_id' => null,
+        ]);
+    
+        echo "SuperAdmin account created successfully!";
     }
 }

@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
-            // SuperAdmins have NO tenant_id, and this flag is true
-            $table->boolean('is_superadmin')->default(false)->after('email');
+            $table->dropColumn('is_superadmin');
+
+            // 2. Add the new role_id (nullable for now to avoid errors with existing data)
+            $table->foreignId('role_id')->nullable()->constrained()->after('email');
         });
     }
 
@@ -24,8 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('is_superadmin');
-
+            $table->boolean('is_superadmin')->default(false);
+            $table->dropForeign(['role_id']);
+            $table->dropColumn('role_id');
         });
     }
 };

@@ -30,9 +30,12 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
-
+        // Logic: If I am SuperAdmin, send me to the Admin Dashboard
+        if ($request->user()->is_superadmin) {
+        return redirect()->route('superadmin.dashboard');
+        }
+        //else, send me to the Tenant Dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

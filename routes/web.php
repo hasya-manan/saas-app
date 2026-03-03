@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SuperAdmin\TenantController;
+use App\Http\Controllers\SuperAdmin\DashboardController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,4 +27,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// =========================================
+// ============ SUPERADMIN ROUTES ==========
+// =========================================
+
+
+Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function () {
+    // This page only shows if you are logged in AND is_superadmin = true
+     Route::get('/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
+    Route::get('/tenant/create', [TenantController::class, 'index']);
+});
 require __DIR__.'/auth.php';

@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
         // Use string instead of foreignId if your tenants.id is a string/UUID
-        $table->string('tenant_id'); 
-        
+       $table->string('tenant_id')->nullable()->after('password'); 
+
+        // 2. Then define the relationship rule
         $table->foreign('tenant_id')
-              ->references('id')
-              ->on('tenants')
-              ->onDelete('cascade')
-              ->onUpdate('cascade');
+          ->references('id')
+          ->on('tenants')
+          ->onUpdate('cascade')
+          ->onDelete('cascade');
         });
     }
 

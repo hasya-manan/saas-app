@@ -15,8 +15,8 @@ class CheckSuperAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // If user is logged in AND is a superadmin, let them through
-    if (auth()->check() && auth()->user()->is_superadmin) {
+        // If user is logged in AND is a superadmin (role:1), let them through
+    if (auth()->check() && auth()->user()->role_id === 1) {
         return $next($request);
     }
 

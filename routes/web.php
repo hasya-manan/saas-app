@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
 // ============ SUPERADMIN ROUTES ==========
 // =========================================
 
-
+//::TODO :: does the superadmin can hop to user page ??
 Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function () {
     // This page only shows if you are logged in AND is_superadmin = true
      Route::get('/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');

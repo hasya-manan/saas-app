@@ -24,9 +24,13 @@ class TenantController extends Controller
     ]);
 
         // Logic: Keep generating until ID is unique
-        do {
-            $customId = 't-' . rand(100, 999) . Str::lower(Str::random(3));
-        } while (Tenant::where('id', $customId)->exists()); 
+       do {
+        // Generate 3 random numbers (100-999) &  Generate 3 random letters only (a-z)
+        $numbers = rand(100, 999);
+        $letters = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
+        $customId = "t-{$numbers}{$letters}";
+    
+        } while (Tenant::where('id', $customId)->exists());
 
         // Create the Tenant record
        $tenant = Tenant::create([

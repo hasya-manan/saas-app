@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function () {
     // This page only shows if you are logged in AND is_superadmin = true
      Route::get('/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
-    Route::get('/tenant/create', [TenantController::class, 'index']);
+     Route::get('/tenant/create', [TenantController::class, 'index'])->name('tenants.create');
+     Route::post('/tenant/create', [TenantController::class, 'store'])->name('tenants.store');
+     
+   
 });
 require __DIR__.'/auth.php';

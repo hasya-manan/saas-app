@@ -1,59 +1,187 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏢 Multi-Tenant HR System
+> A shared-database multi-tenancy HR platform built with Laravel, Inertia.js & Vue 3 — designed for Malaysian SME payroll & HR management.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Status](https://img.shields.io/badge/status-in%20development-orange)
+![Laravel](https://img.shields.io/badge/Laravel-11.x-red?logo=laravel)
+![Vue](https://img.shields.io/badge/Vue-3.x-green?logo=vue.js)
+![Inertia](https://img.shields.io/badge/Inertia.js-latest-purple)
+![Package](https://img.shields.io/badge/tenancy-stancl%2Ftenancy-blue)
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📌 Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for SME HR & payroll use cases and intentionally does **not** use domain-based tenant resolution.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Key Design Decisions:**
+- ✅ Shared database (no per-tenant DB)
+- ✅ No domain routing table (not needed for this architecture)
+- ✅ `TenantScope` trait applied on all models to prevent cross-company data leakage
+- ✅ Role-based access: `SuperAdmin`, `CompanyAdmin`, `Staff`
+- ✅ SuperAdmin has `tenant_id = null` (global access)
+---
 
-## Learning Laravel
+## 🗂️ ERD (Entity Relationship Diagram)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│   tenants    │       │    users     │       │    roles     │
+├──────────────┤       ├──────────────┤       ├──────────────┤
+│ id (varchar) │◄──────│ tenant_id    │  ┌───►│ id (int)     │
+│ company_name │       │ id (int)     │  │    │ role_name    │
+│ status       │       │ name         │  │    │ created_at   │
+│ created_at   │       │ email        │  │    │ updated_at   │
+│ updated_at   │       │ password     │  │    └──────────────┘
+└──────────────┘       │ role_id ─────┼──┘
+                       │ remember_token│
+                       │ created_at   │
+                       │ updated_at   │
+                       └──────────────┘
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+> 📎 Full diagram: [View on dbdiagram.io](https://dbdiagram.io/d/saas-app-69a79c60a3f0aa31e1ba7347)
 
-## Laravel Sponsors
+**Roles:**
+| ID | Role Name     | `tenant_id` |
+|----|---------------|-------------|
+| 1  | SuperAdmin    | `null`      |
+| 2  | CompanyAdmin  | `t-xxxxxx`  |
+| 3  | Staff         | `t-xxxxxx`  |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ✨ Features
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Done
+- Role-based auth: SuperAdmin, CompanyAdmin, Staff
+- SuperAdmin dashboard & middleware
+- Shared-database tenant isolation via `TenantScope`
+- Tenant status management
+- Flash messages with Inertia.js
+- Lucide icons integrated
 
-## Contributing
+### In Progress
+- Side navigation menu
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Coming Soon
+- Tenant (company) CRUD for SuperAdmin
+- User management per tenant
+- Attendance & leave modules
+- Payroll module
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 Getting Started
 
-## Security Vulnerabilities
+### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js & NPM
+- MySQL / MariaDB
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Installation
 
-## License
+```bash
+# Clone the repository
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Install PHP dependencies
+composer install
+
+# Install JS dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+
+
+# Configure your database in .env, then run:
+php artisan migrate:fresh --seed
+
+# Start development servers
+php artisan serve
+npm run dev
+```
+
+### Default SuperAdmin Credentials
+> ⚠️ You may change inside DatabaseSeeder.php
+
+```
+Email:    superadmin@example.com
+Password: password123
+```
+
+---
+
+## 📁 Project Structure (Key Files)
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Auth/
+│   │   │   └── AuthenticatedSessionController.php  ← Modified for SuperAdmin login
+│   │   └── SuperAdminDashboardController.php
+│   └── Middleware/
+│       └── CheckSuperAdmin.php
+├── Models/
+│   ├── Tenant.php          ← Has status field
+│   └── User.php            ← Uses HasTenant trait
+├── Scopes/
+│   └── TenantScope.php     ← Shared DB isolation logic
+└── Traits/
+    └── HasTenant.php       ← Applied to models
+
+database/
+├── migrations/
+└── seeders/
+    ├── DatabaseSeeder.php  ← Seeds SuperAdmin + roles
+    └── RoleSeeder.php
+
+resources/js/
+├── Pages/
+└── Layouts/
+    └── (side menu in progress)
+```
+
+---
+
+## 🔧 Architecture Notes
+
+### Why Shared Database?
+Unlike domain-based tenancy (where each tenant gets their own DB or subdomain), this project uses **shared-database tenancy** — all tenant data lives in one database, scoped by `tenant_id`. This avoids the complexity of per-tenant databases while keeping data properly isolated.
+
+### TenantScope — How It Works
+Every model that belongs to a tenant uses the `HasTenant` trait, which automatically applies a `WHERE tenant_id = ?` constraint on all queries. This prevents Company A from ever seeing Company B's data.
+
+```php
+// Example: Automatically scoped
+User::all(); // Only returns users belonging to the current tenant
+```
+
+SuperAdmin bypasses this scope entirely (since `tenant_id = null`).
+
+---
+
+## 📦 Key Packages
+
+| Package | Purpose |
+|---|---|
+| `stancl/tenancy` | Multi-tenancy foundation |
+| `inertiajs/inertia-laravel` | SPA-style routing |
+| `vue` | Frontend framework |
+| `lucide-vue-next` | Icon library (installed ✅) |
+
+---
+
+## 👤 About
+
+This is a **solo personal project** built for learning and portfolio purposes. It is not open for collaboration at this stage, but feel free to explore the code, open issues, or leave feedback.
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.

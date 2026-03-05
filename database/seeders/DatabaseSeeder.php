@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         // 2. Create your SuperAdmin account
         User::create([
             'name' => 'Super Admin',
-            'email' => 'admin@kakitangan.com',
+            'email' => 'superadmin@example.com',
             'password' => bcrypt('password123'),
             'role_id' => 1,
             'tenant_id' => null,

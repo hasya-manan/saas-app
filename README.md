@@ -59,7 +59,7 @@ classDiagram
     }
 
     Role "1" --> "*" User : has many
-    Tenant "1" --> "*" User : has many
+    Tenant "1" --* "*" User : owns (cascade delete)
 ```
 
 > **Note:** `User.tenant_id` is `null` for SuperAdmin — they are not bound to any company.

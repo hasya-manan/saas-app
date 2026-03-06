@@ -4,7 +4,8 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import Modal from '@/Components/Modal.vue'; // Ensure Modal is imported
+import Modal from '@/Components/Modal.vue'; 
+
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert } from 'lucide-vue-next';
@@ -111,22 +112,25 @@ const hardDeleteTenant = () => {
                                     Archived
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right">
-                                <div v-if="currentTab === 'active'" class="flex justify-end gap-4">
-                                    <button class="text-gray-400 hover:text-primary transition-colors flex items-center gap-1 text-sm font-medium">
+                           <td class="px-6 py-4 text-right">
+                                <div v-if="currentTab === 'active'" class="flex justify-end gap-2">
+                                    <BaseButton variant="outline" size="sm">
                                         <Edit2 :size="14" /> Edit
-                                    </button>
-                                    <button @click="softDeleteTenant(tenant)" class="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium">
+                                    </BaseButton>
+
+                                    <BaseButton @click="softDeleteTenant(tenant)" variant="danger" size="sm">
                                         <Trash2 :size="14" /> Archive
-                                    </button>
+                                    </BaseButton>
                                 </div>
-                                <div v-else class="flex justify-end gap-4">
-                                    <button @click="restoreTenant(tenant)" class="text-primary hover:text-primary-dark transition-colors flex items-center gap-1 text-sm font-bold">
-                                        <RotateCcw :size="14" /> Restore
-                                    </button>
-                                    <button @click="openHardDeleteModal(tenant)" class="text-red-400 hover:text-red-600 transition-colors flex items-center gap-1 text-sm font-medium">
+
+                                <div v-else class="flex justify-end gap-2">
+                                    <BaseButton @click="restoreTenant(tenant)" variant="primary" size="sm">
+                                         <RotateCcw :size="iconSize" /> Restore
+                                    </BaseButton>
+
+                                    <BaseButton @click="openHardDeleteModal(tenant)" variant="danger" size="sm">
                                         Delete Forever
-                                    </button>
+                                    </BaseButton>
                                 </div>
                             </td>
                         </tr>

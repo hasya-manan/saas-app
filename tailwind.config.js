@@ -10,6 +10,22 @@ export default {
         './resources/js/**/*.vue',
     ],
 
+    safelist: [
+        'hover:border-primary',
+        'hover:text-primary',
+        'hover:shadow-sm',
+        'hover:bg-red-50',
+        'hover:text-red-600',
+        'hover:border-red-100',
+        'hover:bg-primary-dark',
+        'hover:shadow-md',
+        'hover:bg-red-700',
+        'hover:bg-red-800',
+        'hover:opacity-80',
+        'hover:bg-blue-500',
+        'active:scale-95',
+    ],
+
     theme: {
         extend: {
             fontFamily: {

@@ -66,7 +66,7 @@ const openEdit = (tenant) => {
 };
 
 const openEditPanel = (tenant) => {
-    // Clone the tenant so we don't accidentally edit the table row live
+    // Clone the tenant so we don't accidentally edit the table row live, { ...tenant }
     editingTenant.value = { ...tenant }; 
     isEditPanelOpen.value = true;
 };

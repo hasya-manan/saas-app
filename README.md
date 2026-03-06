@@ -11,7 +11,7 @@
 
 ## 📌 Overview
 
-This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for SME HR & payroll use cases and intentionally does **not** use domain-based tenant resolution.
+This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for  HR & payroll use cases and intentionally does **not** use domain-based tenant resolution.
 
 **Key Design Decisions:**
 - ✅ Shared database (no per-tenant DB)
@@ -19,6 +19,51 @@ This project implements a **shared-database multi-tenancy** system — meaning a
 - ✅ `TenantScope` trait applied on all models to prevent cross-company data leakage
 - ✅ Role-based access: `SuperAdmin`, `CompanyAdmin`, `Staff`
 - ✅ SuperAdmin has `tenant_id = null` (global access)
+---
+
+## 📐 UML Class Diagram
+
+```mermaid
+classDiagram
+    class Tenant {
+        +String id
+        +String company_name
+        +String status
+        +DateTime created_at
+        +DateTime updated_at
+        +hasMany(User) List
+    }
+
+    class User {
+        +Int id
+        +String name
+        +String email
+        +String password
+        +String tenant_id
+        +Int role_id
+        +DateTime created_at
+        +DateTime updated_at
+        +isSuperAdmin() Boolean
+        +isAdmin() Boolean
+        +isStaff() Boolean
+        +belongsTo(Tenant) Tenant
+        +belongsTo(Role) Role
+    }
+
+    class Role {
+        +Int id
+        +String role_name
+        +DateTime created_at
+        +DateTime updated_at
+        +hasMany(User) List
+    }
+
+    Role "1" --> "*" User : has many
+    Tenant "1" --> "*" User : has many
+```
+
+> **Note:** `User.tenant_id` is `null` for SuperAdmin — they are not bound to any company.
+
 ---
 
 ## 🗂️ ERD (Entity Relationship Diagram)
@@ -59,12 +104,13 @@ This project implements a **shared-database multi-tenancy** system — meaning a
 - Tenant status management
 - Flash messages with Inertia.js
 - Lucide icons integrated
-
-### In Progress
 - Side navigation menu
 
-### Coming Soon
+### In Progress
 - Tenant (company) CRUD for SuperAdmin
+
+### Coming Soon
+
 - User management per tenant
 - Attendance & leave modules
 - Payroll module
@@ -96,7 +142,6 @@ npm install
 cp .env.example .env
 
 
-
 # Configure your database in .env, then run:
 php artisan migrate:fresh --seed
 
@@ -106,7 +151,7 @@ npm run dev
 ```
 
 ### Default SuperAdmin Credentials
-> ⚠️ You may change inside DatabaseSeeder.php
+> ⚠️ Change these immediately after first login!
 
 ```
 Email:    superadmin@example.com
@@ -127,7 +172,7 @@ app/
 │   └── Middleware/
 │       └── CheckSuperAdmin.php
 ├── Models/
-│   ├── Tenant.php          ← Has status field
+│   ├── Tenant.php          
 │   └── User.php            ← Uses HasTenant trait
 ├── Scopes/
 │   └── TenantScope.php     ← Shared DB isolation logic

@@ -15,7 +15,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     {
         return [
             'id',
-            'company_name', // Add this here!
+            'company_name', 
             'status',
             'plan',
         ];

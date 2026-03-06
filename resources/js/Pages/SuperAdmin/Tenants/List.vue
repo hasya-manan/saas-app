@@ -31,7 +31,7 @@ const closeModal = () => {
     selectedTenant.value = null;
 };
 
-// Open Modal for Hard Delete only
+// TODO::Open Modal for Hard Delete only
 const openHardDeleteModal = (tenant) => {
     selectedTenant.value = tenant;
     confirmingDeletion.value = true;
@@ -49,11 +49,31 @@ const restoreTenant = (tenant) => {
     router.put(route('tenants.restore', tenant.id));
 };
 
-// Logic for Hard Delete (Forever)
+// TODO::Logic for Hard Delete (Forever)
 const hardDeleteTenant = () => {
     router.delete(route('tenants.force-delete', selectedTenant.value.id), {
         onSuccess: () => closeModal(),
     });
+};
+
+//split 40 :60
+const isEditPanelOpen = ref(false);
+const editingTenant = ref(null);
+
+const openEdit = (tenant) => {
+    selectedTenant.value = tenant;
+    isEditOpen.value = true;
+};
+
+const openEditPanel = (tenant) => {
+    // Clone the tenant so we don't accidentally edit the table row live
+    editingTenant.value = { ...tenant }; 
+    isEditPanelOpen.value = true;
+};
+
+const closeEditPanel = () => {
+    isEditPanelOpen.value = false;
+    editingTenant.value = null;
 };
 </script>
 
@@ -114,7 +134,7 @@ const hardDeleteTenant = () => {
                             </td>
                            <td class="px-6 py-4 text-right">
                                 <div v-if="currentTab === 'active'" class="flex justify-end gap-2">
-                                    <BaseButton variant="outline" size="sm">
+                                    <BaseButton variant="outline" size="sm" @click="openEdit(tenant)">
                                         <Edit2 :size="14" /> Edit
                                     </BaseButton>
 

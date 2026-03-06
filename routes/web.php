@@ -34,10 +34,23 @@ Route::middleware('auth')->group(function () {
 //::TODO :: does the superadmin can hop to user page ??
 Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function () {
     // This page only shows if you are logged in AND is_superadmin = true
+    //page dashboard superadmin
      Route::get('/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
+     
+     // page create.vue
      Route::get('/tenant/create', [TenantController::class, 'index'])->name('tenants.create');
      Route::post('/tenant/create', [TenantController::class, 'store'])->name('tenants.store');
+
+     // page list.vue
+    Route::get('/tenant/list', [TenantController::class, 'list'])->name('tenants.list');
+    // "Go to this specific tenant's ID and delete it"
+    Route::delete('/tenant/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+    Route::put('/tenant/{id}/restore', [TenantController::class, 'restore'])->name('tenants.restore');
+    // "Go to this specific deleted ID and wipe it forever"
+    Route::delete('/tenant/{id}/force', [TenantController::class, 'forceDelete'])->name('tenants.force-delete');
+
+
      
-   
+
 });
 require __DIR__.'/auth.php';

@@ -11,7 +11,8 @@ import {
     ChevronRight,
     PlusCircle,
     Menu, 
-    X     
+    X,
+    List      
 } from 'lucide-vue-next';
 
 const isCollapsed = ref(false);
@@ -39,6 +40,8 @@ const toggleSidebar = () => {
                 <nav class="flex-1 px-4 py-4 space-y-2">
                     <Link :href="route('dashboard')" class="block px-3 py-2 text-gray-600 font-medium">Dashboard</Link>
                     <Link v-if="$page.props.auth.user.role_id === 1" :href="route('tenants.create')" class="block px-3 py-2 text-gray-600 font-medium">Onboard Company</Link>
+                    <Link v-if="$page.props.auth.user.role_id === 1" :href="route('tenants.list')" class="block px-3 py-2 text-gray-600 font-medium">List Company</Link>
+
                 </nav>
             </aside>
         </div>
@@ -85,6 +88,12 @@ const toggleSidebar = () => {
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <PlusCircle :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Onboard Company</span>
+                    </Link>
+                    <Link :href="route('tenants.list')"
+                        :class="[route().current('tenants.list') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <List  :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">List Company</span>
                     </Link>
                 </div>
             </nav>

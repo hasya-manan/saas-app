@@ -48,7 +48,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
     Route::put('/tenant/{id}/restore', [TenantController::class, 'restore'])->name('tenants.restore');
     // "Go to this specific deleted ID and wipe it forever"
     Route::delete('/tenant/{id}/force', [TenantController::class, 'forceDelete'])->name('tenants.force-delete');
-
+    Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
 
      
 

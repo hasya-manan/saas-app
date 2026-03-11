@@ -91,4 +91,21 @@ class TenantController extends Controller
 
         return back()->with('message', 'Company permanently removed.');
     }
+    public function update(Request $request, $id)
+    {
+    
+        $tenant = Tenant::withTrashed()->findOrFail($id);
+
+    
+        $validated = $request->validate([
+            'company_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:tenants,email,' . $id,
+        ]);
+
+    
+        $tenant->update($validated);
+
+        // 4. Redirect back with a success flash message
+        return redirect()->back()->with('success', 'Company updated successfully.');
+}
 }

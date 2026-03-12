@@ -25,10 +25,6 @@ const props = defineProps({
 });
 
 
-// Computed list based on tab
-// const displayList = computed(() => {
-//     return currentTab.value === 'active' ? props.tenants : props.deletedTenants;
-// });
 
 const displayList = computed(() => {
     return currentTab.value === 'active'

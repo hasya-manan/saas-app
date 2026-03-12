@@ -90,7 +90,6 @@ class TenantController extends Controller
     {
         // This physically removes the record from the disk
         Tenant::withTrashed()->findOrFail($id)->forceDelete();
-
         return back()->with('message', 'Company permanently removed.');
     }
     public function update(Request $request, $id)

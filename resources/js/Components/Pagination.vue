@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-    <div v-if="links.length > 3" class="flex items-center justify-between px-6 py-4 bg-gray-50/50 border-t border-gray-100">
+    <div v-if="links.length > 0" class="flex items-center justify-between px-6 py-4 bg-gray-50/50 border-t border-gray-100">
         <div v-if="meta" class="hidden sm:block text-xs text-gray-500 font-medium">
             Showing {{ meta.from }} to {{ meta.to }} of {{ meta.total }}
         </div>

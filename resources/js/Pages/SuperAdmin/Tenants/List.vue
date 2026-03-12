@@ -5,7 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
-
+import Pagination from '@/Components/Pagination.vue'; 
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X } from 'lucide-vue-next';
@@ -20,14 +20,20 @@ const editingTenant = ref(null);
 const processing = ref(false);
 
 const props = defineProps({
-    tenants: Array,      // Active tenants
-    deletedTenants: Array // Soft-deleted tenants
+    tenants: Object,        // Changed from Array to Object
+    deletedTenants: Object  // Changed from Array to Object
 });
 
 
 // Computed list based on tab
+// const displayList = computed(() => {
+//     return currentTab.value === 'active' ? props.tenants : props.deletedTenants;
+// });
+
 const displayList = computed(() => {
-    return currentTab.value === 'active' ? props.tenants : props.deletedTenants;
+    return currentTab.value === 'active'
+        ? props.tenants.data
+        : props.deletedTenants.data;
 });
 
 const closeModal = () => {
@@ -120,12 +126,12 @@ const submitUpdate = () => {
                 <button @click="currentTab = 'active'"
                     :class="currentTab === 'active' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-600'"
                     class="pb-4 px-2 font-bold text-sm transition-all">
-                    Active ({{ tenants.length }})
+                    Active ({{ tenants.total ?? 0 }})
                 </button>
                 <button @click="currentTab = 'trash'"
                     :class="currentTab === 'trash' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-600'"
                     class="pb-4 px-2 font-bold text-sm transition-all flex items-center gap-2">
-                    Trash ({{ deletedTenants.length }})
+                    Trash ({{ deletedTenants.total ?? 0 }})
                 </button>
             </div>
 
@@ -198,6 +204,13 @@ const submitUpdate = () => {
                                 </tr>
                             </tbody>
                         </table>
+                        <!--pagination-->
+                        <div class="bg-white border-t border-gray-100">
+                            <Pagination v-if="currentTab === 'active'" :links="tenants.links"
+                                :meta="{ from: tenants.from, to: tenants.to, total: tenants.total }" />
+                            <Pagination v-else :links="deletedTenants.links"
+                                :meta="{ from: deletedTenants.from, to: deletedTenants.to, total: deletedTenants.total }" />
+                        </div>
                     </div>
                 </div>
 

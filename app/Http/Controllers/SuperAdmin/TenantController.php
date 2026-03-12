@@ -63,8 +63,8 @@ class TenantController extends Controller
     public function list()
     {
         return Inertia::render('SuperAdmin/Tenants/List', [
-            'tenants' => Tenant::all(), 
-            'deletedTenants' => Tenant::onlyTrashed()->get(),
+            'tenants' => Tenant::latest()->paginate(10), 
+            'deletedTenants' => Tenant::onlyTrashed()->latest()->paginate(10)
         ]);
     }
 

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -50,7 +51,8 @@ class TenantController extends Controller
             'email'     => $validated['admin_email'],
             'password'  => bcrypt('password123'), // TODO::maybe we can make their phone number as their password 
             'tenant_id' => $tenant->id,           // Link them to the new company
-            'role_id'   => 2,                     // ROLE 2 = Company Admin
+            'role_id'   => Role::where('name', 'admin_company')->value('id'), //  fetch from DB
+                    
         ]);
 
         return redirect()->route('superadmin.dashboard')

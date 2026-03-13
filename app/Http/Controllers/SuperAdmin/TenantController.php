@@ -37,6 +37,7 @@ class TenantController extends Controller
        $tenant = Tenant::create([
         'id'           => $customId,
         'company_name' => $validated['company_name'],
+        'email'        => $validated['admin_email'],
         'status'       => 'active', 
         ]);
 

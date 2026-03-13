@@ -18,6 +18,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'id',
             'company_name', 
             'status',
+            'email',
             'plan',
             'deleted_at',
         ];

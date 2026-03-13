@@ -67,11 +67,15 @@ class TenantController extends Controller
     public function list()
     {
         return Inertia::render('SuperAdmin/Tenants/List', [
-            'tenants' => Tenant::latest()->paginate(10), 
-            'deletedTenants' => Tenant::onlyTrashed()->latest()->paginate(10),
-            'statusOptions' => GlobalLookup::where('category', 'tenant_status')
-                            ->orderBy('sort_order')
-                            ->get(['key', 'label']) 
+        'tenants' => Tenant::latest()->paginate(10), 
+            
+        'deletedTenants' => Tenant::onlyTrashed()
+             
+            ->latest()
+            ->paginate(10),
+        'statusOptions' => GlobalLookup::where('category', 'tenant_status')
+            ->orderBy('sort_order')
+            ->get(['key', 'label']) 
         ]);
     }
 
@@ -104,20 +108,25 @@ class TenantController extends Controller
     }
     public function update(Request $request, $id)
     {
-    
+        // 1. Find the tenant (including trashed in case you're editing an archived one)
         $tenant = Tenant::withTrashed()->findOrFail($id);
 
-    
+        // 2. Validate ONLY company fields
         $validated = $request->validate([
-            'company_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:tenants,email,' . $id,
-            'status'=> 'required|exists:global_lookups,key',
+            'company_name'  => 'required|string|max:255',
+            'company_email' => 'required|email', 
+            'status'        => 'required|exists:global_lookups,key',
         ]);
 
-    
-        $tenant->update($validated);
+        // 3. Update the tenant record
+        // We map 'company_email' from the form to 'email' in the database
+        $tenant->update([
+            'company_name' => $validated['company_name'],
+            'email'        => $validated['company_email'], 
+            'status'       => $validated['status'],
+        ]);
 
-        // 4. Redirect back with a success flash message
-        return redirect()->back()->with('success', 'Company updated successfully.');
-}
+        // 4. Redirect back with success toast
+        return redirect()->back()->with('success', 'Company information updated successfully.');
+    }
 }

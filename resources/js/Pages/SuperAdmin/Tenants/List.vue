@@ -30,7 +30,7 @@ const tenantToArchive = ref(null);
 const form = useForm({
     id: null,
     company_name: '',
-    email: '',
+    company_email: '', 
     status: '',
 });
 
@@ -46,8 +46,9 @@ const openEditPanel = (tenant) => {
     // Fill the form helper with the clicked tenant's data
     form.id = tenant.id;
     form.company_name = tenant.company_name;
-    form.email = tenant.email;
+    form.company_email = tenant.email; 
     form.status = tenant.status;
+   
 
     isEditPanelOpen.value = true;
 };
@@ -156,7 +157,7 @@ const closeModal = () => {
                                         Company</th>
                                     <th
                                         class="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Admin Email</th>
+                                        Company Email</th>
                                     <th
                                         class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
                                         Status</th>
@@ -220,7 +221,7 @@ const closeModal = () => {
                         </div>
                     </div>
                 </div>
-
+                <!--slide for edit panel-->
                 <div v-if="isEditPanelOpen"
                     class="w-full lg:w-[40%] sticky top-0 lg:top-6 z-10 animate-in slide-in-from-top lg:slide-in-from-right duration-500 order-1 lg:order-2">
                     <div class="bg-white border border-primary/10 rounded-xl lg:rounded-2xl shadow-lg p-5 lg:p-6">
@@ -241,16 +242,16 @@ const closeModal = () => {
                                     :class="{ 'border-red-500': form.errors.company_name }" />
                                 <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
                                     form.errors.company_name
-                                }}</p>
+                                    }}</p>
                             </div>
                             <div>
                                 <label
-                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Admin
-                                    Email</label>
-                                <input v-model="form.email" type="email"
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Company
+                                    Contact Email</label>
+                                <input v-model="form.company_email" type="email"
                                     class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
                                     :class="{ 'border-red-500': form.errors.email }" />
-                                <p v-if="form.errors.email" class="text-xs text-red-500 mt-1">{{ form.errors.email }}
+                                <p v-if="form.errors.company_email" class="text-xs text-red-500 mt-1">{{ form.errors.company_email }}
                                 </p>
                             </div>
                             <div>
@@ -266,6 +267,7 @@ const closeModal = () => {
                                 <p v-if="form.errors.status" class="text-xs text-red-500 mt-1">{{ form.errors.status }}
                                 </p>
                             </div>
+                           
 
                             <div class="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-gray-50 mt-4">
                                 <BaseButton variant="outline" class="w-full sm:w-auto" @click="closeEditPanel">Cancel

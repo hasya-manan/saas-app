@@ -47,4 +47,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function users() {
         return $this->hasMany(User::class);
     }
+
+    public function adminUser() {
+   return $this->hasOne(User::class, 'tenant_id');
+}
 }

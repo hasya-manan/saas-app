@@ -95,21 +95,27 @@ classDiagram
 
 ---
 
+
+
 ## ✨ Features
 
-### Done
-- Role-based auth: SuperAdmin, CompanyAdmin, Staff
-- SuperAdmin dashboard & middleware
-- Shared-database tenant isolation via `TenantScope`
-- Tenant status management
-- Flash messages with Inertia.js
-- Lucide icons integrated
+### 🏗️ Core Infrastructure (Done)
+- Multi-tenant Architecture: Shared-database isolation using tenant_id and global scopes.
+- Role-Based Access Control (RBAC): Custom middleware for SuperAdmin, CompanyAdmin, and Staff.
+- Dynamic UI Components: Reusable Vue 3 components (StatusBadges, Modals, Pagination).
+- Global Lookup System: Centralized database-driven management for statuses and categories.
 - Side navigation menu
 
-### In Progress
-- Tenant (company) CRUD for SuperAdmin
+### 🏢 SuperAdmin Management (In Progress)
+- [x] Tenant Registration: Onboarding flow for new companies
+- [x] Tenant List:  data tables with filtering and tabbed views (Active/Trash).
+- [x] Recovery System: Soft-deleting tenants with Restore/Force Delete functionality.
 
-### Coming Soon
+### 🏢 SuperAdmin Management (In Progress)
+- [ ] User Management: Inviting and managing staff within a specific tenant.
+- [ ] Attendance & Leave: Tracking clock-ins and time-off requests.
+- [ ] Payroll: Monthly salary calculations and generation.
+
 
 - User management per tenant
 - Attendance & leave modules
@@ -151,7 +157,7 @@ npm run dev
 ```
 
 ### Default SuperAdmin Credentials
-> You may change these before you db seed
+> You may change these before you db seed, this is only 
 
 ```
 Email:    superadmin@example.com

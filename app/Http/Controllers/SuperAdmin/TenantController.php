@@ -77,6 +77,7 @@ class TenantController extends Controller
     public function destroy(Tenant $tenant)
     {
         // Because the Model uses SoftDeletes, this only sets the 'deleted_at' column
+        $tenant->update(['status' => 'archived']); // Change status to archived
         $tenant->delete(); 
         return redirect()->route('tenants.list')
             ->with('message', 'Company archived to Trash.');
@@ -86,7 +87,8 @@ class TenantController extends Controller
     public function restore($id)    
     {
         // We use withTrashed() because normally Laravel can't "see" deleted rows
-        Tenant::withTrashed()->findOrFail($id)->restore();
+       $tenant = Tenant::withTrashed()->findOrFail($id);
+        $tenant->update(['status' => 'active']);
         return back()->with('message', 'Company restored successfully!');
     }
 

@@ -5,10 +5,10 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
 import Pagination from '@/Components/Pagination.vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3'; 
+import StatusBadge from '@/Components/StatusBadge.vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X } from 'lucide-vue-next';
-
 
 const props = defineProps({
     tenants: Object,        // Changed from Array to Object
@@ -179,10 +179,9 @@ const closeModal = () => {
                                     <td class="hidden md:table-cell px-6 py-4 text-sm text-gray-600">{{ tenant.email }}
                                     </td>
                                     <td class="px-4 lg:px-6 py-4">
-                                        <span v-if="currentTab === 'active'"
-                                            class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 uppercase">Active</span>
-                                        <span v-else
-                                            class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-50 text-red-600 border border-red-100 uppercase">Archived</span>
+                                        <StatusBadge v-if="currentTab === 'trash'" status="archived" />
+
+                                        <StatusBadge v-else :status="tenant.status" />
                                     </td>
                                     <td class="px-4 lg:px-6 py-4 text-right">
                                         <div class="flex justify-end gap-1 lg:gap-2">
@@ -244,7 +243,7 @@ const closeModal = () => {
                                     :class="{ 'border-red-500': form.errors.company_name }" />
                                 <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
                                     form.errors.company_name
-                                }}</p>
+                                    }}</p>
                             </div>
                             <div>
                                 <label
@@ -298,7 +297,7 @@ const closeModal = () => {
                 </div>
 
                 <p class="text-sm text-gray-500 leading-relaxed">
-                    You are about to <span class="text-red-600 font-bold uppercase">Permanently Delete</span>
+                    You are about to <span class="text-red-600 font-bold uppercase">Permanently Delete</span>&nbsp;
                     <span class="font-bold text-gray-900">{{ selectedTenant?.company_name }}</span>.
                     All employee records, payroll history, and files will be erased from our servers immediately.
                 </p>

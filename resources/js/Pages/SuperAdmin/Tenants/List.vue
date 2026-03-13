@@ -2,29 +2,35 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
-import Pagination from '@/Components/Pagination.vue'; 
-import { Head, Link, router } from '@inertiajs/vue3';
+import Pagination from '@/Components/Pagination.vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3'; 
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X } from 'lucide-vue-next';
 
 
+const props = defineProps({
+    tenants: Object,        // Changed from Array to Object
+    deletedTenants: Object,  // Changed from Array to Object
+    statusOptions: Array,
+});
+
+// --- State Management ---
 const currentTab = ref('active');
 const confirmingDeletion = ref(false);
 const selectedTenant = ref(null);
 const confirmationInput = ref('');
 const isEditPanelOpen = ref(false);
-const editingTenant = ref(null);
-const processing = ref(false);
 
-const props = defineProps({
-    tenants: Object,        // Changed from Array to Object
-    deletedTenants: Object  // Changed from Array to Object
+
+// --- The Form Helper ---
+const form = useForm({
+    id: null,
+    company_name: '',
+    email: '',
+    status: '',
 });
-
-
 
 const displayList = computed(() => {
     return currentTab.value === 'active'
@@ -32,70 +38,78 @@ const displayList = computed(() => {
         : props.deletedTenants.data;
 });
 
-const closeModal = () => {
-    confirmingDeletion.value = false;
-    confirmationInput.value = '';
-    selectedTenant.value = null;
-};
-
-// TODO::Open Modal for Hard Delete only
-const openHardDeleteModal = (tenant) => {
-    selectedTenant.value = tenant;
-    confirmingDeletion.value = true;
-};
-
-// Logic for Soft Delete (Archive)
-const softDeleteTenant = (tenant) => {
-    if (confirm(`Archive ${tenant.company_name}? You can restore it from Trash later.`)) {
-        router.delete(route('tenants.destroy', tenant.id));
-    }
-};
-
-// Logic for Restore
-const restoreTenant = (tenant) => {
-    router.put(route('tenants.restore', tenant.id));
-};
-
-// TODO::Logic for Hard Delete (Forever)
-const hardDeleteTenant = () => {
-    router.delete(route('tenants.force-delete', selectedTenant.value.id), {
-        onSuccess: () => closeModal(),
-    });
-};
-
-//split 40 :60
+// --- Actions ---
 
 const openEditPanel = (tenant) => {
-    // We use { ... } to photocopy the data so the table doesn't move while we type
-    editingTenant.value = { ...tenant };
+    // Fill the form helper with the clicked tenant's data
+    form.id = tenant.id;
+    form.company_name = tenant.company_name;
+    form.email = tenant.email;
+    form.status = tenant.status;
+
     isEditPanelOpen.value = true;
 };
-
-// 3. The function to handle closing
 const closeEditPanel = () => {
     isEditPanelOpen.value = false;
-    editingTenant.value = null; // Clear the memory
+    form.reset(); // Clears inputs and any error messages
+    form.clearErrors();
 };
 
 const submitUpdate = () => {
-    processing.value = true;
-    router.put(route('tenants.update', editingTenant.value.id), editingTenant.value, {
+    // Note: form.put handles the processing state and errors for you
+    form.put(route('tenants.update', form.id), {
         preserveScroll: true,
         onSuccess: () => {
             closeEditPanel();
             console.log('Update successful');
         },
         onError: (errors) => {
-            // This will catch validation errors from Laravel
             console.error('Update failed:', errors);
         },
-        onFinish: () => {
-            processing.value = false;
-        },
-
-
     });
 };
+// --- Delete/Restore Logic ---
+const softDeleteTenant = (tenant) => {
+    if (confirm(`Archive ${tenant.company_name}?`)) {
+        router.delete(route('tenants.destroy', tenant.id));
+    }
+};
+
+const restoreTenant = (tenant) => {
+    router.put(route('tenants.restore', tenant.id));
+};
+
+const openHardDeleteModal = (tenant) => {
+    selectedTenant.value = tenant;
+    confirmingDeletion.value = true;
+};
+
+const hardDeleteTenant = () => {
+    router.delete(route('tenants.force-delete', selectedTenant.value.id), {
+        onSuccess: () => closeModal(),
+    });
+};
+
+const closeModal = () => {
+    confirmingDeletion.value = false;
+    confirmationInput.value = '';
+    selectedTenant.value = null;
+};
+//split 40 :60
+
+// const openEditPanel = (tenant) => {
+//     // We use { ... } to photocopy the data so the table doesn't move while we type
+//     editingTenant.value = { ...tenant };
+//     isEditPanelOpen.value = true;
+// };
+
+// 3. The function to handle closing
+// const closeEditPanel = () => {
+//     isEditPanelOpen.value = false;
+//     editingTenant.value = null; // Clear the memory
+// };
+
+
 </script>
 
 <template>
@@ -225,15 +239,35 @@ const submitUpdate = () => {
                                 <label
                                     class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Company
                                     Name</label>
-                                <input v-model="editingTenant.company_name" type="text"
-                                    class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5" />
+                                <input v-model="form.company_name" type="text"
+                                    class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
+                                    :class="{ 'border-red-500': form.errors.company_name }" />
+                                <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
+                                    form.errors.company_name
+                                }}</p>
                             </div>
                             <div>
                                 <label
                                     class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Admin
                                     Email</label>
-                                <input v-model="editingTenant.email" type="email"
-                                    class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5" />
+                                <input v-model="form.email" type="email"
+                                    class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
+                                    :class="{ 'border-red-500': form.errors.email }" />
+                                <p v-if="form.errors.email" class="text-xs text-red-500 mt-1">{{ form.errors.email }}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                                    Status</label>
+                                <select v-model="form.status"
+                                    class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5 bg-white"
+                                    :class="{ 'border-red-500': form.errors.status }">
+                                    <option v-for="option in statusOptions" :key="option.key" :value="option.key">
+                                        {{ option.label }}
+                                    </option>
+                                </select>
+                                <p v-if="form.errors.status" class="text-xs text-red-500 mt-1">{{ form.errors.status }}
+                                </p>
                             </div>
 
                             <div class="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-gray-50 mt-4">
@@ -277,8 +311,9 @@ const submitUpdate = () => {
                 </div>
 
                 <div class="mt-8 flex justify-end gap-4">
-                    <button @click="closeModal" class="text-sm font-semibold text-gray-500 hover:text-gray-700">Go
-                        Back</button>
+                    <button @click="closeModal" class="text-sm font-semibold text-gray-500 hover:text-gray-700">
+                        Go Back
+                    </button>
                     <button @click="hardDeleteTenant" :disabled="confirmationInput !== selectedTenant?.company_name"
                         class="px-8 py-3 bg-red-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:bg-red-700">
                         Delete Everything Forever

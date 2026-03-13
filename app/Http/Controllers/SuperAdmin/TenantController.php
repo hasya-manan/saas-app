@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\GlobalLookup;
 use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
@@ -65,7 +66,10 @@ class TenantController extends Controller
     {
         return Inertia::render('SuperAdmin/Tenants/List', [
             'tenants' => Tenant::latest()->paginate(10), 
-            'deletedTenants' => Tenant::onlyTrashed()->latest()->paginate(10)
+            'deletedTenants' => Tenant::onlyTrashed()->latest()->paginate(10),
+            'statusOptions' => GlobalLookup::where('category', 'tenant_status')
+                            ->orderBy('sort_order')
+                            ->get(['key', 'label']) 
         ]);
     }
 
@@ -86,10 +90,10 @@ class TenantController extends Controller
         return back()->with('message', 'Company restored successfully!');
     }
 
-    // 4. The Nuclear Option (Hard Delete): Erases the row from the database forever
+    
     public function forceDelete($id)
     {
-        // This physically removes the record from the disk
+        // This physically removes the record from the list
         Tenant::withTrashed()->findOrFail($id)->forceDelete();
         return back()->with('message', 'Company permanently removed.');
     }
@@ -102,6 +106,7 @@ class TenantController extends Controller
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:tenants,email,' . $id,
+            'status'=> 'required|exists:global_lookups,key',
         ]);
 
     

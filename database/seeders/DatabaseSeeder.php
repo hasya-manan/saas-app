@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // Always seed roles first so users have something to link to!
         $this->call([
+            GlobalLookupSeeder::class,
             RoleSeeder::class,
         ]);
 

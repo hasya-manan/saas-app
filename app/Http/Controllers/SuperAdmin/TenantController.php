@@ -57,8 +57,10 @@ class TenantController extends Controller
                     
         ]);
 
-        return redirect()->route('superadmin.dashboard')
+        return redirect()->back()
         ->with('success', "Company $customId has been fully set up!");
+               
+
     }
 
     // 1. The Main List: Shows both Active and Trashed companies to the UI

@@ -21,7 +21,7 @@ const submit = () => {
     });
 };
 
-const flashMessage = computed(() => page.props.flash.message);
+
 </script>
 
 <template>

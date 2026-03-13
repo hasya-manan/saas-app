@@ -30,7 +30,7 @@ const tenantToArchive = ref(null);
 const form = useForm({
     id: null,
     company_name: '',
-    company_email: '', 
+    company_email: '',
     status: '',
 });
 
@@ -46,9 +46,9 @@ const openEditPanel = (tenant) => {
     // Fill the form helper with the clicked tenant's data
     form.id = tenant.id;
     form.company_name = tenant.company_name;
-    form.company_email = tenant.email; 
+    form.company_email = tenant.email;
     form.status = tenant.status;
-   
+
 
     isEditPanelOpen.value = true;
 };
@@ -185,6 +185,14 @@ const closeModal = () => {
                                     <td class="px-4 lg:px-6 py-4 text-right">
                                         <div class="flex justify-end gap-1 lg:gap-2">
                                             <template v-if="currentTab === 'active'">
+                                                <!--TODO:: Add User Management-->
+                                                <!-- <Link :href="route('superadmin.users.list', { tenant_id: tenant.id })">
+                                                    <BaseButton variant="outline" size="sm"
+                                                        class="p-2 lg:px-3 text-primary hover:bg-primary/5">
+                                                        <Users :size="14" /><span
+                                                            class="hidden lg:inline ml-1">Team</span>
+                                                    </BaseButton>
+                                                </Link> -->
                                                 <BaseButton variant="outline" size="sm" @click="openEditPanel(tenant)"
                                                     class="p-2 lg:px-3">
                                                     <Edit2 :size="14" /><span class="hidden lg:inline ml-1">Edit</span>
@@ -194,6 +202,7 @@ const closeModal = () => {
                                                     <Trash2 :size="14" /><span
                                                         class="hidden lg:inline ml-1">Archive</span>
                                                 </BaseButton>
+
                                             </template>
                                             <template v-else>
                                                 <BaseButton @click="restoreTenant(tenant)" variant="primary" size="sm"
@@ -242,7 +251,7 @@ const closeModal = () => {
                                     :class="{ 'border-red-500': form.errors.company_name }" />
                                 <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
                                     form.errors.company_name
-                                    }}</p>
+                                }}</p>
                             </div>
                             <div>
                                 <label
@@ -251,7 +260,8 @@ const closeModal = () => {
                                 <input v-model="form.company_email" type="email"
                                     class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
                                     :class="{ 'border-red-500': form.errors.email }" />
-                                <p v-if="form.errors.company_email" class="text-xs text-red-500 mt-1">{{ form.errors.company_email }}
+                                <p v-if="form.errors.company_email" class="text-xs text-red-500 mt-1">{{
+                                    form.errors.company_email }}
                                 </p>
                             </div>
                             <div>
@@ -267,7 +277,7 @@ const closeModal = () => {
                                 <p v-if="form.errors.status" class="text-xs text-red-500 mt-1">{{ form.errors.status }}
                                 </p>
                             </div>
-                           
+
 
                             <div class="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-gray-50 mt-4">
                                 <BaseButton variant="outline" class="w-full sm:w-auto" @click="closeEditPanel">Cancel

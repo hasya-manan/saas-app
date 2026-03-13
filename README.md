@@ -117,10 +117,6 @@ classDiagram
 - [ ] Payroll: Monthly salary calculations and generation.
 
 
-- User management per tenant
-- Attendance & leave modules
-- Payroll module
-
 ---
 
 ## 🚀 Getting Started

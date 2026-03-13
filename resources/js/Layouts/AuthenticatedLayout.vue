@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { useNotifications } from '@/Composables/useNotifications';
 // Example using Lucide icons (install via npm install lucide-vue-next)
 import {
     LayoutDashboard,
@@ -17,11 +18,29 @@ import {
 
 const isCollapsed = ref(false);
 const showingMobileMenu = ref(false); 
-
+const page = usePage();
+const { notifySuccess, notifyError, notifyWarning } = useNotifications();
 const toggleSidebar = () => {
     isCollapsed.value = !isCollapsed.value;
 };
 
+watch(
+    () => page.props.flash, 
+    (flash) => {
+        console.log("Flash Data Detected:", flash); // <--- Add this
+        if (flash?.success) {
+            notifySuccess(flash.success);
+        }
+        if (flash?.error) {
+            notifyError(flash.error);
+        }
+        
+        if (flash?.message) {
+            notifySuccess(flash.message);
+        }
+    }, 
+    { deep: true }
+);
 </script>
 
 <template>

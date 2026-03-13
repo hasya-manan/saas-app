@@ -58,7 +58,7 @@ class TenantController extends Controller
         ]);
 
         return redirect()->route('superadmin.dashboard')
-            ->with('message', "Company $customId and Admin created!");
+        ->with('success', "Company $customId has been fully set up!");
     }
 
     // 1. The Main List: Shows both Active and Trashed companies to the UI
@@ -80,16 +80,17 @@ class TenantController extends Controller
         $tenant->update(['status' => 'archived']); // Change status to archived
         $tenant->delete(); 
         return redirect()->route('tenants.list')
-            ->with('message', 'Company archived to Trash.');
+            ->with('success', 'Company archived to Trash.');
     }
 
     // 3. The Restore: Clears 'deleted_at' so it becomes "Active" again
     public function restore($id)    
     {
         // We use withTrashed() because normally Laravel can't "see" deleted rows
-       $tenant = Tenant::withTrashed()->findOrFail($id);
+        $tenant = Tenant::withTrashed()->findOrFail($id);
+        $tenant->restore();
         $tenant->update(['status' => 'active']);
-        return back()->with('message', 'Company restored successfully!');
+        return back()->with('success', "Company {$tenant->company_name} restored successfully!");
     }
 
     
@@ -97,7 +98,7 @@ class TenantController extends Controller
     {
         // This physically removes the record from the list
         Tenant::withTrashed()->findOrFail($id)->forceDelete();
-        return back()->with('message', 'Company permanently removed.');
+        return back()->with('success', 'Company permanently removed.');
     }
     public function update(Request $request, $id)
     {

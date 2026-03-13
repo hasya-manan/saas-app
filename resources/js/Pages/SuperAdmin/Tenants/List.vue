@@ -1,11 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
 import Pagination from '@/Components/Pagination.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
+import ConfirmModal from '@/Components/ConfirmModal.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X } from 'lucide-vue-next';
@@ -22,6 +22,8 @@ const confirmingDeletion = ref(false);
 const selectedTenant = ref(null);
 const confirmationInput = ref('');
 const isEditPanelOpen = ref(false);
+const isModalOpen = ref(false);
+const tenantToArchive = ref(null);
 
 
 // --- The Form Helper ---
@@ -70,9 +72,18 @@ const submitUpdate = () => {
 };
 // --- Delete/Restore Logic ---
 const softDeleteTenant = (tenant) => {
-    if (confirm(`Archive ${tenant.company_name}?`)) {
-        router.delete(route('tenants.destroy', tenant.id));
-    }
+    tenantToArchive.value = tenant; // Save the tenant details
+    isModalOpen.value = true;
+};
+
+
+const executeDelete = () => {
+    router.delete(route('tenants.destroy', tenantToArchive.value.id), {
+        onSuccess: () => {
+            isModalOpen.value = false;
+            // Your AuthenticatedLayout watcher will trigger the Toast automatically!
+        },
+    });
 };
 
 const restoreTenant = (tenant) => {
@@ -95,19 +106,6 @@ const closeModal = () => {
     confirmationInput.value = '';
     selectedTenant.value = null;
 };
-//split 40 :60
-
-// const openEditPanel = (tenant) => {
-//     // We use { ... } to photocopy the data so the table doesn't move while we type
-//     editingTenant.value = { ...tenant };
-//     isEditPanelOpen.value = true;
-// };
-
-// 3. The function to handle closing
-// const closeEditPanel = () => {
-//     isEditPanelOpen.value = false;
-//     editingTenant.value = null; // Clear the memory
-// };
 
 
 </script>
@@ -243,7 +241,7 @@ const closeModal = () => {
                                     :class="{ 'border-red-500': form.errors.company_name }" />
                                 <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
                                     form.errors.company_name
-                                    }}</p>
+                                }}</p>
                             </div>
                             <div>
                                 <label
@@ -320,6 +318,11 @@ const closeModal = () => {
                 </div>
             </div>
         </Modal>
+
+        <!--Modal:: Soft Delete -->
+        <ConfirmModal :show="isModalOpen" title="Archive Tenant"
+            :message="`Are you sure you want to archive ${tenantToArchive?.company_name}? This will disable their access.`"
+            confirmText="Yes, Archive" @close="isModalOpen = false" @confirm="executeDelete" />
     </AuthenticatedLayout>
 
 

@@ -1,10 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import Pagination from '@/Components/Pagination.vue'; // Make sure you have this component
+import Pagination from '@/Components/Pagination.vue';
+import GlobalFilter from '@/Components/GlobalFilter.vue';
 
 defineProps({
     users: Object,
+    filters: Object,    
+    tenants: Array,     
+    roles: Array,
 });
 </script>
 
@@ -17,7 +21,7 @@ defineProps({
             <h2 class="text-xl font-bold leading-tight text-gray-800">
                 Global User Directory
             </h2>
-             <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
+            <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
         </template>
 
         <div class="py-12">
@@ -28,9 +32,12 @@ defineProps({
                     <div class="mb-6 flex justify-between items-center px-2">
                         <div>
                             <h3 class="text-lg font-bold text-gray-900">Total Users</h3>
-                           
+
                         </div>
                     </div>
+                    <!--filtering-->
+                    <GlobalFilter routeName="users.list" :filters="filters" :roles="roles" :tenants="tenants"
+                        :showRole="true" :showTenant="true" placeholder="Search users..." />
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2">
@@ -74,7 +81,8 @@ defineProps({
                                         <span :class="{
                                             'bg-primary text-white': user.role?.name === 'admin_company',
                                             'bg-pink-100 text-pink-700': user.role?.name === 'Staff'
-                                        }" class="px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter">
+                                        }"
+                                            class="px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter">
                                             {{ user.role?.name }}
                                         </span>
                                     </td>

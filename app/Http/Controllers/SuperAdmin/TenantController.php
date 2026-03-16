@@ -140,19 +140,43 @@ class TenantController extends Controller
     // =========================================
     // this is for the page user list all tenant
     // =========================================    
-    public function userList()
+    public function userList(Request $request) // 1. Added Request here
     {
-    // Fetch all users, grouped by their tenant
-    // We include 'role' and 'tenant' so we know who they are and where they work
         $users = User::withoutGlobalScopes()
-            ->with(['tenant', 'role']) 
-            ->whereNotNull('tenant_id') // Exclude other Super Admins if any
+            ->with(['tenant', 'role'])
+            ->whereNotNull('tenant_id')
+        
+        
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+
+            // 3. Filter by Role (Admin or Staff)
+            ->when($request->role, function ($query, $role) {
+                $query->whereHas('role', function ($q) use ($role) {
+                    $q->where('name', $role);
+                });
+            })
+
+        // 4.  Filter by Specific Company
+            ->when($request->tenant_id, function ($query, $tenantId) {
+                $query->where('tenant_id', $tenantId);
+            })
+
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString(); // 5. 💡 Keeps your search filters active when clicking "Next Page"
 
         return Inertia::render('SuperAdmin/Users/List', [
-            'users' => $users
+            'users' => $users,
+            // 6. Send these props so the GlobalFilter knows what the current values are
+            'filters' => $request->only(['search', 'role', 'tenant_id']),
+            'tenants' => Tenant::select('id', 'company_name')->get(),
+            'roles' => Role::select('id', 'name')->get(),
         ]);
-}
-   
+    }
+
 }

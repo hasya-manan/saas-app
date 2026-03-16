@@ -15,7 +15,7 @@ const props = defineProps({
     tenants: Object,        // Changed from Array to Object
     deletedTenants: Object,  // Changed from Array to Object
     filters: Object,
-     statusOptions: Array,
+    statusOptions: Array,
 });
 
 // --- State Management ---
@@ -133,8 +133,7 @@ const closeModal = () => {
         </template>
 
         <div class="py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div
-                class="bg-white overflow-hidden shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
+            <div class="bg-white shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
 
                 <div class="flex gap-6 mb-6 border-b border-gray-100">
                     <button @click="currentTab = 'active'"
@@ -148,30 +147,37 @@ const closeModal = () => {
                         Trash ({{ deletedTenants.total ?? 0 }})
                     </button>
                 </div>
-                <GlobalFilter routeName="tenants.list" :filters="filters" dataKey="tenants" :status-options="statusOptions" :show-role="false" :show-tenant="false" 
-                    :show-status="true" placeholder="Search companies by name or email..." />
+
+                <GlobalFilter routeName="tenants.list" :filters="filters" dataKey="tenants"
+                    :status-options="statusOptions" :show-role="false" :show-tenant="false" :show-status="true"
+                    placeholder="Search companies by name or email..." />
 
                 <div class="flex flex-col lg:flex-row items-start gap-6">
+
                     <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']"
                         class="transition-all duration-500 order-2 lg:order-1">
-                        <div
-                            class="bg-white overflow-x-auto shadow-sm border border-primary-border/20 rounded-xl lg:rounded-2xl">
-                            <table class="w-full text-left border-separate border-spacing-y-2"">
-                                <thead class=" bg-primary-light/20">
-                                <tr>
-                                    <th
-                                        class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Company</th>
-                                    <th
-                                        class="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Company Email</th>
-                                    <th
-                                        class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Status</th>
-                                    <th
-                                        class="px-4 lg:px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Actions</th>
-                                </tr>
+
+                        <div class="bg-white overflow-x-auto shadow-sm border border-primary-border/20 rounded-2xl">
+                            <table class="w-full text-left border-separate border-spacing-y-2">
+                                <thead class="bg-primary-light/20">
+                                    <tr>
+                                        <th
+                                            class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Company
+                                        </th>
+                                        <th
+                                            class="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Company Email
+                                        </th>
+                                        <th
+                                            class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Status
+                                        </th>
+                                        <th
+                                            class="px-4 lg:px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Actions
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50 bg-white">
                                     <tr v-for="tenant in displayList" :key="tenant.id"
@@ -229,8 +235,8 @@ const closeModal = () => {
                                     </tr>
                                 </tbody>
                             </table>
-                            <!--pagination-->
-                            <div class="bg-white border-t border-gray-100">
+
+                            <div class="bg-white border-t border-gray-100 p-4">
                                 <Pagination v-if="currentTab === 'active'" :links="tenants.links"
                                     :meta="{ from: tenants.from, to: tenants.to, total: tenants.total }" />
                                 <Pagination v-else :links="deletedTenants.links"
@@ -238,9 +244,9 @@ const closeModal = () => {
                             </div>
                         </div>
                     </div>
-                    <!--slide for edit panel-->
+
                     <div v-if="isEditPanelOpen"
-                        class="w-full lg:w-[40%] sticky top-0 lg:top-6 z-10 animate-in slide-in-from-top lg:slide-in-from-right duration-500 order-1 lg:order-2">
+                        class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-top lg:slide-in-from-right duration-500 order-1 lg:order-2">
                         <div class="bg-white border border-primary/10 rounded-xl lg:rounded-2xl shadow-lg p-5 lg:p-6">
                             <div class="flex items-center justify-between mb-6">
                                 <h2 class="text-lg font-bold text-gray-800">Edit Company</h2>
@@ -258,9 +264,9 @@ const closeModal = () => {
                                         class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
                                         :class="{ 'border-red-500': form.errors.company_name }" />
                                     <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
-                                        form.errors.company_name
-                                    }}</p>
+                                        form.errors.company_name }}</p>
                                 </div>
+
                                 <div>
                                     <label
                                         class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Company
@@ -269,13 +275,12 @@ const closeModal = () => {
                                         class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
                                         :class="{ 'border-red-500': form.errors.email }" />
                                     <p v-if="form.errors.company_email" class="text-xs text-red-500 mt-1">{{
-                                        form.errors.company_email }}
-                                    </p>
+                                        form.errors.company_email }}</p>
                                 </div>
+
                                 <div>
                                     <label
-                                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-                                        Status</label>
+                                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</label>
                                     <select v-model="form.status"
                                         class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5 bg-white"
                                         :class="{ 'border-red-500': form.errors.status }">
@@ -284,10 +289,8 @@ const closeModal = () => {
                                         </option>
                                     </select>
                                     <p v-if="form.errors.status" class="text-xs text-red-500 mt-1">{{ form.errors.status
-                                    }}
-                                    </p>
+                                        }}</p>
                                 </div>
-
 
                                 <div
                                     class="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-gray-50 mt-4">
@@ -296,12 +299,8 @@ const closeModal = () => {
                                     </BaseButton>
                                     <BaseButton variant="primary" class="w-full sm:w-auto" :disabled="processing"
                                         @click="submitUpdate">
-                                        <template v-if="processing">
-                                            Saving...
-                                        </template>
-                                        <template v-else>
-                                            Save Changes
-                                        </template>
+                                        <template v-if="processing">Saving...</template>
+                                        <template v-else>Save Changes</template>
                                     </BaseButton>
                                 </div>
                             </div>

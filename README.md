@@ -96,10 +96,11 @@ classDiagram
 ---
 ## 📸 Preview
 
-### User Management Super Admin
-![Create/Reg Tenant](./screenshots/super-admin/onboard.png)
-![Manage Tenant](./screenshots/super-admin/Manage_company.png)
-![Manage Tenant](./screenshots/super-admin/Edit_company.png)
+### 🖥️ Super Admin Interface
+
+| Onboarding Tenant | Manage Companies | Edit Details |
+| :---: | :---: | :---: |
+| ![Onboard](./screenshots/super-admin/onboard.png) | ![Manage](./screenshots/super-admin/Manage_company.png) | ![Edit](./screenshots/super-admin/Edit_company.png) |
 
 
 

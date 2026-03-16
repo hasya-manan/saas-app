@@ -133,9 +133,8 @@ const closeModal = () => {
         </template>
 
         <div class="py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="bg-white shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
-
-                <div class="flex gap-6 mb-6 border-b border-gray-100">
+            <div class="mb-8">
+                <div class="flex gap-6 mb-6 border-b border-gray-200">
                     <button @click="currentTab = 'active'"
                         :class="currentTab === 'active' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-600'"
                         class="pb-4 px-2 font-bold text-sm transition-all">
@@ -151,162 +150,122 @@ const closeModal = () => {
                 <GlobalFilter routeName="tenants.list" :filters="filters" dataKey="tenants"
                     :status-options="statusOptions" :show-role="false" :show-tenant="false" :show-status="true"
                     placeholder="Search companies by name or email..." />
+            </div>
 
-                <div class="flex flex-col lg:flex-row items-start gap-6">
+            <div class="flex flex-col lg:flex-row items-start gap-6">
 
-                    <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']"
-                        class="transition-all duration-500 order-2 lg:order-1">
-
-                        <div class="bg-white overflow-x-auto shadow-sm border border-primary-border/20 rounded-2xl">
+                <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']"
+                    class="transition-all duration-500 order-2 lg:order-1">
+                    <div
+                        class="bg-white shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] overflow-hidden">
+                        <div class="overflow-x-auto p-4 lg:p-8">
                             <table class="w-full text-left border-separate border-spacing-y-2">
-                                <thead class="bg-primary-light/20">
+                                <thead class="bg-primary-light/10">
                                     <tr>
                                         <th
-                                            class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Company
-                                        </th>
+                                            class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Company</th>
                                         <th
                                             class="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Company Email
-                                        </th>
+                                            Email</th>
                                         <th
-                                            class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Status
-                                        </th>
+                                            class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Status</th>
                                         <th
-                                            class="px-4 lg:px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Actions
-                                        </th>
+                                            class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                            Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50 bg-white">
+                                <tbody class="divide-y divide-gray-50">
                                     <tr v-for="tenant in displayList" :key="tenant.id"
-                                        class="group bg-white hover:bg-primary-light/10 transition-all duration-300">
-
+                                        class="group hover:bg-primary-light/5 transition-all duration-300">
                                         <td
-                                            class="px-6 lg:px-6 py-4 rounded-l-2xl border-y border-l border-transparent group-hover:border-primary-border">
+                                            class="px-6 py-4 rounded-l-2xl border-y border-l border-transparent group-hover:border-primary-border">
                                             <div class="text-sm font-bold text-gray-900">{{ tenant.company_name }}</div>
-                                            <div
-                                                class="text-[10px] text-gray-400 truncate max-w-[100px] lg:max-w-none lg:text-xs">
-                                                ID: {{ tenant.id }}
-                                            </div>
+                                            <div class="text-[10px] text-gray-400">ID: {{ tenant.id }}</div>
                                         </td>
-
                                         <td
                                             class="hidden md:table-cell px-6 py-4 text-sm text-gray-600 border-y border-transparent group-hover:border-primary-border">
                                             {{ tenant.email }}
                                         </td>
-
                                         <td
-                                            class="px-4 lg:px-6 py-4 border-y border-transparent group-hover:border-primary-border">
+                                            class="px-6 py-4 border-y border-transparent group-hover:border-primary-border">
                                             <StatusBadge v-if="currentTab === 'trash'" status="archived" />
                                             <StatusBadge v-else :status="tenant.status" />
                                         </td>
-
                                         <td
-                                            class="px-4 lg:px-6 py-4 text-right rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border">
-                                            <div class="flex justify-end gap-1 lg:gap-2">
-                                                <template v-if="currentTab === 'active'">
-                                                    <BaseButton variant="outline" size="sm"
-                                                        @click="openEditPanel(tenant)" class="p-2 lg:px-3">
-                                                        <Edit2 :size="14" /><span
-                                                            class="hidden lg:inline ml-1">Edit</span>
-                                                    </BaseButton>
-                                                    <BaseButton @click="softDeleteTenant(tenant)" variant="danger"
-                                                        size="sm" class="p-2 lg:px-3">
-                                                        <Trash2 :size="14" /><span
-                                                            class="hidden lg:inline ml-1">Archive</span>
-                                                    </BaseButton>
-                                                </template>
-                                                <template v-else>
-                                                    <BaseButton @click="restoreTenant(tenant)" variant="primary"
-                                                        size="sm" class="p-2 lg:px-3">
-                                                        <RotateCcw :size="14" /><span
-                                                            class="hidden lg:inline ml-1">Restore</span>
-                                                    </BaseButton>
-                                                    <BaseButton @click="openHardDeleteModal(tenant)" variant="danger"
-                                                        size="sm" class="p-2 lg:px-3">
-                                                        <Trash2 :size="14" /><span
-                                                            class="hidden lg:inline ml-1">Delete</span>
-                                                    </BaseButton>
-                                                </template>
+                                            class="px-6 py-4 text-right rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border">
+                                            <div class="flex justify-end gap-2">
+                                                <BaseButton v-if="currentTab === 'active'" variant="outline" size="sm"
+                                                    @click="openEditPanel(tenant)">
+                                                    <Edit2 :size="14" /><span class="hidden lg:inline ml-1">Edit</span>
+                                                </BaseButton>
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <div class="bg-white border-t border-gray-100 p-4">
-                                <Pagination v-if="currentTab === 'active'" :links="tenants.links"
-                                    :meta="{ from: tenants.from, to: tenants.to, total: tenants.total }" />
-                                <Pagination v-else :links="deletedTenants.links"
-                                    :meta="{ from: deletedTenants.from, to: deletedTenants.to, total: deletedTenants.total }" />
-                            </div>
+                        </div>
+                        <div class="bg-gray-50/50 border-t border-gray-100 px-8">
+                            <Pagination v-if="currentTab === 'active'" :links="tenants.links"
+                                :meta="{ from: tenants.from, to: tenants.to, total: tenants.total }" />
+                            <Pagination v-else :links="deletedTenants.links"
+                                :meta="{ from: deletedTenants.from, to: deletedTenants.to, total: deletedTenants.total }" />
                         </div>
                     </div>
+                </div>
 
-                    <div v-if="isEditPanelOpen"
-                        class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-top lg:slide-in-from-right duration-500 order-1 lg:order-2">
-                        <div class="bg-white border border-primary/10 rounded-xl lg:rounded-2xl shadow-lg p-5 lg:p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-lg font-bold text-gray-800">Edit Company</h2>
-                                <button @click="closeEditPanel" class="p-2 -mr-2 text-gray-400 hover:text-gray-600">
-                                    <X :size="20" />
-                                </button>
+                <div v-if="isEditPanelOpen"
+                    class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-right duration-500 order-1 lg:order-2">
+                    <div class="bg-white shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-xl font-bold text-gray-800">Edit Company</h2>
+                            <button @click="closeEditPanel"
+                                class="p-2 -mr-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+                                <X :size="20" />
+                            </button>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Company
+                                    Name</label>
+                                <input v-model="form.company_name" type="text"
+                                    class="w-full rounded-xl border-gray-200 focus:ring-primary p-3"
+                                    :class="{ 'border-red-500': form.errors.company_name }" />
                             </div>
 
-                            <div class="space-y-4">
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Company
-                                        Name</label>
-                                    <input v-model="form.company_name" type="text"
-                                        class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
-                                        :class="{ 'border-red-500': form.errors.company_name }" />
-                                    <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
-                                        form.errors.company_name }}</p>
-                                </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Contact
+                                    Email</label>
+                                <input v-model="form.company_email" type="email"
+                                    class="w-full rounded-xl border-gray-200 focus:ring-primary p-3"
+                                    :class="{ 'border-red-500': form.errors.email }" />
+                            </div>
 
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Company
-                                        Contact Email</label>
-                                    <input v-model="form.company_email" type="email"
-                                        class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5"
-                                        :class="{ 'border-red-500': form.errors.email }" />
-                                    <p v-if="form.errors.company_email" class="text-xs text-red-500 mt-1">{{
-                                        form.errors.company_email }}</p>
-                                </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Status</label>
+                                <select v-model="form.status"
+                                    class="w-full rounded-xl border-gray-200 focus:ring-primary p-3 bg-white">
+                                    <option v-for="option in statusOptions" :key="option.key" :value="option.key">{{
+                                        option.label }}</option>
+                                </select>
+                            </div>
 
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</label>
-                                    <select v-model="form.status"
-                                        class="w-full rounded-lg border-gray-200 focus:ring-primary text-sm p-2.5 bg-white"
-                                        :class="{ 'border-red-500': form.errors.status }">
-                                        <option v-for="option in statusOptions" :key="option.key" :value="option.key">
-                                            {{ option.label }}
-                                        </option>
-                                    </select>
-                                    <p v-if="form.errors.status" class="text-xs text-red-500 mt-1">{{ form.errors.status
-                                        }}</p>
-                                </div>
-
-                                <div
-                                    class="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-gray-50 mt-4">
-                                    <BaseButton variant="outline" class="w-full sm:w-auto" @click="closeEditPanel">
-                                        Cancel
-                                    </BaseButton>
-                                    <BaseButton variant="primary" class="w-full sm:w-auto" :disabled="processing"
-                                        @click="submitUpdate">
-                                        <template v-if="processing">Saving...</template>
-                                        <template v-else>Save Changes</template>
-                                    </BaseButton>
-                                </div>
+                            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-50">
+                                <BaseButton variant="outline" class="flex-1" @click="closeEditPanel">Cancel</BaseButton>
+                                <BaseButton variant="primary" class="flex-1" :disabled="processing"
+                                    @click="submitUpdate">
+                                    {{ processing ? 'Saving...' : 'Save Changes' }}
+                                </BaseButton>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 

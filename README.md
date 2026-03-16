@@ -96,11 +96,21 @@ classDiagram
 ---
 ## 📸 Preview
 
-### 🖥️ Super Admin Interface
+### 📸 System Walkthrough
 
-| Onboarding Tenant | Manage Companies | Edit Details |
-| :---: | :---: | :---: |
-| ![Onboard](./screenshots/super-admin/onboard.png) | ![Manage](./screenshots/super-admin/Manage_company.png) | ![Edit](./screenshots/super-admin/Edit_company.png) |
+<details>
+  <summary><b>Click to view Super Admin Screenshots</b></summary>
+
+  #### 1. Registration & Onboarding
+  ![Onboard](./screenshots/super-admin/onboard.png)
+
+  #### 2. Company Management
+  ![Manage](./screenshots/super-admin/Manage_company.png)
+
+  #### 3. Edit Access
+  ![Edit](./screenshots/super-admin/Edit_company.png)
+
+</details>
 
 
 

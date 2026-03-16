@@ -64,6 +64,8 @@ const submitUpdate = () => {
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
+             <GlobalFilter routeName="users.list" :filters="filters" dataKey="users" :roles="roles"
+                            :tenants="tenants" :showRole="true" :showTenant="true" placeholder="Search users..." />
             <div class="flex flex-col lg:flex-row items-start gap-6">
 
                 <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']"
@@ -75,8 +77,7 @@ const submitUpdate = () => {
                             <h3 class="text-lg font-bold text-gray-900">Total Users</h3>
                         </div>
 
-                        <GlobalFilter routeName="users.list" :filters="filters" dataKey="users" :roles="roles"
-                            :tenants="tenants" :showRole="true" :showTenant="true" placeholder="Search users..." />
+                       
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-separate border-spacing-y-2">

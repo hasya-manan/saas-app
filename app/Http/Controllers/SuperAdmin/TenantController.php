@@ -12,6 +12,10 @@ use Inertia\Inertia;
 
 class TenantController extends Controller
 {
+
+    // =========================================
+    // this is for the page create a new company
+    // ========================================= 
     public function index()
     {
         return Inertia::render('SuperAdmin/Tenants/Create');
@@ -23,7 +27,7 @@ class TenantController extends Controller
         'company_name' => 'required|string|max:255',
         'admin_name'   => 'required|string|max:255',
         'admin_email'  => 'required|email|unique:users,email',
-    ]);
+        ]);
 
         // Logic: Keep generating until ID is unique
        do {
@@ -63,7 +67,10 @@ class TenantController extends Controller
 
     }
 
-    // 1. The Main List: Shows both Active and Trashed companies to the UI
+    // =========================================
+    // this is for the page company list all tenant
+    // ========================================= 
+    
     public function list()
     {
         return Inertia::render('SuperAdmin/Tenants/List', [
@@ -129,4 +136,23 @@ class TenantController extends Controller
         // 4. Redirect back with success toast
         return redirect()->back()->with('success', 'Company information updated successfully.');
     }
+
+    // =========================================
+    // this is for the page user list all tenant
+    // =========================================    
+    public function userList()
+    {
+    // Fetch all users, grouped by their tenant
+    // We include 'role' and 'tenant' so we know who they are and where they work
+        $users = User::withoutGlobalScopes()
+            ->with(['tenant', 'role']) 
+            ->whereNotNull('tenant_id') // Exclude other Super Admins if any
+            ->latest()
+            ->paginate(10);
+
+        return Inertia::render('SuperAdmin/Users/List', [
+            'users' => $users
+        ]);
+}
+   
 }

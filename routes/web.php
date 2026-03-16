@@ -50,6 +50,8 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
     Route::delete('/tenant/{id}/force', [TenantController::class, 'forceDelete'])->name('tenants.force-delete');
     Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
 
+    // page list.vue user
+    Route::get('/users/list', [TenantController::class, 'userList'])->name('users.list');
      
 
 });

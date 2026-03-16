@@ -13,7 +13,8 @@ import {
     PlusCircle,
     Menu, 
     X,
-    List      
+    List,
+    Contact      
 } from 'lucide-vue-next';
 
 const isCollapsed = ref(false);
@@ -60,6 +61,7 @@ watch(
                     <Link :href="route('dashboard')" class="block px-3 py-2 text-gray-600 font-medium">Dashboard</Link>
                     <Link v-if="$page.props.auth.user.role_id === 1" :href="route('tenants.create')" class="block px-3 py-2 text-gray-600 font-medium">Onboard Company</Link>
                     <Link v-if="$page.props.auth.user.role_id === 1" :href="route('tenants.list')" class="block px-3 py-2 text-gray-600 font-medium">List Company</Link>
+                    <Link v-if="$page.props.auth.user.role_id === 1" :href="route('users.list')" class="block px-3 py-2 text-gray-600 font-medium">All List Users</Link>
 
                 </nav>
             </aside>
@@ -113,6 +115,12 @@ watch(
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <List  :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Company</span>
+                    </Link>
+                     <Link :href="route('users.list')"
+                        :class="[route().current('users.list') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <Contact   :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">List Users</span>
                     </Link>
                 </div>
             </nav>

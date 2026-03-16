@@ -217,7 +217,7 @@ const closeModal = () => {
 
                 <div v-if="isEditPanelOpen"
                     class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-right duration-500 order-1 lg:order-2">
-                    <div class="bg-white shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
+                    <div class="bg-white border border-primary/10 rounded-[2.5rem] shadow-xl p-8">
                         <div class="flex items-center justify-between mb-8">
                             <h2 class="text-xl font-bold text-gray-800">Edit Company</h2>
                             <button @click="closeEditPanel"

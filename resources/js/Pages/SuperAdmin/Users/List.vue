@@ -49,7 +49,7 @@ const closeEditPanel = () => {
     form.reset();
 };
 
-// 🎯 Added the missing submit function
+// Added the missing submit function
 const submitUpdate = () => {
     form.put(route('users.update', form.id), {
         onSuccess: () => closeEditPanel(),

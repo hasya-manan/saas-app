@@ -9,6 +9,7 @@ defineProps({
     filters: Object,    
     tenants: Array,     
     roles: Array,
+    filters: Object,
 });
 </script>
 
@@ -36,8 +37,8 @@ defineProps({
                         </div>
                     </div>
                     <!--filtering-->
-                    <GlobalFilter routeName="users.list" :filters="filters" :roles="roles" :tenants="tenants"
-                        :showRole="true" :showTenant="true" placeholder="Search users..." />
+                    <GlobalFilter routeName="users.list" :filters="filters" dataKey="users" :roles="roles" :tenants="tenants"
+                        :showRole="true" :showTenant="true"  placeholder="Search users..." />
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2">

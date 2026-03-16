@@ -1,21 +1,25 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { Search, X, Users, Building2 } from 'lucide-vue-next';
+import { Search, X, Users, Building2, Activity } from 'lucide-vue-next';
 
 const props = defineProps({
     routeName: String,
     filters: { type: Object, default: () => ({}) },
     tenants: { type: Array, default: () => [] },
     roles: { type: Array, default: () => [] },
+    statusOptions: { type: Array, default: () => [] },
     placeholder: String,
     showRole: Boolean,
-    showTenant: Boolean
+    showTenant: Boolean,
+    showStatus: { type: Boolean, default: false },
+    dataKey: { type: String, default: 'data' }
 });
 
 const search = ref(props.filters.search || '');
 const role = ref(props.filters.role || null);
 const tenant_id = ref(props.filters.tenant_id || null);
+const status = ref(props.filters.status || null);
 
 let timeout = null;
 
@@ -26,15 +30,17 @@ const performFilter = () => {
         const query = { search: search.value };
         if (props.showRole) query.role = role.value;
         if (props.showTenant) query.tenant_id = tenant_id.value;
+        if (props.showStatus) query.status = status.value;
 
         router.get(route(props.routeName), query, {
             preserveState: true,
             replace: true,
+            only: [props.dataKey],
         });
     }, 300);
 };
 
-watch([search, role, tenant_id], () => performFilter());
+watch([search, role, tenant_id, status], () => performFilter());
 
 const formatRoleName = (name) => {
     if (!name) return '';
@@ -74,6 +80,18 @@ const formatRoleName = (name) => {
                 <option :value="null">All Companies</option>
                 <option v-for="t in tenants" :key="t.id" :value="t.id">{{ t.company_name }}</option>
 
+            </select>
+        </div>
+
+        <div v-if="showStatus && statusOptions.length > 0"
+            class="flex items-center gap-2 px-4 py-2 bg-gray-50/50 rounded-2xl border border-transparent hover:border-primary-border transition-colors">
+            <Activity :size="16" class="text-gray-400" />
+            <select v-model="status"
+                class="bg-transparent border-none text-sm font-medium text-gray-600 focus:ring-0 cursor-pointer p-0 pr-8">
+                <option :value="null">All Status</option>
+                <option v-for="opt in statusOptions" :key="opt.key" :value="opt.key">
+                    {{ opt.label }}
+                </option>
             </select>
         </div>
     </div>

@@ -9,11 +9,13 @@ import ConfirmModal from '@/Components/ConfirmModal.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X } from 'lucide-vue-next';
+import GlobalFilter from '@/Components/GlobalFilter.vue';
 
 const props = defineProps({
     tenants: Object,        // Changed from Array to Object
     deletedTenants: Object,  // Changed from Array to Object
-    statusOptions: Array,
+    filters: Object,
+     statusOptions: Array,
 });
 
 // --- State Management ---
@@ -146,6 +148,8 @@ const closeModal = () => {
                         Trash ({{ deletedTenants.total ?? 0 }})
                     </button>
                 </div>
+                <GlobalFilter routeName="tenants.list" :filters="filters" dataKey="tenants" :status-options="statusOptions" :show-role="false" :show-tenant="false" 
+                    :show-status="true" placeholder="Search companies by name or email..." />
 
                 <div class="flex flex-col lg:flex-row items-start gap-6">
                     <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']"
@@ -153,21 +157,21 @@ const closeModal = () => {
                         <div
                             class="bg-white overflow-x-auto shadow-sm border border-primary-border/20 rounded-xl lg:rounded-2xl">
                             <table class="w-full text-left border-separate border-spacing-y-2"">
-                                <thead class="bg-primary-light/20">
-                                    <tr>
-                                        <th
-                                            class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Company</th>
-                                        <th
-                                            class="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Company Email</th>
-                                        <th
-                                            class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Status</th>
-                                        <th
-                                            class="px-4 lg:px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                            Actions</th>
-                                    </tr>
+                                <thead class=" bg-primary-light/20">
+                                <tr>
+                                    <th
+                                        class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                        Company</th>
+                                    <th
+                                        class="hidden md:table-cell px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                        Company Email</th>
+                                    <th
+                                        class="px-4 lg:px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                        Status</th>
+                                    <th
+                                        class="px-4 lg:px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                        Actions</th>
+                                </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50 bg-white">
                                     <tr v-for="tenant in displayList" :key="tenant.id"
@@ -255,7 +259,7 @@ const closeModal = () => {
                                         :class="{ 'border-red-500': form.errors.company_name }" />
                                     <p v-if="form.errors.company_name" class="text-xs text-red-500 mt-1">{{
                                         form.errors.company_name
-                                        }}</p>
+                                    }}</p>
                                 </div>
                                 <div>
                                     <label
@@ -280,7 +284,7 @@ const closeModal = () => {
                                         </option>
                                     </select>
                                     <p v-if="form.errors.status" class="text-xs text-red-500 mt-1">{{ form.errors.status
-                                        }}
+                                    }}
                                     </p>
                                 </div>
 

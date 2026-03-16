@@ -17,6 +17,7 @@ defineProps({
             <h2 class="text-xl font-bold leading-tight text-gray-800">
                 Global User Directory
             </h2>
+             <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
         </template>
 
         <div class="py-12">
@@ -27,7 +28,7 @@ defineProps({
                     <div class="mb-6 flex justify-between items-center px-2">
                         <div>
                             <h3 class="text-lg font-bold text-gray-900">Total Users</h3>
-                            <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
+                           
                         </div>
                     </div>
 

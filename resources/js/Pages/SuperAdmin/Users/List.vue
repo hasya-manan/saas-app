@@ -26,17 +26,23 @@ const form = useForm({
 });
 
 const openEditPanel = (user) => {
+    // Safety check to prevent the "undefined" error
+    if (!user) return;
+
     selectedUser.value = user;
     isEditPanelOpen.value = true;
-
-    // Fill the form with user data
+    
+    // Map the user data to your form
     form.id = user.id;
     form.name = user.name;
     form.email = user.email;
+    
+    // Map tenant/company data if it exists
+    form.company_name = user.tenant?.company_name || '';
+    
+    // Map the role
     form.role = user.role?.name || '';
-    form.tenant_id = user.tenant_id;
 };
-
 const closeEditPanel = () => {
     isEditPanelOpen.value = false;
     selectedUser.value = null;
@@ -64,8 +70,8 @@ const submitUpdate = () => {
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
-             <GlobalFilter routeName="users.list" :filters="filters" dataKey="users" :roles="roles"
-                            :tenants="tenants" :showRole="true" :showTenant="true" placeholder="Search users..." />
+            <GlobalFilter routeName="users.list" :filters="filters" dataKey="users" :roles="roles" :tenants="tenants"
+                :showRole="true" :showTenant="true" placeholder="Search users..." />
             <div class="flex flex-col lg:flex-row items-start gap-6">
 
                 <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']"
@@ -77,7 +83,7 @@ const submitUpdate = () => {
                             <h3 class="text-lg font-bold text-gray-900">Total Users</h3>
                         </div>
 
-                       
+
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-separate border-spacing-y-2">
@@ -133,7 +139,7 @@ const submitUpdate = () => {
                                         <td
                                             class="px-6 py-4 rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border text-right">
 
-                                            <BaseButton variant="outline" size="sm" @click="openEditPanel(tenant)"
+                                            <BaseButton variant="outline" size="sm" @click="openEditPanel(user)"
                                                 class="p-2 lg:px-3">
                                                 <Edit2 :size="14" /><span class="hidden lg:inline ml-1">Edit</span>
                                             </BaseButton>
@@ -157,7 +163,7 @@ const submitUpdate = () => {
                             <div>
                                 <h2 class="text-xl font-bold text-gray-800">Edit User Access</h2>
                                 <p class="text-xs text-gray-400 font-medium text-wrap">
-                                    Updating permissions for {{ selectedUser?.name }}
+                                   Updating permissions for {{ selectedUser?.name }}
                                 </p>
                             </div>
                             <button @click="closeEditPanel"
@@ -167,6 +173,22 @@ const submitUpdate = () => {
                         </div>
 
                         <div class="space-y-6">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">User
+                                    Name</label>
+                                <input v-model="form.name" type="text"
+                                    class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4"
+                                    placeholder="Enter user name">
+                                <p v-if="form.errors.name" class="text-xs text-red-500 mt-1">{{ form.errors.name }}</p>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">User
+                                    Email</label>
+                                <input v-model="form.email" type="text"
+                                    class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
+                            </div>
                             <div>
                                 <label
                                     class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Assign

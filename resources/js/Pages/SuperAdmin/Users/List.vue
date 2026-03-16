@@ -72,7 +72,7 @@ defineProps({
                                             <span class="text-sm font-semibold text-gray-700">
                                                 {{ user.tenant?.company_name || 'Individual' }}
                                             </span>
-                                            <span class="text-[10px] text-gray-400 uppercase tracking-widest">
+                                            <span class="text-[10px] text-gray-400  tracking-widest">
                                                 ID: {{ user.tenant_id }}
                                             </span>
                                         </div>

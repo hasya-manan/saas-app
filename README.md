@@ -1,5 +1,5 @@
 # 🏢 Multi-Tenant HR System
-> A shared-database multi-tenancy HR platform built with Laravel, Inertia.js & Vue 3 — designed for Malaysian SME payroll & HR management.
+> A shared-database multi-tenancy HR platform built with Laravel, Inertia.js & Vue 3 — designed for payroll & HR management.
 
 ![Status](https://img.shields.io/badge/status-in%20development-orange)
 ![Laravel](https://img.shields.io/badge/Laravel-11.x-red?logo=laravel)

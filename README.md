@@ -244,6 +244,3 @@ This is a **solo personal project** built for learning and portfolio purposes. I
 
 ---
 
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.

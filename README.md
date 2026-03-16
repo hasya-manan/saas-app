@@ -240,7 +240,7 @@ SuperAdmin bypasses this scope entirely (since `tenant_id = null`).
 
 ## 👤 About
 
-This is a **solo personal project** built for learning and portfolio purposes. It is not open for collaboration at this stage, but feel free to explore the code, open issues, or leave feedback.
+This is a **solo personal project** built for learning and portfolio purposes. It is not open for collaboration at this stage, but feel free to explore the code.
 
 ---
 

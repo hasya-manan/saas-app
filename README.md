@@ -94,6 +94,13 @@ classDiagram
 | 3  | Staff         | `t-xxxxxx`  |
 
 ---
+## 📸 Preview
+
+### User Management Super Admin
+![Create/Reg Tenant](./screenshots/super-admin/onboard.png)
+![Manage Tenant](./screenshots/super-admin/Manage_company.png)
+![Manage Tenant](./screenshots/super-admin/Edit_company.png)
+
 
 
 

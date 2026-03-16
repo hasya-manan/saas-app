@@ -94,7 +94,6 @@ classDiagram
 | 3  | Staff         | `t-xxxxxx`  |
 
 ---
-## 📸 Preview
 
 ### 📸 System Walkthrough
 

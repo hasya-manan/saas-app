@@ -26,8 +26,8 @@ const confirmationInput = ref('');
 const isEditPanelOpen = ref(false);
 const isModalOpen = ref(false);
 const tenantToArchive = ref(null);
-
-
+const processing = ref(false);
+const restoringId = ref(null);
 // --- The Form Helper ---
 const form = useForm({
     id: null,
@@ -81,16 +81,28 @@ const softDeleteTenant = (tenant) => {
 
 
 const executeDelete = () => {
+    processing.value = true;
     router.delete(route('tenants.destroy', tenantToArchive.value.id), {
         onSuccess: () => {
             isModalOpen.value = false;
             // Your AuthenticatedLayout watcher will trigger the Toast automatically!
         },
+        onFinish: () => {
+            processing.value = false; // Stop loading regardless of success/fail
+        }
     });
 };
 
+
+
 const restoreTenant = (tenant) => {
-    router.put(route('tenants.restore', tenant.id));
+    restoringId.value = tenant.id; //why ID so we dont want every bitton restore spinning , only that we click spin
+    
+    router.put(route('tenants.restore', tenant.id), {}, {
+        onFinish: () => {
+            restoringId.value = null; // Clear the ID to hide the spinner
+        }
+    });
 };
 
 const openHardDeleteModal = (tenant) => {
@@ -213,8 +225,9 @@ const closeModal = () => {
 
                                                 <template v-else>
                                                     <BaseButton variant="outline" size="sm"
+                                                        :loading="restoringId === tenant.id"
                                                         @click="restoreTenant(tenant)">
-                                                        <RotateCcw :size="14" />
+                                                        <RotateCcw v-if="restoringId !== tenant.id" :size="14" />
                                                         <span class="hidden lg:inline ml-1">Restore</span>
                                                     </BaseButton>
 
@@ -330,7 +343,8 @@ const closeModal = () => {
         <!--Modal:: Soft Delete -->
         <ConfirmModal :show="isModalOpen" title="Archive Tenant"
             :message="`Are you sure you want to archive ${tenantToArchive?.company_name}? This will disable their access.`"
-            confirmText="Yes, Archive" @close="isModalOpen = false" @confirm="executeDelete" />
+            confirmText="Yes, Archive" @close="isModalOpen = false" @confirm="executeDelete" variant="danger"
+            :loading="processing" />
     </AuthenticatedLayout>
 
 

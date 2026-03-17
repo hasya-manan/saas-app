@@ -1,5 +1,5 @@
 <script setup>
-import { X, AlertTriangle } from 'lucide-vue-next'; // Using the icons you already have
+import { X, AlertTriangle, Loader2} from 'lucide-vue-next'; // Using the icons you already have
 
 defineProps({
     show: Boolean,
@@ -12,6 +12,10 @@ defineProps({
     variant: {
         type: String,
         default: 'danger' 
+    },
+    loading: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -40,19 +44,23 @@ const emit = defineEmits(['close', 'confirm']);
 
             <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3">
                 <button 
-                    @click="emit('close')" 
-                    class="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-lg transition"
+                    @click="emit('close')"
+                    :disabled="loading" 
+                    class="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-lg transition disabled:opacity-50"
                 >
                     Cancel
                 </button>
                 <button 
                     @click="emit('confirm')" 
+                    :disabled="loading"
                     :class="[
                         'px-4 py-2 text-sm font-semibold text-white rounded-lg shadow-sm transition',
-                        variant === 'danger' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'
+                        variant === 'danger' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700', 'disabled:opacity-70 disabled:cursor-not-allowed'
                     ]"
                 >
-                    {{ confirmText }}
+                    
+                    <Loader2 v-if="loading" class="w-4 h-4 animate-spin" />
+                    {{ loading ? 'Processing...' : confirmText }}
                 </button>
             </div>
         </div>

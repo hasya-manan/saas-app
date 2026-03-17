@@ -11,6 +11,14 @@ import "vue-toastification/dist/index.css";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const toastOptions = {
+    timeout: 1000,
+    hideProgressBar: false, // Removes the distracting line at the bottom
+    closeOnClick: true,
+    pauseOnHover: true,
+    position: "top-right", // Standard professional position
+};
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
@@ -22,7 +30,7 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(Toast)
+            .use(Toast, toastOptions)
             .component('BaseButton', BaseButton)
             .mount(el);
     },

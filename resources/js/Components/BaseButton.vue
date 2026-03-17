@@ -30,9 +30,8 @@ const classes = computed(() => {
     // NEUTRAL: Cancel / Go Back / View
     ghost: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 border border-transparent transition-colors duration-200",
 
-    // CAUTION: Archive / Trash (The "Reddish" hover)
-    warning: "text-gray-400 hover:bg-red-50 hover:text-red-600 hover:border-red-100 border border-transparent transition-all duration-200",
-
+    // CAUTION / ARCHIVE: Soft Muted Yellow
+    warning: "text-amber-500 bg-transparent border border-transparent hover:bg-amber-50 hover:text-amber-600 hover:border-amber-100 transition-all duration-200",
     // DESTRUCTIVE: Delete Forever / Hard Delete
     danger: "bg-red-600 text-white hover:bg-red-700 hover:shadow-md border border-transparent transition-all duration-200",
 };

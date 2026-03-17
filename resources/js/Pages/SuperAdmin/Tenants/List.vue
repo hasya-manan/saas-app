@@ -8,7 +8,7 @@ import StatusBadge from '@/Components/StatusBadge.vue';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import { Trash2, RotateCcw, Edit2, ShieldAlert, X } from 'lucide-vue-next';
+import { Trash2, RotateCcw, Edit2, ShieldAlert, X, Archive } from 'lucide-vue-next';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
 
 const props = defineProps({
@@ -196,10 +196,35 @@ const closeModal = () => {
                                         <td
                                             class="px-6 py-4 text-right rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border">
                                             <div class="flex justify-end gap-2">
-                                                <BaseButton v-if="currentTab === 'active'" variant="outline" size="sm"
-                                                    @click="openEditPanel(tenant)">
-                                                    <Edit2 :size="14" /><span class="hidden lg:inline ml-1">Edit</span>
-                                                </BaseButton>
+
+                                                <template v-if="currentTab === 'active'">
+                                                    <BaseButton variant="outline" size="sm"
+                                                        @click="openEditPanel(tenant)">
+                                                        <Edit2 :size="14" />
+                                                        <span class="hidden lg:inline ml-1">Edit</span>
+                                                    </BaseButton>
+
+                                                    <BaseButton variant="warning" size="sm"
+                                                        @click="softDeleteTenant(tenant)">
+                                                        <Archive :size="14" />
+                                                        <span class="hidden lg:inline ml-1">Archive</span>
+                                                    </BaseButton>
+                                                </template>
+
+                                                <template v-else>
+                                                    <BaseButton variant="outline" size="sm"
+                                                        @click="restoreTenant(tenant)">
+                                                        <RotateCcw :size="14" />
+                                                        <span class="hidden lg:inline ml-1">Restore</span>
+                                                    </BaseButton>
+
+                                                    <BaseButton variant="danger" size="sm"
+                                                        @click="openHardDeleteModal(tenant)">
+                                                        <Trash2 :size="14" />
+                                                        <span class="hidden lg:inline ml-1">Delete</span>
+                                                    </BaseButton>
+                                                </template>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -257,9 +282,9 @@ const closeModal = () => {
 
                             <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-50">
                                 <BaseButton variant="outline" class="flex-1" @click="closeEditPanel">Cancel</BaseButton>
-                                <BaseButton variant="primary" class="flex-1" :disabled="processing"
+                                <BaseButton variant="primary" class="flex-1" :disabled="form.processing"
                                     @click="submitUpdate">
-                                    {{ processing ? 'Saving...' : 'Save Changes' }}
+                                    {{ form.processing ? 'Saving...' : 'Save Changes' }}
                                 </BaseButton>
                             </div>
                         </div>

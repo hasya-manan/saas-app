@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\Company\CompanyDashboardController;
+use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SuperAdmin\TenantController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
-
+use App\Http\Controllers\SuperAdmin\TenantController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// =============================================
+// ============ ADMMIN COMPANY ROUTES ==========
+// =============================================
+Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(function () {
+    Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('admin_company.dashboard');
+    
+    // Employee Management
+    Route::resource('users', UserController::class)->names([
+        'index'   => 'company.users.index',
+        'store'   => 'company.users.store',
+        // ... etc
+    ]);
+});
 // =========================================
 // ============ SUPERADMIN ROUTES ==========
 // =========================================

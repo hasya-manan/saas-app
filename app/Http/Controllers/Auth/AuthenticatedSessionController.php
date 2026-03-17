@@ -39,14 +39,10 @@ class AuthenticatedSessionController extends Controller
         return redirect()->route('superadmin.dashboard');
         } 
 
-        //TODO: uncomment this part after do a new page for Admin Dashboard
+        if ($user->role_id === 2) {
+        return redirect()->route('admin_company.dashboard');        
+        }
 
-        // if ($user->role_id === 2) {
-        // // CompanyAdmin (Masjid Owner/Manager)
-        // return redirect()->route('admin.dashboard');
-        // }
-
-        
         //else, send me to the Tenant Dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }

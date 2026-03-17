@@ -21,7 +21,7 @@ const form = useForm({
     id: null,
     name: '',
     email: '',
-    role: '',
+    role_id: '',
     tenant_id: null,
 });
 
@@ -31,17 +31,18 @@ const openEditPanel = (user) => {
 
     selectedUser.value = user;
     isEditPanelOpen.value = true;
-    
+
     // Map the user data to your form
     form.id = user.id;
     form.name = user.name;
     form.email = user.email;
-    
+
     // Map tenant/company data if it exists
     form.company_name = user.tenant?.company_name || '';
-    
+
     // Map the role
-    form.role = user.role?.name || '';
+    // form.role = user.role?.name || '';
+    form.role_id = user.role_id || '';
 };
 const closeEditPanel = () => {
     isEditPanelOpen.value = false;
@@ -51,8 +52,15 @@ const closeEditPanel = () => {
 
 // Added the missing submit function
 const submitUpdate = () => {
+    // route('users.update', form.id) generates: /users/5
     form.put(route('users.update', form.id), {
-        onSuccess: () => closeEditPanel(),
+        onSuccess: () => {
+            closeEditPanel();
+          
+        },
+        onError: (errors) => {
+            console.error("Validation failed:", errors);
+        }
     });
 };
 </script>
@@ -163,7 +171,7 @@ const submitUpdate = () => {
                             <div>
                                 <h2 class="text-xl font-bold text-gray-800">Edit User Access</h2>
                                 <p class="text-xs text-gray-400 font-medium text-wrap">
-                                   Updating permissions for {{ selectedUser?.name }}
+                                    Updating permissions for {{ selectedUser?.name }}
                                 </p>
                             </div>
                             <button @click="closeEditPanel"
@@ -193,9 +201,11 @@ const submitUpdate = () => {
                                 <label
                                     class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Assign
                                     Role</label>
-                                <select v-model="form.role"
+                                <select v-model.number="form.role_id"
                                     class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
-                                    <option v-for="r in roles" :key="r.id" :value="r.name">{{ r.name }}</option>
+                                    <option v-for="r in roles" :key="r.id" :value="r.id">
+                                        {{ r.name }}
+                                    </option>
                                 </select>
                             </div>
 

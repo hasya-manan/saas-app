@@ -52,7 +52,8 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
 
     // page list.vue user
     Route::get('/users/list', [TenantController::class, 'userList'])->name('users.list');
-     
+    Route::put('/users/{user}', [TenantController::class, 'updateUser'])->name('users.update');   
+    
 
 });
 require __DIR__.'/auth.php';

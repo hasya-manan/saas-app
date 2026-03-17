@@ -1,21 +1,25 @@
 <script setup>
 import { computed } from 'vue';
+import { Loader2 } from 'lucide-vue-next'; 
 
 const props = defineProps({
     variant: {
         type: String,
-        default: 'outline' // Matches your "Edit" button look
+        default: 'outline' 
     },
     size: {
         type: String,
         default: 'md'
-    }
-    
+    },
+    disabled: {          
+        type: Boolean,
+        default: false
+    },
+    loading: { type: Boolean, default: false }
 });
 
 const classes = computed(() => {
-    const base = "inline-flex items-center justify-center gap-1.5 font-medium transition-all duration-200 rounded-full active:scale-95 disabled:opacity-50";
-    
+    const base = "inline-flex items-center justify-center gap-1.5 font-medium transition-all duration-200 rounded-full active:scale-95 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed";    
    const variants = {
     // MAIN: Save / Onboard
     primary: "bg-primary text-white hover:bg-primary-dark hover:shadow-md transition-all duration-300 ease-out border border-transparent",
@@ -43,7 +47,8 @@ const classes = computed(() => {
 </script>
 
 <template>
-    <button :class="classes">
+   <button :class="classes" :disabled="disabled || loading"">
+    <Loader2 v-if="loading" :size="16" class="animate-spin" />
         <slot />
     </button>
 </template>

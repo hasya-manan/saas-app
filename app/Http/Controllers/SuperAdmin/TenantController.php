@@ -171,7 +171,7 @@ class TenantController extends Controller
     // =========================================
     // this is for the page user list all tenant
     // =========================================    
-    public function userList(Request $request) // 1. Added Request here
+    public function userList(Request $request) 
     {
         $users = User::withoutGlobalScopes()
             ->with(['tenant', 'role'])
@@ -185,7 +185,7 @@ class TenantController extends Controller
                 });
             })
 
-            // 3. Filter by Role (Admin or Staff)
+            // 3. Filter by Role 
             ->when($request->role, function ($query, $role) {
                 $query->whereHas('role', function ($q) use ($role) {
                     $q->where('name', $role);
@@ -199,7 +199,7 @@ class TenantController extends Controller
 
             ->latest()
             ->paginate(10)
-            ->withQueryString(); // 5. 💡 Keeps your search filters active when clicking "Next Page"
+            ->withQueryString(); // 5.  Keeps your search filters active when clicking "Next Page"
 
         return Inertia::render('SuperAdmin/Users/List', [
             'users' => $users,
@@ -210,4 +210,21 @@ class TenantController extends Controller
         ]);
     }
 
+    public function updateUser(Request $request, User $user)
+    {
+    // Security check for multi-tenancy
+       if (auth()->user()->role_id !== 1 && $user->tenant_id !== auth()->user()->tenant_id) {
+        abort(403, 'Unauthorized access.');
+    }
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role_id'  => 'required|integer|exists:roles,id', 
+        ]);
+
+        $user->update($validated);
+
+        return back()->with('success', 'User updated successfully.');
+}
 }

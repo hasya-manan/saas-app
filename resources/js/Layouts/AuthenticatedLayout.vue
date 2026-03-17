@@ -79,6 +79,7 @@ watch(
                 <div class="h-10 w-10 rounded-full bg-gray-200 shrink-0 overflow-hidden">
                     <img src="https://ui-avatars.com/api/?name=Super+Admin" alt="Avatar" />
                 </div>
+                <!-- TODO:: do something so it tally with the role or maybe name of the user -->
                 <div v-if="!isCollapsed" class="overflow-hidden transition-opacity duration-300">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter">SuperAdmin</p>
                     <p class="text-sm font-semibold text-gray-800 truncate">{{ $page.props.auth.user.name }}</p>

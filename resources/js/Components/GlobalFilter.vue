@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Search, X, Users, Building2, Activity } from 'lucide-vue-next';
+import RoundedSelect from '@/Components/RoundedSelect.vue';
 
 const props = defineProps({
     routeName: String,
@@ -20,7 +21,7 @@ const search = ref(props.filters.search || '');
 const role = ref(props.filters.role || null);
 const tenant_id = ref(props.filters.tenant_id || null);
 const status = ref(props.filters.status || null);
-
+const isRoleOpen = ref(false);
 let timeout = null;
 
 const performFilter = () => {
@@ -58,41 +59,36 @@ const formatRoleName = (name) => {
             <input v-model="search" type="text" :placeholder="placeholder"
                 class="w-full pl-12 pr-4 py-3 bg-gray-50/50 border-transparent rounded-[1.5rem] focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm outline-none" />
         </div>
+        <!--TODO:: make a dropdown more to the theme-->
+       <RoundedSelect 
+            v-if="showRole"
+            v-model="role"
+            :options="roles"
+            label="All Roles"
+            :icon="Users"
+            option-label="name"
+            option-value="name"
+        />
 
-        <div v-if="showRole"
-            class="flex items-center gap-2 px-4 py-2 bg-gray-50/50 rounded-2xl border border-transparent hover:border-primary-border transition-colors">
-            <Users :size="16" class="text-gray-400" />
-            <select v-model="role"
-                class="bg-transparent border-none text-sm font-medium text-gray-600 focus:ring-0 cursor-pointer p-0 pr-8">
-                <option :value="null">All Roles</option>
+       <RoundedSelect 
+            v-if="showTenant"
+            v-model="tenant_id"
+            :options="tenants"
+            label="All Companies"
+            :icon="Building2"
+            option-label="company_name" 
+            option-value="id"
+        />
 
-                <option v-for="r in roles" :key="r.id" :value="r.name">
-                    {{ formatRoleName(r.name) }}
-                </option>
-            </select>
-        </div>
-
-        <div v-if="showTenant && tenants.length > 0"
-            class="flex items-center gap-2 px-4 py-2 bg-gray-50/50 rounded-2xl border border-transparent hover:border-primary-border transition-colors">
-            <Building2 :size="16" class="text-gray-400" />
-            <select v-model="tenant_id"
-                class="bg-transparent border-none text-sm font-medium text-gray-600 focus:ring-0 cursor-pointer p-0 pr-8">
-                <option :value="null">All Companies</option>
-                <option v-for="t in tenants" :key="t.id" :value="t.id">{{ t.company_name }}</option>
-
-            </select>
-        </div>
-
-        <div v-if="showStatus && statusOptions.length > 0"
-            class="flex items-center gap-2 px-4 py-2 bg-gray-50/50 rounded-2xl border border-transparent hover:border-primary-border transition-colors">
-            <Activity :size="16" class="text-gray-400" />
-            <select v-model="status"
-                class="bg-transparent border-none text-sm font-medium text-gray-600 focus:ring-0 cursor-pointer p-0 pr-8">
-                <option :value="null">All Status</option>
-                <option v-for="opt in statusOptions" :key="opt.key" :value="opt.key">
-                    {{ opt.label }}
-                </option>
-            </select>
-        </div>
+        <RoundedSelect 
+            v-if="showStatus"
+            v-model="status"
+            :options="statusOptions"
+            label="All Status"
+            :icon="Activity"
+            option-label="label"
+            option-value="key"
+        />
+       
     </div>
 </template>

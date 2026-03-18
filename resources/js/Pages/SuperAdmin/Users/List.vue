@@ -2,15 +2,15 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
-import { ref } from 'vue'; // Removed unused 'computed'
-import { Head, useForm } from '@inertiajs/vue3'; // Removed unused 'Link' and 'router'
-import { Edit2, X } from 'lucide-vue-next'; // Kept only used icons
+import { ref } from 'vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { Edit2, X } from 'lucide-vue-next';
 
 const props = defineProps({
     users: Object,
     tenants: Array,
     roles: Array,
-    filters: Object, // Removed the duplicate entry
+    filters: Object,
 });
 
 // State side-by-side
@@ -56,7 +56,7 @@ const submitUpdate = () => {
     form.put(route('users.update', form.id), {
         onSuccess: () => {
             closeEditPanel();
-          
+
         },
         onError: (errors) => {
             console.error("Validation failed:", errors);
@@ -70,11 +70,18 @@ const submitUpdate = () => {
     <Head title="Platform Users" />
 
     <AuthenticatedLayout>
+        <!--TODO:: make a button to become a function.-->
         <template #header>
-            <h2 class="text-xl font-bold leading-tight text-gray-800">
-                Global User Directory
-            </h2>
-            <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Global User Directory</h2>
+                    <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
+                </div>
+                <button type="button"
+                    class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
+                    + New User
+                </button>
+            </div>
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
@@ -90,8 +97,6 @@ const submitUpdate = () => {
                         <div class="mb-6 flex justify-between items-center px-2">
                             <h3 class="text-lg font-bold text-gray-900">Total Users</h3>
                         </div>
-
-
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-separate border-spacing-y-2">

@@ -6,7 +6,7 @@ const props = defineProps({
     modelValue: [String, Number, null],
     options: Array,
     label: String,
-    icon: Object, // Pass the Lucide icon component
+    icon: Object, 
     optionLabel: { type: String, default: 'name' },
     optionValue: { type: String, default: 'id' }
 });

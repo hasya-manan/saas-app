@@ -5,7 +5,7 @@ import GlobalFilter from '@/Components/GlobalFilter.vue';
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Edit2, X } from 'lucide-vue-next';
-
+import CreateUserModal from '@/Components/CreateUserModal.vue';
 const props = defineProps({
     users: Object,
     tenants: Array,
@@ -16,6 +16,7 @@ const props = defineProps({
 // State side-by-side
 const isEditPanelOpen = ref(false);
 const selectedUser = ref(null);
+const isCreateModalOpen = ref(false);
 
 const form = useForm({
     id: null,
@@ -32,16 +33,12 @@ const openEditPanel = (user) => {
     selectedUser.value = user;
     isEditPanelOpen.value = true;
 
-    // Map the user data to your form
+
     form.id = user.id;
     form.name = user.name;
     form.email = user.email;
 
-    // Map tenant/company data if it exists
     form.company_name = user.tenant?.company_name || '';
-
-    // Map the role
-    // form.role = user.role?.name || '';
     form.role_id = user.role_id || '';
 };
 const closeEditPanel = () => {
@@ -77,7 +74,7 @@ const submitUpdate = () => {
                     <h2 class="text-xl font-bold text-gray-800">Global User Directory</h2>
                     <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
                 </div>
-                <button type="button"
+                <button @click="isCreateModalOpen = true" type="button"
                     class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
                     + New User
                 </button>
@@ -224,5 +221,10 @@ const submitUpdate = () => {
 
             </div>
         </div>
+        <!--modal-->
+        <CreateUserModal :show="isCreateModalOpen" title="Add New User"
+            description="Create a global account and assign a tenant." :tenants="tenants" :roles="roles"
+            @close="isCreateModalOpen = false" />
+
     </AuthenticatedLayout>
 </template>

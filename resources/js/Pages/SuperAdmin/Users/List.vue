@@ -223,7 +223,7 @@ const submitUpdate = () => {
         </div>
         <!--modal-->
         <CreateUserModal :show="isCreateModalOpen" title="Add New User"
-            description="Create a global account and assign a tenant." :tenants="tenants" :roles="roles"
+            description="Create an account and assign a user." :tenants="tenants" :roles="roles"
             @close="isCreateModalOpen = false" />
 
     </AuthenticatedLayout>

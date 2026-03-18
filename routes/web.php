@@ -19,6 +19,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    if (auth()->user()->role_id !== 3) {
+        return redirect()->intended(); 
+    }
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -28,19 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// =============================================
-// ============ ADMMIN COMPANY ROUTES ==========
-// =============================================
-Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(function () {
-    Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('admin_company.dashboard');
-    
-    // Employee Management
-    Route::resource('users', UserController::class)->names([
-        'index'   => 'company.users.index',
-        'store'   => 'company.users.store',
-        // ... etc
-    ]);
-});
 // =========================================
 // ============ SUPERADMIN ROUTES ==========
 // =========================================
@@ -66,8 +56,23 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
 
     // page list.vue user
     Route::get('/users/list', [TenantController::class, 'userList'])->name('users.list');
-    Route::put('/users/{user}', [TenantController::class, 'updateUser'])->name('users.update');   
+    Route::put('/users/{user}', [TenantController::class, 'updateUser'])->name('superadmin.users.update');
     
 
 });
+
+// =============================================
+// ============ ADMMIN COMPANY ROUTES ==========
+// =============================================
+Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(function () {
+    Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('admin_company.dashboard');
+    
+    // Employee Management
+    Route::resource('users', UserController::class)->names([
+        'index'   => 'company.users.index',
+        'store'   => 'company.users.store',
+        // ... etc
+    ]);
+});
+
 require __DIR__.'/auth.php';

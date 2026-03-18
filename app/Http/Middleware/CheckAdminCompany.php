@@ -21,6 +21,6 @@ class CheckAdminCompany
      }
 
         // If they aren't, send them back to the main dashboard or login
-        return redirect('/dashboard')->with('error', 'You do not have Company Admin access.');
+       abort(403, 'You do not have access to this page.');
     }
 }

@@ -6,7 +6,10 @@ const props = defineProps({
     modelValue: [String, Number, null],
     options: Array,
     label: String,
-    icon: Object, 
+    icon: {
+        type: [Object, Function],
+        default: null
+    },
     optionLabel: { type: String, default: 'name' },
     optionValue: { type: String, default: 'id' }
 });

@@ -44,7 +44,10 @@ class AuthenticatedSessionController extends Controller
         }
 
         //else, send me to the Tenant Dashboard
-        return redirect()->intended(route('dashboard', absolute: false));
+        if ($user->role_id === 3) {
+            return redirect()->route('dashboard');
+        }
+       
     }
 
     /**

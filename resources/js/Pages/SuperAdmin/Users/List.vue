@@ -48,16 +48,27 @@ const closeEditPanel = () => {
 // Added the missing submit function
 const submitUpdate = () => {
     // route('users.update', form.id) generates: /users/5
-    form.put(route('users.update', form.id), {
-        onSuccess: () => {
-            closeEditPanel();
+    // console.log("Updating user with ID:", form.id);
 
-        },
-        onError: (errors) => {
-            console.error("Validation failed:", errors);
-        }
-    });
+    if (!form.id) {
+        // console.error("Error: form.id is missing!");
+        return;
+    }
+    form.put(route('superadmin.users.update', form.id), {
+    preserveState: true,  // Keeps your form open so you can see errors
+    preserveScroll: true,
+    onSuccess: () => {
+        // console.log("Success! Role is now:", form.role_id);
+        closeEditPanel();
+    },
+    onError: (errors) => {
+        // If it redirects to the landing page, look here!
+        // console.log("Backend said NO:", errors);
+    }
+});
 };
+
+
 </script>
 
 <template>

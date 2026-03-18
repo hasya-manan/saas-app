@@ -32,8 +32,6 @@ const openEditPanel = (user) => {
 
     selectedUser.value = user;
     isEditPanelOpen.value = true;
-
-
     form.id = user.id;
     form.name = user.name;
     form.email = user.email;

@@ -61,7 +61,6 @@ const submit = () => {
                 <!-- Scrollable Form -->
                 <div class="flex-1 overflow-y-auto p-10 pt-8 custom-scrollbar">
                     <form id="createUserForm" @submit.prevent="submit" class="space-y-7">
-
                         <div class="grid grid-cols-2 gap-8">
                             <div>
                                 <label

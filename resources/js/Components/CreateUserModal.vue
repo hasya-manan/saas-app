@@ -43,7 +43,7 @@ const submit = () => {
 
                 <!-- Header -->
                 <div class="px-10 py-8 flex items-center justify-between border-b border-gray-100 bg-white">
-                    <div class="flex items-center gap-5 mr-10"> <!-- Increased gap & margin -->
+                    <div class="flex items-center gap-5 mr-10"> 
                         <div class="p-3.5 bg-primary/10 rounded-2xl text-primary">
                             <UserPlus :size="24" />
                         </div>

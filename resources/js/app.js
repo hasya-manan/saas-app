@@ -20,7 +20,8 @@ const toastOptions = {
 };
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    //title: (title) => `${title} - ${appName}`,
+    title: (title) => `${title} - H.A.M`,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.vue`,

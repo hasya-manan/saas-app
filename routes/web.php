@@ -47,7 +47,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
 
      // page list.vue
     Route::get('/tenant/list', [TenantController::class, 'list'])->name('tenants.list');
-    // "Go to this specific tenant's ID and delete it"
+    // "Go to this specific tenant's ID and delete it (soft delete)"
     Route::delete('/tenant/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::put('/tenant/{id}/restore', [TenantController::class, 'restore'])->name('tenants.restore');
     // "Go to this specific deleted ID and wipe it forever"

@@ -30,7 +30,7 @@ const classes = computed(() => {
     ghost: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 border border-transparent transition-colors duration-200",
 
     // CAUTION / ARCHIVE: Soft Muted Yellow
-    warning: "bg-white border-2 border-amber-400 text-amber-700 font-black px-4 py-2 rounded-xl hover:bg-amber-400 hover:text-white hover:border-amber-400 transition-all duration-300 shadow-sm shadow-amber-400/10 active:scale-95",     // DESTRUCTIVE: Delete Forever / Hard Delete
+    warning: "bg-white border-2 border-orange-400 text-orange-700 font-black px-4 py-2 rounded-xl hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300 shadow-sm shadow-orange-500/10 active:scale-95",
     danger: "bg-red-600 text-white hover:bg-red-700 hover:shadow-md border border-transparent transition-all duration-200",
 };
 

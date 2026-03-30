@@ -213,7 +213,7 @@ database/
 resources/js/
 ├── Pages/
 └── Layouts/
-    └── (side menu in progress)
+    └── (side menu)
 ```
 
 ---

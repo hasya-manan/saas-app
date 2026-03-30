@@ -25,14 +25,12 @@ const classes = computed(() => {
     primary: "bg-primary text-white hover:bg-primary-dark hover:shadow-md transition-all duration-300 ease-out border border-transparent",
 
     // SECONDARY: Edit / Manage (The "Pinkish" vibe)
-    outline: "bg-white border border-primary-border text-primary hover:bg-primary-light/50 hover:border-primary transition-all duration-200",
-
+    outline: "bg-white border-2 border-primary text-primary-dark font-black px-4 py-2 rounded-xl hover:bg-primary hover:text-white transition-all duration-300",
     // NEUTRAL: Cancel / Go Back / View
     ghost: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 border border-transparent transition-colors duration-200",
 
     // CAUTION / ARCHIVE: Soft Muted Yellow
-    warning: "text-amber-500 bg-transparent border border-transparent hover:bg-amber-50 hover:text-amber-600 hover:border-amber-100 transition-all duration-200",
-    // DESTRUCTIVE: Delete Forever / Hard Delete
+    warning: "bg-white border-2 border-amber-400 text-amber-700 font-black px-4 py-2 rounded-xl hover:bg-amber-400 hover:text-white hover:border-amber-400 transition-all duration-300 shadow-sm shadow-amber-400/10 active:scale-95",     // DESTRUCTIVE: Delete Forever / Hard Delete
     danger: "bg-red-600 text-white hover:bg-red-700 hover:shadow-md border border-transparent transition-all duration-200",
 };
 

@@ -87,11 +87,19 @@ classDiagram
 > 📎 Full diagram: [View on dbdiagram.io](https://dbdiagram.io/d/saas-app-69a79c60a3f0aa31e1ba7347)
 
 **Roles:**
-| ID | Role Name     | `tenant_id` |
-|----|---------------|-------------|
-| 1  | SuperAdmin    | `null`      |
-| 2  | CompanyAdmin  | `t-xxxxxx`  |
-| 3  | Staff         | `t-xxxxxx`  |
+Roles (Global Lookup Table):
+| ID | Role Name | Description |
+|:---|:---|:---|
+| 1 | SuperAdmin | Full System Access (No Tenant Restriction) |
+| 2 | CompanyAdmin | Management Access for a specific Tenant |
+| 3 | Staff | Standard Access for a specific Tenant |
+
+Users (The Actual Data):
+| Name | role_id | tenant_id | Access Level |
+|:---|:---|:---|:---|
+| Hasya | 1 | null | Global (Sees Everything) |
+| Admin A | 2 | t-xxxxx | Scoped (Sees Company E) |
+| Staff B | 3 | t-xxxx | Scoped (Sees Company D) |
 
 ---
 

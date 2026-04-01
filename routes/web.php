@@ -66,13 +66,23 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
 // =============================================
 Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(function () {
     Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('admin_company.dashboard');
+    // Staff Management
+    Route::get('/staff', [UserController::class, 'index'])->name('admin_company.users.index');
+    Route::get('/staff/create', [UserController::class, 'create'])->name('admin_company.users.create');
+    Route::post('/staff', [UserController::class, 'store'])->name('admin_company.users.store');
     
+    // This is the one you were missing for the "View Details" button!
+    Route::get('/staff/{user}', [UserController::class, 'show'])->name('admin_company.users.show');
+    
+    // And for the "Update Permissions" button in your edit panel:
+    Route::put('/staff/{user}', [UserController::class, 'update'])->name('admin_company.users.update');
+
     // Employee Management
-    Route::resource('users', UserController::class)->names([
-        'index'   => 'company.users.index',
-        'store'   => 'company.users.store',
-        // ... etc
-    ]);
+    // Route::resource('users', UserController::class)->names([
+    //     'index'   => 'company.users.index',
+    //     'store'   => 'company.users.store',
+    //     // ... etc
+    // ]);
 });
 
 require __DIR__.'/auth.php';

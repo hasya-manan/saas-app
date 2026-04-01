@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role; 
 //use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,13 +13,30 @@ class UserController extends Controller
     //
     public function index()
     {
-        $companyId = auth()->user()->tenant_id;
 
-        return Inertia::render('CompanyAdmin/Users/Index', [
-            'employees' => User::where('tenant_id', $companyId)
-                ->with('role')
-                ->latest()
-                ->paginate(10)
+    /**
+     * Display the list of staff (List.vue)
+     */
+        $employees = User::where('tenant_id', auth()->user()->tenant_id)
+            ->with(['role', 'profile'])
+            // ->withTrashed() // So we see the "Deactivated" ones too
+            ->latest()
+            ->paginate(10);
+
+        return Inertia::render('CompanyAdmin/Users/List', [
+            'employees' => $employees
+        ]);
+    }
+
+    /**
+     * Show the form to add new staff (Create.vue)
+     */
+    public function create()
+    {
+        return Inertia::render('CompanyAdmin/Users/Create', [
+            // Pass roles so the Admin can choose (Staff, Manager, etc.)
+            // Usually IDs 2 and 3 for Company Admin and Staff
+            'roles' => Role::whereIn('id', [2, 3])->get()
         ]);
     }
 }

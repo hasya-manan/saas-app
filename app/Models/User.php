@@ -55,4 +55,13 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+        /**
+     * Add this method! 
+     * Even with BelongsToTenant trait, you need this to access $user->tenant
+     */
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'id');
+    }
 }

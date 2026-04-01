@@ -29,6 +29,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $user = \App\Models\User::withTrashed()->where('email', $request->email)->first();
+
+        if ($user && $user->trashed()) {
+            return back()->withErrors([
+                'email' => 'Your account has been deactivated. Please contact your manager or HR for assistance.',
+            ]);
+        }
         $request->authenticate();
         $request->session()->regenerate();
         $user = $request->user();

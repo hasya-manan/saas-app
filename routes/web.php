@@ -71,7 +71,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(fun
     Route::get('/staff/create', [UserController::class, 'create'])->name('admin_company.users.create');
     Route::post('/staff', [UserController::class, 'store'])->name('admin_company.users.store');
     
-    // This is the one you were missing for the "View Details" button!
+    // "View Details" button!
     Route::get('/staff/{user}', [UserController::class, 'show'])->name('admin_company.users.show');
     
     // And for the "Update Permissions" button in your edit panel:

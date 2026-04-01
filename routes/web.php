@@ -74,7 +74,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(fun
     // "View Details" button!
     Route::get('/staff/{user}', [UserController::class, 'show'])->name('admin_company.users.show');
     
-    // And for the "Update Permissions" button in your edit panel:
+    //  "Update Permissions" button in the edit panel:
     Route::put('/staff/{user}', [UserController::class, 'update'])->name('admin_company.users.update');
 
     // Employee Management

@@ -79,7 +79,7 @@ class TenantController extends Controller
 
     // 2. Create a reusable query logic
     $applyFilters = function ($query) use ($search, $status) {
-        // Text Search (Name or Email)
+      
         $query->when($search, function ($q) use ($search) {
             $q->where(function ($inner) use ($search) {
                 $inner->where('company_name', 'like', "%{$search}%")
@@ -121,7 +121,7 @@ class TenantController extends Controller
     public function destroy(Tenant $tenant)
     {
         // Because the Model uses SoftDeletes, this only sets the 'deleted_at' column
-        $tenant->update(['status' => 'archived']); // Change status to archived
+        $tenant->update(['status' => 'archived']); 
         $tenant->delete(); 
         return redirect()->route('tenants.list')
             ->with('success', 'Company archived to Trash.');
@@ -149,14 +149,14 @@ class TenantController extends Controller
         // 1. Find the tenant (including trashed in case you're editing an archived one)
         $tenant = Tenant::withTrashed()->findOrFail($id);
 
-        // 2. Validate ONLY company fields
+       
         $validated = $request->validate([
             'company_name'  => 'required|string|max:255',
             'company_email' => 'required|email', 
             'status'        => 'required|exists:global_lookups,key',
         ]);
 
-        // 3. Update the tenant record
+       
         // We map 'company_email' from the form to 'email' in the database
         $tenant->update([
             'company_name' => $validated['company_name'],

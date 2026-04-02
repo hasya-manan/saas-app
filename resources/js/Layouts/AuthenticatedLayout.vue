@@ -60,13 +60,23 @@ watch(
                 </div>
 
                 <nav class="flex-1 px-4 py-4 space-y-2">
-                    <Link :href="route('dashboard')" class="block px-3 py-2 text-gray-600 font-medium">Dashboard</Link>
+                    <Link :href="$page.props.auth.user.role_id === 1
+                        ? route('superadmin.dashboard')
+                        : ($page.props.auth.user.role_id === 2
+                            ? route('admin_company.dashboard')
+                            : route('dashboard'))" class="block px-3 py-2 text-gray-600 font-medium hover:bg-gray-50 rounded-lg">
+                        Dashboard
+                    </Link>
                     <Link v-if="$page.props.auth.user.role_id === 1" :href="route('tenants.create')"
                         class="block px-3 py-2 text-gray-600 font-medium">Onboard Company</Link>
                     <Link v-if="$page.props.auth.user.role_id === 1" :href="route('tenants.list')"
                         class="block px-3 py-2 text-gray-600 font-medium">List Company</Link>
                     <Link v-if="$page.props.auth.user.role_id === 1" :href="route('users.list')"
                         class="block px-3 py-2 text-gray-600 font-medium">All List Users</Link>
+                    <Link v-if="$page.props.auth.user.role_id === 2" :href="route('admin_company.users.index')"
+                        class="block px-3 py-2 text-gray-600 font-medium">Staff Directory</Link>
+                    <Link v-if="$page.props.auth.user.role_id === 2" :href="route('admin_company.users.create')"
+                        class="block px-3 py-2 text-gray-600 font-medium">Add New Staff</Link>
 
                 </nav>
             </aside>
@@ -108,16 +118,23 @@ watch(
                     <span v-if="!isCollapsed" class="text-sm font-medium">Platform Dashboard</span>
                 </Link>
 
+                <Link v-if="$page.props.auth.user.role_id === 2" :href="route('admin_company.dashboard')"
+                    :class="[route().current('superadmin.dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                    <LayoutDashboard :size="20" />
+                    <span v-if="!isCollapsed" class="text-sm font-medium">Admin Dashboard</span>
+                </Link>
+
                 <Link v-if="$page.props.auth.user.role_id === 3" :href="route('dashboard')"
                     :class="[route().current('dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">My Dashboard</span>
                 </Link>
-
+                <!--Super Admin Menu-->
                 <div v-if="$page.props.auth.user.role_id === 1">
                     <p v-if="!isCollapsed"
-                        class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">System
+                        class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">Super
                         Admin</p>
                     <Link :href="route('tenants.create')"
                         :class="[route().current('tenants.create') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
@@ -138,7 +155,21 @@ watch(
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Users</span>
                     </Link>
                 </div>
+                <!-- Admin Company Menu -->
+                <div v-if="$page.props.auth.user.role_id === 2">
+                    <p v-if="!isCollapsed"
+                        class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">System
+                        Admin</p>
+                    <Link :href="route('admin_company.users.index')"
+                        :class="[route().current('admin_company.users.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <PlusCircle :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">List Staff</span>
+                    </Link>
+
+                </div>
             </nav>
+
 
             <div class="p-4 border-t border-gray-100">
                 <Link :href="route('logout')" method="post" as="button"

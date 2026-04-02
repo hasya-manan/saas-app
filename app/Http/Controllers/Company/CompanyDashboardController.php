@@ -15,7 +15,7 @@ class CompanyDashboardController extends Controller
             'tenant' => $user->tenant,
             'stats' => [
                'total_employees' => User::where('tenant_id', $user->tenant_id)->count(),
-                // Add more company-specific stats later
+                //TODO:: Add more company-specific stats later
             ]
         ]);
     }

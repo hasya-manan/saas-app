@@ -8,7 +8,7 @@ import { Edit2, X, UserCheck, UserX, Eye } from 'lucide-vue-next';
 import BaseButton from '@/Components/BaseButton.vue';
 
 const props = defineProps({
-    employees: Object, // Changed from 'users' to match your controller
+    employees: Object,
     roles: Array,
     filters: Object,
 });

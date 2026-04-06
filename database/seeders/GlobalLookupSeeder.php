@@ -17,7 +17,7 @@ class GlobalLookupSeeder extends Seeder
         $data = [
             ['category' => 'tenant_status', 'key' => 'active', 'label' => 'Active', 'sort_order' => 10],
             ['category' => 'tenant_status', 'key' => 'inactive', 'label' => 'Inactive', 'sort_order' => 20],
-             ['category' => 'tenant_status', 'key' => 'archived', 'label' => 'Archived', 'sort_order' => 30],
+            ['category' => 'tenant_status', 'key' => 'archived', 'label' => 'Archived', 'sort_order' => 30],
             ['category' => 'tenant_status', 'key' => 'suspended', 'label' => 'Suspended', 'sort_order' => 40],
             ['category' => 'gender', 'key' => 'm', 'label' => 'Male', 'sort_order' => 10],
             ['category' => 'gender', 'key' => 'f', 'label' => 'Female', 'sort_order' => 20],

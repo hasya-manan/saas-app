@@ -55,6 +55,9 @@ class TenantController extends Controller
             'password'  => bcrypt('password123'),
             'tenant_id' => $tenant->id,
             'role_id'   => Role::where('name', 'admin_company')->value('id'),
+
+            //Todo:: better use this instead?
+            // 'role_id' => Role::where('name', 'admin_company')->firstOrFail()->id,
         ]);
 
         // 5. If everything above finishes without an error, the DB "commits"

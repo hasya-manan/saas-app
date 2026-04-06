@@ -64,5 +64,6 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         })->when($filters['status'] ?? null, function ($q, $status) {
             $q->where('status', $status);
         });
+        return $query->orderBy('sort_order', 'asc');
     }
 }

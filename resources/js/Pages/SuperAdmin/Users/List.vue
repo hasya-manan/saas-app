@@ -137,12 +137,21 @@ const submitUpdate = () => {
                                             class="px-6 py-4 border-y border-transparent group-hover:border-primary-border">
                                             <div class="flex flex-col">
                                                 <span class="text-sm font-semibold text-gray-700">
-                                                    {{ user.tenant?.company_name || 'Individual' }}
+                                                    {{ user.tenant?.company_name || 'System Internal' }}
                                                 </span>
-                                                <span
-                                                    class="text-[10px] text-gray-400 font-medium tracking-widest uppercase">
-                                                    ID: {{ user.tenant_id || 'N/A' }}
-                                                </span>
+
+                                                
+                                               <div class="flex flex-col items-start gap-1">
+                                                    <span
+                                                        class="text-[10px] text-gray-400 font-medium tracking-widest uppercase">
+                                                        ID: {{ user.tenant_id }}
+                                                    </span>
+
+                                                    <span v-if="user.tenant?.deleted_at"
+                                                        class="px-2 py-0.5 rounded-full bg-red-50 text-red-500 text-[8px] font-black uppercase border border-red-100">
+                                                        Archived Company
+                                                    </span>
+                                                </div>
                                             </div>
                                         </td>
 

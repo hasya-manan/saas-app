@@ -68,4 +68,23 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserProfile::class);
     }
+
+    //filtering 
+   
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($q, $search) {
+            $q->where(function ($inner) use ($search) {
+                $inner->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('tenant_id', 'like', "%{$search}%");
+            });
+        })->when($filters['role'] ?? null, function ($q, $role) {
+            $q->whereHas('role', function ($inner) use ($role) {
+                $inner->where('name', $role);
+            });
+        })->when($filters['tenant_id'] ?? null, function ($q, $tenantId) {
+            $q->where('tenant_id', $tenantId);
+        });
+    }
 }

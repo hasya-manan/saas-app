@@ -25,7 +25,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     }
 
     protected static function booted()
-{
+    {
     static::deleting(function ($tenant) {
         // We use withoutGlobalScopes() so SuperAdmin isn't blocked by Tenancy
         $relation = $tenant->users()->withoutGlobalScopes();
@@ -42,13 +42,27 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         // Bring back users regardless of tenancy scope
         $tenant->users()->withoutGlobalScopes()->withTrashed()->restore();
     });
-}
+    }
 
     public function users() {
         return $this->hasMany(User::class);
     }
 
     public function adminUser() {
-   return $this->hasOne(User::class, 'tenant_id');
-}
+    return $this->hasOne(User::class, 'tenant_id');
+    }
+
+    // filtering 
+    
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($q, $search) {
+            $q->where(function ($inner) use ($search) {
+                $inner->where('company_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        })->when($filters['status'] ?? null, function ($q, $status) {
+            $q->where('status', $status);
+        });
+    }
 }

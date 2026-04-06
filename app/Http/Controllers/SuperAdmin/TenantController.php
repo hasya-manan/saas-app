@@ -71,49 +71,22 @@ class TenantController extends Controller
     // this is for the page company list all tenant
     // ========================================= 
     
-    public function list(Request $request)
+
+//Update :: change controller for sigle resposibility principle
+public function list(Request $request)
 {
-    // 1. Grab both inputs from the request
-    $search = $request->search;
-    $status = $request->status; 
-
-    // 2. Create a reusable query logic
-    $applyFilters = function ($query) use ($search, $status) {
-      
-        $query->when($search, function ($q) use ($search) {
-            $q->where(function ($inner) use ($search) {
-                $inner->where('company_name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
-            });
-        });
-
-        //  Dropdown Filter (Exact Match)
-        $query->when($status, function ($q) use ($status) {
-            $q->where('status', $status);
-        });
-    };
-
-    $tenants = Tenant::query()
-        ->tap($applyFilters)
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
-
-    $deletedTenants = Tenant::onlyTrashed()
-        ->tap($applyFilters)
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
+    $filters = $request->only(['search', 'status']);
 
     return Inertia::render('SuperAdmin/Tenants/List', [
-        'tenants' => $tenants,
-        'deletedTenants' => $deletedTenants,
+        'tenants' => Tenant::filter($filters)->latest()->paginate(10)->withQueryString(),
+        
+        'deletedTenants' => Tenant::onlyTrashed()->filter($filters)->latest()->paginate(10)->withQueryString(),
+        
         'statusOptions' => GlobalLookup::where('category', 'tenant_status')
             ->orderBy('sort_order')
             ->get(['key', 'label']),
-        
-        //  CRITICAL: You MUST include 'status' here so the dropdown stays selected
-        'filters' => $request->only(['search', 'status']) 
+            
+        'filters' => $filters 
     ]);
 }
 
@@ -171,45 +144,30 @@ class TenantController extends Controller
     // =========================================
     // this is for the page user list all tenant
     // =========================================    
+    
     public function userList(Request $request) 
-    {
-        $users = User::withoutGlobalScopes()
-            ->with(['tenant', 'role'])
-            ->whereNotNull('tenant_id')
-        
-        
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('tenant_id', 'like', "%{$search}%");
-                });
-            })
+{
+    $filters = $request->only(['search', 'role', 'tenant_id']);
 
-            // 3. Filter by Role 
-            ->when($request->role, function ($query, $role) {
-                $query->whereHas('role', function ($q) use ($role) {
-                    $q->where('name', $role);
-                });
-            })
+    $users = User::withoutGlobalScopes()
+    // FIX: Tell the tenant relationship to include soft-deleted companies
+        ->with(['tenant' => function ($query) {
+            $query->withTrashed();
+        }, 'role'])
+        //->with(['tenant', 'role'])
+        ->whereNotNull('tenant_id')
+        ->filter($filters) // Everything is hidden here!
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-        // 4.  Filter by Specific Company
-            ->when($request->tenant_id, function ($query, $tenantId) {
-                $query->where('tenant_id', $tenantId);
-            })
-
-            ->latest()
-            ->paginate(10)
-            ->withQueryString(); // 5.  Keeps your search filters active when clicking "Next Page"
-
-        return Inertia::render('SuperAdmin/Users/List', [
-            'users' => $users,
-            // 6. Send these props so the GlobalFilter knows what the current values are
-            'filters' => $request->only(['search', 'role', 'tenant_id']),
-            'tenants' => Tenant::select('id', 'company_name')->get(),
-            'roles' => Role::select('id', 'name')->get(),
-        ]);
-    }
+    return Inertia::render('SuperAdmin/Users/List', [
+        'users'   => $users,
+        'filters' => $filters,
+        'tenants' => Tenant::select('id', 'company_name')->get(),
+        'roles'   => Role::select('id', 'name')->get(),
+    ]);
+}
 
     public function updateUser(Request $request, $id)
 {

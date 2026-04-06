@@ -78,11 +78,11 @@ const submit = () => {
                                 <InputError class="mt-2" :message="form.errors.admin_name" />
                             </div>
                         </div>
-
+                        <!--TODO :: email for admin-->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-1">
-                                <InputLabel for="admin_email" value="Work Email Address" class="font-semibold text-gray-700" />
-                                <p class="text-xs text-gray-400 mt-1">An invitation link will be sent to this email to set up their password.</p>
+                                <InputLabel for="admin_email" value="Company Email " class="font-semibold text-gray-700" />
+                                <p class="text-xs text-gray-400 mt-1">Email company/organization.</p>
                             </div>
                             <div class="md:col-span-2">
                                 <TextInput id="admin_email" type="email" 

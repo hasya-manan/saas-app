@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB; 
 
 class TenantController extends Controller
 {
@@ -22,50 +23,46 @@ class TenantController extends Controller
     }
 
    public function store(Request $request)
-    {
-        $validated = $request->validate([
+{
+    $validated = $request->validate([
         'company_name' => 'required|string|max:255',
         'admin_name'   => 'required|string|max:255',
         'admin_email'  => 'required|email|unique:users,email',
-        ]);
+    ]);
 
-        // Logic: Keep generating until ID is unique
-       do {
-        // Generate 3 random numbers (100-999) &  Generate 3 random letters only (a-z)
-        $numbers = rand(100, 999);
-        $letters = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
-        $customId = "t-{$numbers}{$letters}";
-    
+    // 1. Start the Transaction
+    return DB::transaction(function () use ($validated) {
+        
+        // 2. Logic: Generate Unique ID
+        do {
+            $numbers = rand(100, 999);
+            $letters = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
+            $customId = "t-{$numbers}{$letters}";
         } while (Tenant::where('id', $customId)->exists());
 
-        // Create the Tenant record
-       $tenant = Tenant::create([
-        'id'           => $customId,
-        'company_name' => $validated['company_name'],
-        'email'        => $validated['admin_email'],
-        'status'       => 'active', 
+        // 3. Create Tenant
+        $tenant = Tenant::create([
+            'id'           => $customId,
+            'company_name' => $validated['company_name'],
+            'email'        => $validated['admin_email'],
+            'status'       => 'active', 
         ]);
 
-        // TODO: if wants to have a domain for each tenant
-        // $tenant->domains()->create([
-        //     'domain' => $customId . '.localhost'
-        // ]);
-
-       
+        // 4. Create User
         User::create([
             'name'      => $validated['admin_name'],
             'email'     => $validated['admin_email'],
-            'password'  => bcrypt('password123'), // TODO::maybe we can make their phone number as their password 
-            'tenant_id' => $tenant->id,           // Link them to the new company
-            'role_id'   => Role::where('name', 'admin_company')->value('id'), //  fetch from DB
-                    
+            'password'  => bcrypt('password123'),
+            'tenant_id' => $tenant->id,
+            'role_id'   => Role::where('name', 'admin_company')->value('id'),
         ]);
 
+        // 5. If everything above finishes without an error, the DB "commits"
         return redirect()->back()
-        ->with('success', "Company $customId has been fully set up!");
-               
-
-    }
+            ->with('success', "Company $customId has been fully set up!");
+            
+    }); // 6. If ANY line fails, the DB "rolls back" automatically
+}
 
     // =========================================
     // this is for the page company list all tenant

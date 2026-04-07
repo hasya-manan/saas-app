@@ -202,7 +202,7 @@ const closeModal = () => {
                                         </td>
                                         <td
                                             class="px-6 py-4 border-y border-transparent group-hover:border-primary-border">
-                                            <StatusBadge v-if="currentTab === 'trash'" status="archived" />
+                                            <StatusBadge v-if="currentTab === 'trash'" status="deactivated" />
                                             <StatusBadge v-else :status="tenant.status" />
                                         </td>
                                         <td
@@ -219,7 +219,7 @@ const closeModal = () => {
                                                     <BaseButton variant="warning" size="sm"
                                                         @click="softDeleteTenant(tenant)">
                                                         <Archive :size="14" />
-                                                        <span class="hidden lg:inline ml-1">Archive</span>
+                                                        <span class="hidden lg:inline ml-1">Deactivate</span>
                                                     </BaseButton>
                                                 </template>
 
@@ -341,10 +341,11 @@ const closeModal = () => {
         </Modal>
 
         <!--Modal:: Soft Delete -->
-        <ConfirmModal :show="isModalOpen" title="Archive Tenant"
-            :message="`Are you sure you want to archive ${tenantToArchive?.company_name}? This will disable their access.`"
-            confirmText="Yes, Archive" @close="isModalOpen = false" @confirm="executeDelete" variant="danger"
-            :loading="processing" />
+        <ConfirmModal :show="isModalOpen" title=" Deactivate Tenant"
+            :message="`Are you sure you want to deactivate ${tenantToArchive?.company_name}?`"
+            :note="`This acts as a system-wide kill-switch. All staff members and admins under this company will be unable to login immediately.`"
+            confirmText="Yes, deactivate & Lock Access" variant="danger" :loading="processing" @close="isModalOpen = false"
+            @confirm="executeDelete" />
     </AuthenticatedLayout>
 
 

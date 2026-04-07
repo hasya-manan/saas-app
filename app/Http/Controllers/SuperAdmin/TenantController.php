@@ -72,7 +72,7 @@ class TenantController extends Controller
     // ========================================= 
     
 
-//Update :: change controller for sigle resposibility principle
+//Update :: change controller for single resposibility principle
 public function list(Request $request)
 {
     $filters = $request->only(['search', 'status']);
@@ -83,8 +83,10 @@ public function list(Request $request)
         'deletedTenants' => Tenant::onlyTrashed()->filter($filters)->latest()->paginate(10)->withQueryString(),
         
         'statusOptions' => GlobalLookup::where('category', 'tenant_status')
+            ->where('is_active', 1)
             ->orderBy('sort_order')
             ->get(['key', 'label']),
+            
             
         'filters' => $filters 
     ]);
@@ -94,10 +96,10 @@ public function list(Request $request)
     public function destroy(Tenant $tenant)
     {
         // Because the Model uses SoftDeletes, this only sets the 'deleted_at' column
-        $tenant->update(['status' => 'archived']); 
+        $tenant->update(['status' => 'deactivated']); 
         $tenant->delete(); 
         return redirect()->route('tenants.list')
-            ->with('success', 'Company archived to Trash.');
+            ->with('success', 'Company deactivated and moved to Trash.');
     }
 
     // 3. The Restore: Clears 'deleted_at' so it becomes "Active" again

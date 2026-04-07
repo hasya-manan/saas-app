@@ -5,6 +5,12 @@ defineProps({
     show: Boolean,
     title: String,
     message: String,
+    // RATIONALE: We add a 'note' prop to separate general context from 
+    // critical technical warnings (like the system kill-switch).
+    note: {
+        type: String,
+        default: null
+    },
     confirmText: {
         type: String,
         default: 'Confirm'
@@ -35,9 +41,17 @@ const emit = defineEmits(['close', 'confirm']);
                     ]">
                         <AlertTriangle class="w-6 h-6" />
                     </div>
-                    <div>
+                   <div class="flex-1">
                         <h3 class="text-xl font-bold text-gray-900">{{ title }}</h3>
-                        <p class="text-gray-500 text-sm mt-1">{{ message }}</p>
+                        <p class="text-gray-500 text-sm mt-1 leading-relaxed">{{ message }}</p>
+
+                        <div v-if="note" class="mt-4 p-3 rounded-xl border bg-gray-50 border-gray-200 flex gap-3 items-start">
+                            <Info :size="16" class="text-gray-400 mt-0.5 shrink-0" />
+                            <p class="text-[12px] text-gray-600 leading-snug">
+                                <span class="font-bold text-gray-900 uppercase text-[10px] block mb-1">Important Note</span>
+                                {{ note }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

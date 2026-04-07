@@ -8,7 +8,7 @@ use App\Models\Role;
 //use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class UserController extends Controller
+class StaffController extends Controller
 {
     //
     public function index()
@@ -23,7 +23,7 @@ class UserController extends Controller
             ->latest()
             ->paginate(10);
 
-        return Inertia::render('CompanyAdmin/Users/List', [
+        return Inertia::render('CompanyAdmin/Staff/List', [
             'employees' => $employees
         ]);
     }
@@ -33,7 +33,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('CompanyAdmin/Users/Create', [
+        return Inertia::render('CompanyAdmin/Staff/Create', [
             // Pass roles so the Admin can choose (Staff, Manager, etc.)
             // Usually IDs 2 and 3 for Company Admin and Staff
             'roles' => Role::whereIn('id', [2, 3])->get()

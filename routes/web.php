@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Company\CompanyDashboardController;
-use App\Http\Controllers\Company\UserController;
+use App\Http\Controllers\Company\StaffController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\TenantController;
@@ -64,21 +64,21 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
 // =============================================
 // ============ ADMMIN COMPANY ROUTES ==========
 // =============================================
-Route::middleware(['auth', 'admin_company'])->prefix('admin_company')->group(function () {
+Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(function () {
     Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('admin_company.dashboard');
     // Staff Management
-    Route::get('/staff', [UserController::class, 'index'])->name('admin_company.users.index');
-    Route::get('/staff/create', [UserController::class, 'create'])->name('admin_company.users.create');
-    Route::post('/staff', [UserController::class, 'store'])->name('admin_company.users.store');
+    Route::get('/staff/list', [StaffController::class, 'index'])->name('admin_company.users.index');
+    Route::get('/staff/create', [StaffController::class, 'create'])->name('admin_company.users.create');
+    Route::post('/staff', [StaffController::class, 'store'])->name('admin_company.users.store');
     
     // "View Details" button!
-    Route::get('/staff/{user}', [UserController::class, 'show'])->name('admin_company.users.show');
+    Route::get('/staff/{user}', [StaffController::class, 'show'])->name('admin_company.users.show');
     
     //  "Update Permissions" button in the edit panel:
-    Route::put('/staff/{user}', [UserController::class, 'update'])->name('admin_company.users.update');
+    Route::put('/staff/{user}', [StaffController::class, 'update'])->name('admin_company.users.update');
 
     // Employee Management
-    // Route::resource('users', UserController::class)->names([
+    // Route::resource('users', StaffController::class)->names([
     //     'index'   => 'company.users.index',
     //     'store'   => 'company.users.store',
     //     // ... etc

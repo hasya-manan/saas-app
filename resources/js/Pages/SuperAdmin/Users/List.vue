@@ -149,7 +149,7 @@ const submitUpdate = () => {
 
                                                     <span v-if="user.tenant?.deleted_at"
                                                         class="px-2 py-0.5 rounded-full bg-red-50 text-red-500 text-[8px] font-black uppercase border border-red-100">
-                                                        Archived Company
+                                                        Deactivated Company
                                                     </span>
                                                 </div>
                                             </div>

@@ -154,7 +154,7 @@ const submitUpdate = () => {
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Role Type</label>
                                 <select v-model.number="form.role_id" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
-                                    <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
+                                    <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.display_name }}</option>
                                 </select>
                             </div>
 

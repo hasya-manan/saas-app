@@ -25,7 +25,9 @@ class StaffController extends Controller
             'employees' => $employees,
             // RATIONALE: Required here because the 'Quick Edit' panel 
             // is a child component/element of the List view.
-            'roles' => Role::whereIn('id', [2, 3])->get(['id', 'name']),
+             'roles'   => Role::where('id', '!=', 1)
+                        ->select('id', 'name', 'display_name')
+                        ->get(),
         ]);
     }
     // RATIONALE: We use Type-Hinting (User $user) so Laravel 
@@ -55,7 +57,9 @@ class StaffController extends Controller
         return Inertia::render('CompanyAdmin/Staff/Create', [
             // Pass roles so the Admin can choose (Staff, Manager, etc.)
             // Usually IDs 2 and 3 for Company Admin and Staff
-            'roles' => Role::whereIn('id', [2, 3])->get()
+            'roles'   => Role::where('id', '!=', 1)
+                        ->select('id', 'name', 'display_name')
+                        ->get(),
         ]);
     }
 }

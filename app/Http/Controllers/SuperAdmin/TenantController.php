@@ -28,6 +28,7 @@ class TenantController extends Controller
         'company_name' => 'required|string|max:255',
         'admin_name'   => 'required|string|max:255',
         'admin_email'  => 'required|email|unique:users,email',
+        'company_email'  => 'required|email|unique:users,email',
     ]);
 
     // 1. Start the Transaction
@@ -44,7 +45,7 @@ class TenantController extends Controller
         $tenant = Tenant::create([
             'id'           => $customId,
             'company_name' => $validated['company_name'],
-            'email'        => $validated['admin_email'],
+            'email'        => $validated['company_email'],
             'status'       => 'active', 
         ]);
 

@@ -5,16 +5,31 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import {ref, watch, computed } from 'vue';
 
-//for flash 
-const page = usePage();
+
+
+const syncEmail = ref(false);
 const form = useForm({
     company_name: '',
     admin_name: '',
     admin_email: '',
+    company_email: '',
 });
 
+// RATIONALE: Automatically syncs the admin email if the toggle is active.
+// This reduces manual typing  where the owner is the admin.
+watch(() => form.company_email, (newValue) => {
+    if (syncEmail.value) {
+        form.admin_email = newValue;
+    }
+});
+// 3. Optional: Sync immediately when they click the checkbox
+watch(syncEmail, (isChecked) => {
+    if (isChecked) {
+        form.admin_email = form.company_email;
+    }
+});
 const submit = () => {
     form.post(route('tenants.store'), {
         onFinish: () => form.reset('admin_email'),
@@ -53,6 +68,17 @@ const submit = () => {
                                 v-model="form.company_name" required autofocus placeholder="e.g. Acme Corporation Pty Ltd" />
                             <InputError class="mt-2" :message="form.errors.company_name" />
                         </div>
+                         <div class="md:col-span-1">
+                            <InputLabel for="company_email" value="Company Email" class="font-semibold text-gray-700" />
+                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">This email will be used for all official correspondence and system-generated reports.</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <TextInput id="company_email" type="text" 
+                                class="block w-full border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-primary-border focus:border-primary transition-all rounded-xl shadow-sm" 
+                                v-model="form.company_email" required autofocus placeholder="e.g. acme@example.com" />
+                            <InputError class="mt-2" :message="form.errors.company_email" />
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -78,17 +104,31 @@ const submit = () => {
                                 <InputError class="mt-2" :message="form.errors.admin_name" />
                             </div>
                         </div>
-                        <!--TODO :: email for admin-->
+                       
+                        <!-- email for admin-->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-1">
-                                <InputLabel for="admin_email" value="Company Email " class="font-semibold text-gray-700" />
-                                <p class="text-xs text-gray-400 mt-1">Email company/organization.</p>
+                                <InputLabel for="admin_email" value="User Email " class="font-semibold text-gray-700" />
+                                <p class="text-xs text-gray-400 mt-1">This is your unique username for logging into the H.A.M System..</p>
                             </div>
                             <div class="md:col-span-2">
                                 <TextInput id="admin_email" type="email" 
                                     class="block w-full border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-primary-border focus:border-primary rounded-xl shadow-sm" 
                                     v-model="form.admin_email" required placeholder="admin@company.com" />
                                 <InputError class="mt-2" :message="form.errors.admin_email" />
+                            </div>
+                        </div>
+                         <!--syn email as company email -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                            <div class="md:col-span-1"></div>
+                            <div class="md:col-span-2">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" v-model="syncEmail"
+                                        class="rounded border-gray-300 text-primary focus:ring-primary transition-all">
+                                    <span class="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                                        Use company email as administrator login?
+                                    </span>
+                                </label>
                             </div>
                         </div>
                     </div>

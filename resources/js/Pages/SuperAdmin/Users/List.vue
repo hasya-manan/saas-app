@@ -160,7 +160,7 @@ const submitUpdate = () => {
                                             <span
                                                 :class="user.role?.name === 'admin_company' ? 'bg-primary text-white' : 'bg-pink-100 text-pink-700'"
                                                 class="px-3 py-1 text-[10px] font-black rounded-full uppercase">
-                                                {{ user.role?.name }}
+                                                {{ user.role?.display_name }}
                                             </span>
                                         </td>
 
@@ -224,7 +224,7 @@ const submitUpdate = () => {
                                 <select v-model.number="form.role_id"
                                     class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
                                     <option v-for="r in roles" :key="r.id" :value="r.id">
-                                        {{ r.name }}
+                                        {{ r.display_name }}
                                     </option>
                                 </select>
                             </div>

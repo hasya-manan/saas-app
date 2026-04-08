@@ -168,7 +168,11 @@ public function list(Request $request)
         'users'   => $users,
         'filters' => $filters,
         'tenants' => Tenant::select('id', 'company_name')->get(),
-        'roles'   => Role::select('id', 'name')->get(),
+        // RATIONALE: We exclude Role ID 1 because SuperAdmins shouldn't 
+        // be reassigned or filtered within the Tenant User list.
+        'roles'   => Role::where('id', '!=', 1)
+                        ->select('id', 'name', 'display_name')
+                        ->get(),
     ]);
 }
 

@@ -101,7 +101,7 @@ const submitUpdate = () => {
 
                                         <td class="px-6 py-4 border-y border-transparent group-hover:border-primary-border">
                                             <span class="px-3 py-1 text-[10px] font-black rounded-full uppercase bg-blue-50 text-blue-600 border border-blue-100">
-                                                {{ user.role?.name || 'Staff' }}
+                                                {{ user.role?.display_name || 'Staff' }}
                                             </span>
                                         </td>
 

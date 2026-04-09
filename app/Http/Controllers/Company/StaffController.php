@@ -62,4 +62,14 @@ class StaffController extends Controller
                         ->get(),
         ]);
     }
+
+    public function show()
+    {
+        return Inertia::render('CompanyAdmin/Staff/View', [
+            
+            'roles'   => Role::where('id', '!=', 1)
+                        ->select('id', 'name', 'display_name')
+                        ->get(),
+        ]);
+    }
 }

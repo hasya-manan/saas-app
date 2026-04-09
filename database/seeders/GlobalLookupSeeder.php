@@ -15,16 +15,28 @@ class GlobalLookupSeeder extends Seeder
     {
         // WHY:: i do 10, 20 instead 1, 2 because lets said i wants to insert new data in between , i can do like 15
         $data = [
-            ['category' => 'tenant_status', 'key' => 'active', 'label' => 'Active', 'sort_order' => 10],
-            ['category' => 'tenant_status', 'key' => 'inactive', 'label' => 'Inactive', 'sort_order' => 20],
-            ['category' => 'tenant_status', 'key' => 'archived', 'label' => 'Archived', 'sort_order' => 30],
-            ['category' => 'tenant_status', 'key' => 'suspended', 'label' => 'Suspended', 'sort_order' => 40],
-            ['category' => 'gender', 'key' => 'm', 'label' => 'Male', 'sort_order' => 10],
-            ['category' => 'gender', 'key' => 'f', 'label' => 'Female', 'sort_order' => 20],
+            // Tenant Status
+            ['category' => 'tenant_status', 'key' => 'active', 'label' => 'Active', 'description' => 'Tenant is active', 'sort_order' => 10],
+            ['category' => 'tenant_status', 'key' => 'inactive', 'label' => 'Inactive', 'description' => 'Tenant is inactive', 'sort_order' => 20],   
+            ['category' => 'tenant_status', 'key' => 'deactivated', 'label' => 'Deactivated','description' => 'Tenant is deactivated ', 'sort_order' => 30],
+            ['category' => 'tenant_status', 'key' => 'suspended', 'label' => 'Suspended', 'description' => 'Tenant is suspended', 'sort_order' => 40],
+            // Gender
+            ['category' => 'gender', 'key' => 'm', 'label' => 'Male', 'description' => 'Gender is Male', 'sort_order' => 10],
+            ['category' => 'gender', 'key' => 'f', 'label' => 'Female', 'description' => 'Gender is Female', 'sort_order' => 20],
+            // SOCSO Type 
+            ['category' => 'socso_type', 'key' => 'category_1', 'label' => 'Category 1', 'description' => 'Employment Injury & Invalidity (Under 60 years old)', 'sort_order' => 10],
+            ['category' => 'socso_type', 'key' => 'category_2', 'label' => 'Category 2', 'description' => 'Employment Injury Only (60 years old and above)', 'sort_order' => 20],
+            
+            // TODO::  Common Malaysian Banks (To fill the dropdown for staff_finances)
         ];
 
         foreach ($data as $item) {
-            GlobalLookup::create($item);
-        }
+        // RATIONALE: Search by category and key. If found, update. If not, create.
+        // This makes your seeder "Idempotent" (safe to run many times).
+        GlobalLookup::updateOrCreate(
+            ['category' => $item['category'], 'key' => $item['key']],
+            $item
+        );
+    }
     }
 }

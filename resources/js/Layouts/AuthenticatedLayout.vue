@@ -14,7 +14,8 @@ import {
     Menu,
     X,
     List,
-    Contact
+    Contact,
+    ListPlus 
 } from 'lucide-vue-next';
 
 const isCollapsed = ref(false);
@@ -160,10 +161,16 @@ watch(
                     <p v-if="!isCollapsed"
                         class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">System
                         Admin</p>
+                    <Link :href="route('admin_company.users.create')"
+                        :class="[route().current('admin_company.users.create') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <PlusCircle :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">Create Staff</span>
+                    </Link>
                     <Link :href="route('admin_company.users.index')"
                         :class="[route().current('admin_company.users.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
-                        <PlusCircle :size="20" />
+                        <ListPlus :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Staff</span>
                     </Link>
 

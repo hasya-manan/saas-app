@@ -242,7 +242,6 @@ SuperAdmin bypasses this scope entirely (since `tenant_id = null`).
 | `stancl/tenancy` | Multi-tenancy foundation |
 | `inertiajs/inertia-laravel` | SPA-style routing |
 | `vue` | Frontend framework |
-| `lucide-vue-next` | Icon library (installed ✅) |
 
 ---
 

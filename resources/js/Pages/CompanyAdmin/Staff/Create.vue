@@ -126,7 +126,7 @@ const prevStep = () => {
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
                                         <input v-model="form.ic_number" type="text"
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
-                                            placeholder="900101115566">
+                                            placeholder="000308000000">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Phone

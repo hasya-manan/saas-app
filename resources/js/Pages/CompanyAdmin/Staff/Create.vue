@@ -121,7 +121,7 @@ const prevStep = () => {
                                         placeholder="e.g. Ahmad bin Ibrahim">
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-2 md:grid-cols-2 gap-6">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
                                         <input v-model="form.ic_number" type="text"

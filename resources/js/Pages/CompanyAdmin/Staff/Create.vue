@@ -93,6 +93,13 @@ const prevStep = () => {
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. staff@company.com">
                                 </div>
+                                <!--TODO:: need to add view icon eye the password field-->
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                                    <input v-model="form.password" type="password" 
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                        placeholder="e.g. need to have at least 8 characters">
+                                </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">System Role</label>
                                     <select v-model="form.role_id" class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 transition-all">
@@ -123,6 +130,13 @@ const prevStep = () => {
                                         <input v-model="form.phone" type="text" 
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3" 
                                             placeholder="0123456789">
+                                    </div>
+                                    <div>
+                                       <label class="block text-sm font-semibold text-slate-700 mb-2">Address</label>
+                                        <textarea v-model="form.address" rows="3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            placeholder="e.g. No. 123, Jalan Ampang, 50450 Kuala Lumpur">
+    </textarea>
                                     </div>
                                 </div>
                             </div>

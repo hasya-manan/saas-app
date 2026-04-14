@@ -15,16 +15,39 @@ const steps = [
     { id: 2, title: 'Personal Information', desc: 'Identity & Contact' },
     { id: 3, title: 'Employment Details', desc: 'Role & Department' },
     { id: 4, title: 'Financial & Statutory', desc: 'Salary, EPF, SOCSO' },
+    { id: 5, title: 'Emergency Contact', desc: 'Emergency Contact' },
 ];
 
 const form = useForm({
-    // Account
+    // Step 1 : Account
     email: '',
     role_id: '',
-    // Personal
+    // Step 2 : Personal
     full_name: '',
     ic_number: '',
     phone: '',
+    address_line_1: '',
+    address_line_2: '',
+    city: '',
+    postcode: '',
+    state: '',
+
+    //step 3 : employment details
+   //step 4 : financial & statutory
+    basic_salary: '',
+    bank_name: '',
+    bank_account_no: '',
+    epf_no: '',
+    epf_rate_employee: '',
+    epf_rate_employer: '',
+    socso_no: '',
+    socso_type: '',
+    tax_no: '',
+    eis_enabled: '',
+
+
+    //step 5 : emergency  contact 
+    
     // Add other fields as needed for later steps
 });
 
@@ -36,7 +59,7 @@ const stepValidation = computed(() => ({
     1: form.email.includes('@') && form.role_id !== '',
     2: form.full_name.length > 3 && form.ic_number.length >= 12,
     3: false, // Pending implementation
-    4: false  // Pending implementation
+    4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== ''
 }));
 
 const isLastStep = computed(() => currentStep.value === steps.length);
@@ -118,7 +141,7 @@ const prevStep = () => {
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name (as per
                                         IC)</label>
                                     <input v-model="form.full_name" type="text"
-                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. Ahmad bin Ibrahim">
                                 </div>
 
@@ -126,14 +149,14 @@ const prevStep = () => {
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
                                         <input v-model="form.ic_number" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="000308000000">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
                                             Number</label>
                                         <input v-model="form.phone" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="0123456789">
                                     </div>
                                 </div>
@@ -150,7 +173,7 @@ const prevStep = () => {
                                         <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Address
                                             Line 1</label>
                                         <input v-model="form.address_line_1" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="Street address, P.O. box">
                                     </div>
 
@@ -158,7 +181,7 @@ const prevStep = () => {
                                         <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Address
                                             Line 2 (Optional)</label>
                                         <input v-model="form.address_line_2" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="Apartment, suite, unit, building, floor">
                                     </div>
 
@@ -167,14 +190,14 @@ const prevStep = () => {
                                             <label
                                                 class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">City</label>
                                             <input v-model="form.city" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                                 placeholder="Kota Bharu">
                                         </div>
                                         <div>
                                             <label
                                                 class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Postcode</label>
                                             <input v-model="form.postcode" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                                 placeholder="15000">
                                         </div>
                                         <div>
@@ -205,7 +228,7 @@ const prevStep = () => {
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name (as per
                                         IC)</label>
                                     <input v-model="form.full_name" type="text"
-                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. Ahmad bin Ibrahim">
                                 </div>
 
@@ -213,14 +236,14 @@ const prevStep = () => {
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
                                         <input v-model="form.ic_number" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="000308000000">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
                                             Number</label>
                                         <input v-model="form.phone" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="0123456789">
                                     </div>
                                 </div>
@@ -237,7 +260,7 @@ const prevStep = () => {
                                         <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Address
                                             Line 1</label>
                                         <input v-model="form.address_line_1" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="Street address, P.O. box">
                                     </div>
 
@@ -245,7 +268,7 @@ const prevStep = () => {
                                         <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Address
                                             Line 2 (Optional)</label>
                                         <input v-model="form.address_line_2" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="Apartment, suite, unit, building, floor">
                                     </div>
 
@@ -254,14 +277,14 @@ const prevStep = () => {
                                             <label
                                                 class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">City</label>
                                             <input v-model="form.city" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                                 placeholder="Kota Bharu">
                                         </div>
                                         <div>
                                             <label
                                                 class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">Postcode</label>
                                             <input v-model="form.postcode" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                                 placeholder="15000">
                                         </div>
                                         <div>
@@ -284,7 +307,93 @@ const prevStep = () => {
                             </div>
                         </div>
                         
-                        <div v-if="currentStep > 2" class="animate-fade-in text-slate-400 italic flex items-center justify-center h-48 border-2 border-dashed border-slate-100 rounded-2xl">
+                        <div v-if="currentStep === 4" class="space-y-8 animate-fade-in">
+    
+                      <div class="grid grid-cols-1 gap-6">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Banking Information
+                                </h3>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Basic Salary
+                                        (MYR)</label>
+                                    <input v-model="form.basic_salary" type="number"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                        placeholder="e.g. 3500.00">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Bank Name</label>
+                                        <input v-model="form.bank_name" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                            placeholder="e.g. Maybank / CIMB">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Account
+                                            Number</label>
+                                        <input v-model="form.bank_account_no" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                            placeholder="e.g. 164000123456">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 border-t border-slate-100">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Statutory
+                                    Contributions</h3>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">EPF
+                                                Number</label>
+                                            <input v-model="form.epf_no" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Employee
+                                                    %</label>
+                                                <input v-model="form.epf_rate_employee" type="number"
+                                                    class="w-full border-primary-border rounded-lg px-3 py-2">
+                                            </div>
+                                            <div>
+                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Employer
+                                                    %</label>
+                                                <input v-model="form.epf_rate_employer" type="number"
+                                                    class="w-full border-primary-border rounded-lg px-3 py-2">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">SOCSO
+                                                Number</label>
+                                            <input v-model="form.socso_no" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tax (LHDN)
+                                                Number</label>
+                                            <input v-model="form.tax_no" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-700">EIS Contribution</p>
+                                        <p class="text-xs text-slate-500">Enable Employment Insurance System
+                                            contribution</p>
+                                    </div>
+                                    <input v-model="form.eis_enabled" type="checkbox"
+                                        class="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="currentStep > 4" class="animate-fade-in text-slate-400 italic flex items-center justify-center h-48 border-2 border-dashed border-slate-100 rounded-2xl">
                             Configuration for {{ steps[currentStep-1].title }} is in progress...
                         </div>
                     </div>

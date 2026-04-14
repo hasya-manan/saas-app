@@ -33,6 +33,7 @@ const form = useForm({
     state: '',
 
     //step 3 : employment details
+    
    //step 4 : financial & statutory
     basic_salary: '',
     bank_name: '',
@@ -47,7 +48,7 @@ const form = useForm({
 
 
     //step 5 : emergency  contact 
-    
+
     // Add other fields as needed for later steps
 });
 

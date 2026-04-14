@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Company\CompanyDashboardController;
+use App\Http\Controllers\Company\DepartmentController;
 use App\Http\Controllers\Company\StaffController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
@@ -77,12 +78,8 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     //  "Update Permissions" button in the edit panel:
     Route::put('/staff/{user}', [StaffController::class, 'update'])->name('admin_company.users.update');
 
-    // Employee Management
-    // Route::resource('users', StaffController::class)->names([
-    //     'index'   => 'company.users.index',
-    //     'store'   => 'company.users.store',
-    //     // ... etc
-    // ]);
+   // department management
+   Route::get('/department/create', [DepartmentController::class, 'create'])->name('admin_company.departments.list');
 });
 
 require __DIR__.'/auth.php';

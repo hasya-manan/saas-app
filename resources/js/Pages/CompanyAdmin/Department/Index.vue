@@ -1,6 +1,8 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
 
+import { ref, computed } from 'vue';
+import { Head, useForm, Link } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 const props = defineProps({
     departments: Array,
     users: Array // Existing staff to choose as HOD
@@ -15,8 +17,23 @@ const form = useForm({
 </script>
 
 <template>
-    <div class="p-6">
-        <h2 class="text-2xl font-bold mb-6">Department Management</h2>
+        <Head title="Department Management" />
+    <AuthenticatedLayout>
+
+         <template #header>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Manage Departments</h2>
+                    <p class="text-sm text-gray-500">Onboard new departments and configure their professional profile</p>
+                </div>
+                
+                <Link :href="route('admin_company.users.index')" class="text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
+                    &larr; Back to Directory
+                </Link>
+            </div>
+        </template>
+        
+        
 
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
             <form @submit.prevent="form.post(route('departments.store'))" class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -59,6 +76,10 @@ const form = useForm({
                 </tbody>
             </table>
         </div>
-    </div>
+    
+
+
+    </AuthenticatedLayout>
+    
 </template>
 

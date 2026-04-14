@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('departments', function (Blueprint $table) {
-            //
-            $table->date('join_date')->nullable()->after('description');
-        });
+        //
+        Schema::table('user_profiles', function (Blueprint $table) {
+        
+        $table->date('join_date')->nullable()->after('phone');
+    });
     }
 
     /**
@@ -22,9 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('departments', function (Blueprint $table) {
-            //
-            $table->dropColumn('join_date');
-        });
+        //
+        Schema::table('user_profiles', function (Blueprint $table) {
+        $table->dropColumn('join_date');
+    });
     }
 };

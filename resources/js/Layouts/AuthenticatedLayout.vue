@@ -6,7 +6,7 @@ import { useNotifications } from '@/Composables/useNotifications';
 import {
     LayoutDashboard,
     Users,
-    Settings,
+    Component,
     LogOut,
     ChevronLeft,
     ChevronRight,
@@ -172,6 +172,12 @@ watch(
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <ListPlus :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Staff</span>
+                    </Link>
+                     <Link :href="route('admin_company.departments.index')"
+                        :class="[route().current('admin_company.departments.indexx') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <Component  :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">Manage Department</span>
                     </Link>
 
                 </div>

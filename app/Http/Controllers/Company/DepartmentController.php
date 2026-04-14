@@ -18,7 +18,7 @@ class DepartmentController extends Controller
  */
     public function index(): Response
     {
-        return Inertia::render('CompanyAdmin/Departments/Index', [
+        return Inertia::render('CompanyAdmin/Department/Index', [
             // Fetch departments only for this tenant, including the manager's name
             'departments' => Department::where('tenant_id', auth()->user()->tenant_id)
                 ->with('manager:id,name') 
@@ -35,20 +35,26 @@ class DepartmentController extends Controller
         ]);
     }
     //
-    public function create(Request $request) 
+   public function store(Request $request) 
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'manager_id' => 'nullable|exists:users,id', // The HOD
-            'join_date' => 'nullable|date', // As per your requirement
+            'manager_id' => 'nullable|exists:users,id',
+            // ... other fields
         ]);
 
-        // Automatically inject the current tenant_id
         $validated['tenant_id'] = auth()->user()->tenant_id;
 
-        Department::create($validated);
+        // 1. Create the Department
+        $department = Department::create($validated);
 
-        return redirect()->back()->with('success', 'Department created successfully!');
+        // 2. Update the User (Optional: only if you want the HOD to be IN the dept)
+        if ($request->manager_id) {
+            User::where('id', $request->manager_id)->update([
+                'department_id' => $department->id
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Department and HOD updated!');
     }
 }

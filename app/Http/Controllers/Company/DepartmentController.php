@@ -21,7 +21,7 @@ class DepartmentController extends Controller
         return Inertia::render('CompanyAdmin/Department/Index', [
             // Fetch departments only for this tenant, including the manager's name
             'departments' => Department::where('tenant_id', auth()->user()->tenant_id)
-                ->with('manager:id,name') 
+                ->with('hod:id,name') 
                 ->latest()
                 ->get(),
 
@@ -39,7 +39,8 @@ class DepartmentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'manager_id' => 'nullable|exists:users,id',
+            'hod_id' => 'nullable|exists:users,id',
+            'description' => 'nullable|string',
             // ... other fields
         ]);
 

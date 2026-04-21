@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
@@ -13,18 +12,16 @@ class Department extends Model
         'tenant_id', 
         'name', 
         'description', 
-        'manager_id', 
+        'hod_id', 
         'join_date'
     ];
 
     /**
      * Get the Head of Department (HOD)
      */
-    public function manager(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'manager_id');
+    public function hod() {
+     return $this->belongsTo(User::class, 'hod_id');
     }
-
     /**
      * Get all staff belonging to this department
      */
@@ -32,4 +29,6 @@ class Department extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    
 }

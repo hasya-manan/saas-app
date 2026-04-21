@@ -68,6 +68,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserProfile::class);
     }
+    public function supervisor() {
+        return $this->belongsTo(User::class, 'supervisor_id');
+    }
 
     //filtering 
    

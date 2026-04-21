@@ -80,7 +80,6 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
 
    // department management
     Route::get('/department/index', [DepartmentController::class, 'index'])->name('admin_company.departments.index');
-    Route::get('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');
-});
+    Route::post('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');});
 
 require __DIR__.'/auth.php';

@@ -156,7 +156,8 @@ Users (The Actual Data):
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/hasya-manan/saas-app.git
+
 cd your-repo
 
 # Install PHP dependencies
@@ -178,7 +179,7 @@ npm run dev
 ```
 
 ### Default SuperAdmin Credentials
-> You may change these before you db seed
+> You may change these in the seeder before running migrate:fresh --seed"
 
 ```
 Email:    superadmin@example.com

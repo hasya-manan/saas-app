@@ -44,7 +44,7 @@ defineProps({
                     </h1>
                     
                     <p class="text-gray-500 font-medium text-lg leading-relaxed max-w-xl">
-                        A technical sandbox built by <strong>Hasya</strong> to explore complex Laravel 11 architectures, shared-database isolation, and advanced Role-Based Access Control (RBAC).
+                        A portal built by <strong>Hasya</strong> to explore complex Laravel 11 architectures, shared-database isolation, and advanced Role-Based Access Control (RBAC).
                     </p>
 
                     <div class="flex items-center gap-4 pt-4">

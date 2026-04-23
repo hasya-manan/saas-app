@@ -178,7 +178,7 @@ npm run dev
 ```
 
 ### Default SuperAdmin Credentials
-> You may change these before you db seed, this is only 
+> You may change these before you db seed
 
 ```
 Email:    superadmin@example.com

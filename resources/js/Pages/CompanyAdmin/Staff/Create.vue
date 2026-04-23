@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue';
+import RoundedSelect from '@/Components/RoundedSelect.vue';
 
 const props = defineProps({
     roles: Array
@@ -60,7 +61,8 @@ const stepValidation = computed(() => ({
     1: form.email.includes('@') && form.role_id !== '',
     2: form.full_name.length > 3 && form.ic_number.length >= 12,
     3: false, // Pending implementation
-    4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== ''
+    4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== '',
+    5: false, // Pending implementation
 }));
 
 const isLastStep = computed(() => currentStep.value === steps.length);
@@ -104,12 +106,12 @@ const prevStep = () => {
             <main class="flex-1 bg-white flex flex-col">
                 <div class="p-12 max-w-2xl mx-auto w-full flex-1">
                     <div class="mb-10">
-                        <span class="text-xs font-bold text-primary tracking-widest uppercase">Step {{ currentStep }} of 4</span>
+                        <span class="text-xs font-bold text-primary tracking-widest uppercase">Step {{ currentStep }} of 5</span>
                         <h1 class="text-3xl font-extrabold text-slate-900 mt-1">{{ steps[currentStep-1].title }}</h1>
                     </div>
 
                     <div class="min-h-[300px]">
-                    <!-- Account Setup -->
+                    <!-- Step 1 : Account Setup -->
                         <div v-if="currentStep === 1" class="space-y-6 animate-fade-in">
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
@@ -125,23 +127,17 @@ const prevStep = () => {
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. need to have at least 8 characters">
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">System Role</label>
-                                    <select v-model="form.role_id" class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 transition-all">
-                                        <option value="" disabled selected>Select a role...</option>
-                                        <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.display_name }}</option>
-                                    </select>
-                                </div>
+                               
                             </div>
                         </div>
-                        <!-- Personal Information -->
+                        <!-- Step 2:Personal Information -->
                        <div v-if="currentStep === 2" class="space-y-8 animate-fade-in">
     
                         <div class="grid grid-cols-1 gap-6">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name (as per
                                         IC)</label>
-                                    <input v-model="form.full_name" type="text"
+                                    <input v-model="form.name" type="text"
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. Ahmad bin Ibrahim">
                                 </div>
@@ -160,10 +156,20 @@ const prevStep = () => {
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                             placeholder="0123456789">
                                     </div>
-                                </div>
-                        </div>
+                                   <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Marital
+                                            Status</label>
 
-                    
+                                        <RoundedSelect v-model="form.marital_status" variant="form"
+                                            label="Select Status" :options="$page.props.lookups.marital_statuses"
+                                            option-label="label" option-value="key" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
 
                         <div class="pt-6 border-t border-slate-100">
                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Permanent
@@ -203,17 +209,14 @@ const prevStep = () => {
                                         </div>
                                         <div>
                                             
-                                           <div>
+                                          <div>
                                                 <label
                                                     class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">State</label>
-                                                <select v-model="form.state"
-                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 bg-white transition-all">
-                                                    <option value="" disabled>Select State</option>
+                                                <RoundedSelect v-model="form.state" variant="form" label="Select Status"
+                                                    :options="$page.props.lookups.states" option-label="label"
+                                                    option-value="key" />
 
-                                                    <option v-for="state in states" :key="state.id" :value="state.name">
-                                                        {{ state.name }}
-                                                    </option>
-                                                </select>
+
                                             </div>
                                         </div>
                                     </div>
@@ -221,40 +224,19 @@ const prevStep = () => {
                             </div>
                         </div>
                         <!--employement details-->
-                        <!--TODO:: need to update the UI / UX for this step-->
+                        <!--Step 3 :: Employment Details-->
                          <div v-if="currentStep === 3" class="space-y-8 animate-fade-in">
     
-                        <div class="grid grid-cols-1 gap-6">
+                      <div class="grid grid-cols-1 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name (as per
-                                        IC)</label>
-                                    <input v-model="form.full_name" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
-                                        placeholder="e.g. Ahmad bin Ibrahim">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Staff Role </label>
+                                    <RoundedSelect v-model="form.role_id" variant="form" label="Select a role..."
+                                        :options="roles" option-label="display_name" option-value="id" />
                                 </div>
-
-                                <div class="grid grid-cols-2 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
-                                        <input v-model="form.ic_number" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
-                                            placeholder="000308000000">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
-                                            Number</label>
-                                        <input v-model="form.phone" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
-                                            placeholder="0123456789">
-                                    </div>
-                                </div>
-                        </div>
-
-                    
+                            </div>
 
                         <div class="pt-6 border-t border-slate-100">
-                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Permanent
-                                    Address</h3>
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Department</h3>
 
                                 <div class="grid grid-cols-1 gap-5">
                                     <div>
@@ -289,19 +271,7 @@ const prevStep = () => {
                                                 placeholder="15000">
                                         </div>
                                         <div>
-                                            
-                                           <div>
-                                                <label
-                                                    class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">State</label>
-                                                <select v-model="form.state"
-                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 bg-white transition-all">
-                                                    <option value="" disabled>Select State</option>
-
-                                                    <option v-for="state in states" :key="state.id" :value="state.name">
-                                                        {{ state.name }}
-                                                    </option>
-                                                </select>
-                                            </div>
+                                          
                                         </div>
                                     </div>
                                 </div>
@@ -325,9 +295,10 @@ const prevStep = () => {
                                 <div class="grid grid-cols-2 gap-6">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Bank Name</label>
-                                        <input v-model="form.bank_name" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
-                                            placeholder="e.g. Maybank / CIMB">
+                                        
+                                          <RoundedSelect v-model="form.bank_name" variant="form" label="Select Bank"
+                                                    :options="$page.props.lookups.banks" option-label="label"
+                                                    option-value="key" />   
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Account
@@ -348,21 +319,20 @@ const prevStep = () => {
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">EPF
                                                 Number</label>
-                                            <input v-model="form.epf_no" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                            <input v-model="form.epf_no" type="text" class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" >
                                         </div>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label class="text-[10px] font-bold text-slate-500 uppercase">Employee
                                                     %</label>
                                                 <input v-model="form.epf_rate_employee" type="number"
-                                                    class="w-full border-primary-border rounded-lg px-3 py-2">
+                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all">
                                             </div>
                                             <div>
                                                 <label class="text-[10px] font-bold text-slate-500 uppercase">Employer
                                                     %</label>
                                                 <input v-model="form.epf_rate_employer" type="number"
-                                                    class="w-full border-primary-border rounded-lg px-3 py-2">
+                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" ">
                                             </div>
                                         </div>
                                     </div>
@@ -372,26 +342,28 @@ const prevStep = () => {
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">SOCSO
                                                 Number</label>
                                             <input v-model="form.socso_no" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" >
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">Tax (LHDN)
                                                 Number</label>
                                             <input v-model="form.tax_no" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" >
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="mt-6 flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                              <label
+                                    class="mt-6 flex items-center justify-between p-4 bg-slate-100/50 hover:bg-slate-100 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-slate-200">
                                     <div>
-                                        <p class="text-sm font-bold text-slate-700">EIS Contribution</p>
-                                        <p class="text-xs text-slate-500">Enable Employment Insurance System
-                                            contribution</p>
+                                        <p class="text-sm font-bold text-slate-900">EIS Contribution</p>
+                                        <p class="text-xs text-slate-600">
+                                            Enable Employment Insurance System contribution
+                                        </p>
                                     </div>
                                     <input v-model="form.eis_enabled" type="checkbox"
-                                        class="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary">
-                                </div>
+                                        class="w-6 h-6 text-primary rounded-md border-slate-400 focus:ring-primary cursor-pointer">
+                                </label>
                             </div>
                         </div>
                         <div v-if="currentStep === 5" class="space-y-8 animate-fade-in">
@@ -406,19 +378,13 @@ const prevStep = () => {
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. Ali Bin Abu">
                                 </div>
-                                <div class="grid grid-cols-2 gap-6">
+                               <div class="grid grid-cols-2 gap-6">
                                     <div>
                                         <label
                                             class="block text-sm font-semibold text-slate-700 mb-2">Relationship</label>
-
-                                        <select v-model="form.waris_relationship"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 transition-all">
-                                            <option value="" disabled>Select Relationship</option>
-                                            <option v-for="item in $page.props.lookups.relationships" :key="item.key"
-                                                :value="item.key">
-                                                {{ item.label }}
-                                            </option>
-                                        </select>
+                                        <RoundedSelect v-model="form.waris_relationship" variant="form"
+                                            label="Select Relationship" :options="$page.props.lookups.relationships"
+                                            option-label="label" option-value="key" />
 
                                         <div v-if="form.waris_relationship === 'other'" class="mt-3">
                                             <label class="block text-xs font-medium text-slate-500 mb-1">Please specify
@@ -430,14 +396,10 @@ const prevStep = () => {
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
-                                        <select v-model="form.waris_gender"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 transition-all">
-                                            <option value="" disabled>Select Gender</option>
-                                            <option v-for="item in $page.props.lookups.genders" :key="item.key"
-                                                :value="item.key">
-                                                {{ item.label }}
-                                            </option>
-                                        </select>
+                                         <RoundedSelect v-model="form.waris_gender" variant="form"
+                                            label="Select Gender" :options="$page.props.lookups.genders"
+                                            option-label="label" option-value="key" />
+                                       
                                     </div>
                                 </div>
                             </div>

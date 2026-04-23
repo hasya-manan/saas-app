@@ -59,6 +59,23 @@ class HandleInertiaRequests extends Middleware
                     ->orderBy('sort_order')
                     ->get(['key', 'label']);
             }),
+              'marital_statuses' => Cache::rememberForever('marital_status', function () {
+                return GlobalLookup::where('category', 'marital_status')
+                    ->orderBy('sort_order')
+                    ->get(['key', 'label']);
+            }),
+            //state
+            'states' => Cache::rememberForever('state', function () {
+                return GlobalLookup::where('category', 'state')
+                    ->orderBy('sort_order')
+                    ->get(['key', 'label']);
+            }),
+            //banks
+            'banks' => Cache::rememberForever('bank', function () {
+                return GlobalLookup::where('category', 'bank')
+                    ->orderBy('sort_order')
+                    ->get(['key', 'label']);
+            }),
         ],
         ];
     }

@@ -33,7 +33,7 @@ class GlobalLookupSeeder extends Seeder
             ['category' => 'relationship', 'key' => 'parent', 'label' => 'Parent (Mother/Father)', 'description' => '', 'sort_order' => 20],
             ['category' => 'relationship', 'key' => 'child', 'label' => 'Child ', 'description' => '', 'sort_order' => 30],
             ['category' => 'relationship', 'key' => 'sibling', 'label' => 'Sibling ', 'description' => '', 'sort_order' => 40],
-            ['category' => 'relationship', 'key' => 'other', 'label' => 'Other', 'description' => 'Custom relationship', 'sort_order' => 999],
+            ['category' => 'relationship', 'key' => 'other', 'label' => 'Other', 'description' => 'Custom relationship', 'sort_order' => 50],
             // TODO::  Common Malaysian Banks (To fill the dropdown for staff_finances)
         ];
 

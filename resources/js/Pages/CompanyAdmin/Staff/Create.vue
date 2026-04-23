@@ -406,19 +406,33 @@ const prevStep = () => {
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
                                         placeholder="e.g. Ali Bin Abu">
                                 </div>
-
                                 <div class="grid grid-cols-2 gap-6">
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Waris Relationship</label>
-                                        <input v-model="form.waris_relationship" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
-                                            placeholder="e.g. Maybank / CIMB">
+                                        <label
+                                            class="block text-sm font-semibold text-slate-700 mb-2">Relationship</label>
+
+                                        <select v-model="form.waris_relationship"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 transition-all">
+                                            <option value="" disabled>Select Relationship</option>
+                                            <option v-for="item in $page.props.lookups.relationships" :key="item.key"
+                                                :value="item.key">
+                                                {{ item.label }}
+                                            </option>
+                                        </select>
+
+                                        <div v-if="form.waris_relationship === 'other'" class="mt-3">
+                                            <label class="block text-xs font-medium text-slate-500 mb-1">Please specify
+                                                relationship</label>
+                                            <input v-model="form.waris_relationship_other" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                                placeholder="e.g. Uncle, Guardian, Cousin">
+                                        </div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Account
                                             Number</label>
                                         <input v-model="form.bank_account_no" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
                                             placeholder="e.g. 164000123456">
                                     </div>
                                 </div>

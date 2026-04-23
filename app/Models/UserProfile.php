@@ -12,18 +12,24 @@ class UserProfile extends Model
     //
     protected $fillable = [
         'user_id',
-        'tenant_id',
         'phone_number',
         'ic_number',
-        'date_of_birth',
+        'user_gender',
+         'dob',
+        'phone',
+        'join_date',
         'gender',
-        'address',
+        'address_line_1',
+        'address_line_2',
         'city',
         'postcode',
         'state',
-        'emergency_contact_name',
-        'emergency_contact_phone',
-        'join_date',
+        'waris_name',
+        'waris_gender',
+        'waris_relationship',
+        'waris_ic ',
+        'waris_phone'
+
     ];
     public function user()
     {

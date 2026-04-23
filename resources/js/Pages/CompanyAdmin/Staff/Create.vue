@@ -22,9 +22,9 @@ const steps = [
 const form = useForm({
     // Step 1 : Account
     email: '',
-    role_id: '',
+    password: '',
     // Step 2 : Personal
-    full_name: '',
+    name: '',// name need to change for user staff
     ic_number: '',
     phone: '',
     address_line_1: '',
@@ -32,9 +32,12 @@ const form = useForm({
     city: '',
     postcode: '',
     state: '',
-
     //step 3 : employment details
-    
+    role_id: '',
+    //department table 
+    tenant_id: '',
+    name_department: '',
+    description: '',
    //step 4 : financial & statutory
     basic_salary: '',
     bank_name: '',
@@ -46,9 +49,11 @@ const form = useForm({
     socso_type: '',
     tax_no: '',
     eis_enabled: '',
-
-
     //step 5 : emergency  contact 
+    waris_name: '',
+    waris_relationship: '',
+    waris_ic: '',
+    waris_phone: '',
 
     // Add other fields as needed for later steps
 });
@@ -59,7 +64,7 @@ const form = useForm({
  */
 const stepValidation = computed(() => ({
     1: form.email.includes('@') && form.role_id !== '',
-    2: form.full_name.length > 3 && form.ic_number.length >= 12,
+    2: form.name.length > 3 && form.ic_number.length >= 12,
     3: false, // Pending implementation
     4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== '',
     5: false, // Pending implementation
@@ -164,6 +169,7 @@ const prevStep = () => {
                                             label="Select Status" :options="$page.props.lookups.marital_statuses"
                                             option-label="label" option-value="key" />
                                     </div>
+                                    <!--TODO:: add DOB and other columns-->
                                 </div>
                             </div>
 

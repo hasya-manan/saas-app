@@ -134,10 +134,12 @@ Users (The Actual Data):
 - [x] Tenant List:  data tables with filtering and tabbed views (Active/Trash).
 - [x] Recovery System: Soft-deleting tenants with Restore/Force Delete functionality.
 
-### 🏢 SuperAdmin Management (In Progress)
-- [ ] User Management: Inviting and managing staff within a specific tenant.
-- [ ] Attendance & Leave: Tracking clock-ins and time-off requests.
-- [ ] Payroll: Monthly salary calculations and generation.
+### 🏢 CompanyAdmin Management (In Progress)
+- [x] Department Management: Add and update departments
+- [x] Staff List: View users within tenant
+- [ ] Staff Creation: Onboarding new staff (in progress)
+- [ ] Attendance & Leave
+- [ ] Payroll
 
 
 ---

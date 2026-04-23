@@ -77,10 +77,11 @@ const submitForm = () => {
                 </div>
                 
                 <button @click="openCreatePanel" 
-                    class="group flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all duration-300">
+                    class="group flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all duration-300">
                     <Plus :size="20" class="group-hover:rotate-90 transition-transform duration-300" />
-                    Add New Department
+                     + Add New Department
                 </button>
+                
             </div>
         </template>
 

@@ -27,6 +27,13 @@ class GlobalLookupSeeder extends Seeder
             ['category' => 'socso_type', 'key' => 'category_1', 'label' => 'Category 1', 'description' => 'Employment Injury & Invalidity (Under 60 years old)', 'sort_order' => 10],
             ['category' => 'socso_type', 'key' => 'category_2', 'label' => 'Category 2', 'description' => 'Employment Injury Only (60 years old and above)', 'sort_order' => 20],
             
+            // next of kin
+            // Waris Relationships
+            ['category' => 'relationship', 'key' => 'spouse', 'label' => 'Spouse (Husband/Wife)', 'description' => '', 'sort_order' => 10],
+            ['category' => 'relationship', 'key' => 'parent', 'label' => 'Parent (Mother/Father)', 'description' => '', 'sort_order' => 20],
+            ['category' => 'relationship', 'key' => 'child', 'label' => 'Child ', 'description' => '', 'sort_order' => 30],
+            ['category' => 'relationship', 'key' => 'sibling', 'label' => 'Sibling ', 'description' => '', 'sort_order' => 40],
+            ['category' => 'relationship', 'key' => 'other', 'label' => 'Other', 'description' => 'Custom relationship', 'sort_order' => 999],
             // TODO::  Common Malaysian Banks (To fill the dropdown for staff_finances)
         ];
 

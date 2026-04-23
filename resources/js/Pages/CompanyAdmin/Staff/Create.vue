@@ -394,9 +394,94 @@ const prevStep = () => {
                                 </div>
                             </div>
                         </div>
-                        <div v-if="currentStep > 4" class="animate-fade-in text-slate-400 italic flex items-center justify-center h-48 border-2 border-dashed border-slate-100 rounded-2xl">
-                            Configuration for {{ steps[currentStep-1].title }} is in progress...
+                        <div v-if="currentStep === 5" class="space-y-8 animate-fade-in">
+    
+                      <div class="grid grid-cols-1 gap-6">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Next of Kin Information
+                                </h3>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name as per IC</label>
+                                    <input v-model="form.waris_name" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                        placeholder="e.g. Ali Bin Abu">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Waris Relationship</label>
+                                        <input v-model="form.waris_relationship" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                            placeholder="e.g. Maybank / CIMB">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Account
+                                            Number</label>
+                                        <input v-model="form.bank_account_no" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" 
+                                            placeholder="e.g. 164000123456">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 border-t border-slate-100">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Statutory
+                                    Contributions</h3>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">EPF
+                                                Number</label>
+                                            <input v-model="form.epf_no" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Employee
+                                                    %</label>
+                                                <input v-model="form.epf_rate_employee" type="number"
+                                                    class="w-full border-primary-border rounded-lg px-3 py-2">
+                                            </div>
+                                            <div>
+                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Employer
+                                                    %</label>
+                                                <input v-model="form.epf_rate_employer" type="number"
+                                                    class="w-full border-primary-border rounded-lg px-3 py-2">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">SOCSO
+                                                Number</label>
+                                            <input v-model="form.socso_no" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tax (LHDN)
+                                                Number</label>
+                                            <input v-model="form.tax_no" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-700">EIS Contribution</p>
+                                        <p class="text-xs text-slate-500">Enable Employment Insurance System
+                                            contribution</p>
+                                    </div>
+                                    <input v-model="form.eis_enabled" type="checkbox"
+                                        class="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary">
+                                </div>
+                            </div>
                         </div>
+                        <!-- <div v-if="currentStep > 4" class="animate-fade-in text-slate-400 italic flex items-center justify-center h-48 border-2 border-dashed border-slate-100 rounded-2xl">
+                            Configuration for {{ steps[currentStep-1].title }} is in progress...
+                        </div> -->
                     </div>
 
                     <div class="mt-16 flex items-center justify-end gap-4 border-t border-surface-100 pt-10 px-4 sm:px-0">

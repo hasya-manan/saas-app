@@ -34,7 +34,7 @@ class DepartmentController extends Controller
             'status' => session('success'),
         ]);
     }
-    //
+    //create a new department
    public function store(Request $request) 
     {
         $validated = $request->validate([
@@ -58,4 +58,6 @@ class DepartmentController extends Controller
 
         return redirect()->back()->with('success', 'Department and HOD updated!');
     }
+
+    
 }

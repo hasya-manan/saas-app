@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
+use App\Models\StaffFinance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -70,6 +71,10 @@ class User extends Authenticatable
     }
     public function supervisor() {
         return $this->belongsTo(User::class, 'supervisor_id');
+    }
+    public function finance()
+    {
+        return $this->hasOne(StaffFinance::class);
     }
 
     //filtering 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Company\StaffController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\TenantController;
+use App\Http\Controllers\ValidationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/validate-email', [ValidationController::class, 'checkEmail'])->name('validation.email');
+
 });
 
 // =========================================
@@ -80,6 +83,14 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
 
    // department management
     Route::get('/department/index', [DepartmentController::class, 'index'])->name('admin_company.departments.index');
-    Route::post('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');});
+    Route::post('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');
+    });
 
+
+    
+
+    // =============================================
+    // ============ GLOBAL VALIDATION ==============
+    // =============================================
+    
 require __DIR__.'/auth.php';

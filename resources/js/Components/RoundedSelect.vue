@@ -12,7 +12,9 @@ const props = defineProps({
     },
     optionLabel: { type: String, default: 'name' },
     optionValue: { type: String, default: 'id' },
-    variant: { type: String, default: 'search' } // 'search' or 'form'
+    variant: { type: String, default: 'search' }, // 'search' or 'form'
+    extraOptions: { type: Array, default: () => [] }
+
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -45,7 +47,8 @@ onMounted(() => document.addEventListener('click', handleClickOutside));
 onUnmounted(() => document.removeEventListener('click', handleClickOutside));
 
 const getSelectedLabel = () => {
-    const selected = props.options.find(opt => opt[props.optionValue] === props.modelValue);
+    const allOptions = [...props.options, ...props.extraOptions]
+    const selected = allOptions.find(opt => opt[props.optionValue] === props.modelValue);
     return selected ? selected[props.optionLabel] : props.label;
 };
 </script>
@@ -91,6 +94,13 @@ const getSelectedLabel = () => {
                         class="px-4 py-2.5 hover:bg-primary/5 cursor-pointer text-sm text-gray-700 font-medium transition-colors"
                         :class="{ 'bg-primary/5 text-primary': modelValue === opt[optionValue] }">
                         {{ opt[optionLabel] }}
+                    </div>
+
+                    <!-- Extra static options like "Others" -->
+                    <div v-for="extra in extraOptions" :key="extra[optionValue]" @click="selectOption(extra)"
+                        class="px-4 py-2.5 hover:bg-primary/5 cursor-pointer text-sm text-gray-700 font-medium transition-colors border-t border-slate-100"
+                        :class="{ 'bg-primary/5 text-primary': modelValue === extra[optionValue] }">
+                        {{ extra[optionLabel] }}
                     </div>
                 </div>
             </div>

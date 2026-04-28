@@ -30,6 +30,7 @@ const form = useForm({
     // Step 1 : Account
     email: '',
     password: '',
+    password_confirmation: '',
     // Step 2 : Personal
     name: '',// name need to change for user staff
     ic_number: '',
@@ -70,10 +71,6 @@ const form = useForm({
 
 });
 
-/**
- * Validation Schema Logic
- * This tells the Wizard when to show the green checkmark
- */
 
 
 // Function to check email uniqueness (called on @blur)
@@ -99,6 +96,20 @@ const checkEmailUnique = () => {
     });
 };
 
+const validateStep3 = () => {
+    if (!form.role_id) return false
+
+    if (hasDepartments.value) {
+        if (!form.department_id) return false
+        if (isOthers.value && !form.name_department) return false
+        return true
+    }
+
+    if (!form.name_department) return false
+    return true
+}
+
+
 const stepValidation = computed(() => ({
     // Step 1: No errors from backend + basic length check
     1: form.email.includes('@') && !form.errors.email && form.password.length >= 8,
@@ -107,7 +118,8 @@ const stepValidation = computed(() => ({
     2: isValidMYIC(form.ic_number),
 
     // Step 3: Role and Department (role_id moved here)
-    3: form.role_id !== '' && (form.department_id !== '' || form.name_department !== ''),
+    3: validateStep3(), // ← call a function instead
+
 
     // Step 4: Financial
     4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== '',
@@ -118,13 +130,35 @@ const stepValidation = computed(() => ({
 
 
 
+const submit = () => {
+    form.post(route('admin_company.users.store'), {
+        onSuccess: () => {
+            form.reset()
+            currentStep.value = 1
+        },
+        onError: (errors) => {
+           
+
+            if (errors.email || errors.password) currentStep.value = 1
+            if (errors.name || errors.ic_number) currentStep.value = 2
+            if (errors.role_id || errors.department_id) currentStep.value = 3
+            if (errors.basic_salary || errors.bank_name) currentStep.value = 4
+        }
+    })
+}
+
 const nextStep = () => {
-    if (currentStep.value < steps.length) currentStep.value++;
-};
+    if (isLastStep.value) {
+        submit() // ← add this! calls submit on last step
+    } else {
+        currentStep.value++
+    }
+}
 
 const prevStep = () => {
     if (currentStep.value > 1) currentStep.value--;
 };
+
 </script>
 
 <template>
@@ -155,6 +189,13 @@ const prevStep = () => {
             </RegistrationWizard>
 
             <main class="flex-1 bg-white flex flex-col">
+            <!-- add this anywhere visible on your form page -->
+<pre style="background: #f1f1f1; padding: 10px; font-size: 11px;">
+{{ form.data() }}
+</pre>
+<pre style="background: #ffe0e0; padding: 10px; font-size: 11px;">
+{{ form.errors }}
+</pre>
                 <div class="p-12 max-w-2xl mx-auto w-full flex-1">
                     <div class="mb-10">
                         <span class="text-xs font-bold text-primary tracking-widest uppercase">Step {{ currentStep }} of
@@ -182,6 +223,18 @@ const prevStep = () => {
                                     <input v-model="form.password" type="password"
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
                                         placeholder="e.g. need to have at least 8 characters">
+
+                                        
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                                    <input v-model="form.password_confirmation" type="password"
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
+                                        placeholder="e.g. need to have at least 8 characters">
+
+                                    <p v-if="form.errors.password" class="mt-1 text-xs text-red-500">
+                                        {{ form.errors.password }}
+                                    </p>
                                 </div>
 
                             </div>
@@ -274,7 +327,7 @@ const prevStep = () => {
                                             <div>
                                                 <label
                                                     class="block text-sm font-semibold text-slate-700 mb-2">State</label>
-                                                <RoundedSelect v-model="form.state" variant="form" label="Select Status"
+                                                <RoundedSelect v-model="form.state" variant="form" label="Select State"
                                                     :options="$page.props.lookups.states" option-label="label"
                                                     option-value="key" />
 
@@ -366,31 +419,6 @@ const prevStep = () => {
 
                                     </div>
 
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Address
-                                            Line 2 (Optional)</label>
-                                        <input v-model="form.address_line_2" type="text"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                            placeholder="Apartment, suite, unit, building, floor">
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label
-                                                class="block text-sm font-semibold text-slate-700 mb-2">City</label>
-                                            <input v-model="form.city" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                placeholder="Kota Bharu">
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-sm font-semibold text-slate-700 mb-2">Postcode</label>
-                                            <input v-model="form.postcode" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                placeholder="15000">
-                                        </div>
-                                        <div></div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -561,13 +589,15 @@ const prevStep = () => {
                                     Back
                                 </button>
 
-                                <button @click="nextStep" :disabled="!stepValidation[currentStep]" :class="[
+                               <button @click="nextStep" :disabled="!stepValidation[currentStep]" :class="[
                                     'px-10 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-lg',
                                     stepValidation[currentStep]
                                         ? 'bg-primary hover:bg-primary-dark text-white shadow-primary-light'
                                         : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
                                 ]">
-                                    {{ isLastStep ? 'Complete Registration' : 'Next Step' }}
+                                    <!-- Show loading when submitting -->
+                                    <span v-if="form.processing">Saving...</span>
+                                    <span v-else>{{ isLastStep ? 'Complete Registration' : 'Next Step' }}</span>
                                 </button>
                             </div>
                         </div>

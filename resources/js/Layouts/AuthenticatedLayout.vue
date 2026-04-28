@@ -27,18 +27,27 @@ const toggleSidebar = () => {
 };
 
 watch(
-    () => page.props.flash,
-    (flash) => {
-        console.log("Flash Data Detected:", flash); // <--- Add this
+    // We watch a function that returns an object containing both flash and errors
+    () => ({ flash: page.props.flash, errors: page.props.errors }),
+    ({ flash, errors }) => {
+        // 1. Handle Manual Flash Messages (Success/Error/Message)
         if (flash?.success) {
             notifySuccess(flash.success);
         }
         if (flash?.error) {
             notifyError(flash.error);
         }
-
         if (flash?.message) {
             notifySuccess(flash.message);
+        }
+
+        // 2. Handle Validation Errors
+        // We check if errors exists and has keys (like 'email' or 'name')
+        const errorKeys = Object.keys(errors || {});
+        if (errorKeys.length > 0) {
+            // Show the first validation error message automatically
+            const firstErrorMessage = errors[errorKeys[0]];
+            notifyError(firstErrorMessage);
         }
     },
     { deep: true }

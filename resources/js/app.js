@@ -12,7 +12,7 @@ import "vue-toastification/dist/index.css";
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 const toastOptions = {
-    timeout: 1000,
+    timeout: 5000,
     hideProgressBar: false, // Removes the distracting line at the bottom
     closeOnClick: true,
     pauseOnHover: true,

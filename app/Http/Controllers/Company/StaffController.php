@@ -7,10 +7,10 @@ use App\Models\Department;
 use App\Models\Role; 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+// use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-
+use App\Services\StaffService;
 /**
  * StaffController
  * 
@@ -88,7 +88,7 @@ class StaffController extends Controller
     }
 
 
-//     store()
+//     store() inside StaffService.php
 // ├── 1. Validate all fields
 // ├── 2. If "others" → create new Department first → get its id
 // ├── 3. Create User (with tenant_id + department_id)
@@ -104,10 +104,11 @@ class StaffController extends Controller
 // ├── new dept  → hod_id = selected hod_id, supervisor_id = that selected hod
 // └── exist dept → supervisor_id = department's current hod_id (auto-fetched)
     
+   // ── Inject the service ──────────────────────────
+    public function __construct(private StaffService $staffService) {}
+
     public function store(Request $request)
     {
-        $tenantId = auth()->user()->tenant_id;
-
         $validated = $request->validate([
             // users table
             'name'           => 'required|string|max:255',
@@ -145,108 +146,15 @@ class StaffController extends Controller
             'tax_no'            => 'nullable|string',
             'eis_enabled'       => 'nullable|boolean',
 
-            //if have = new department fields
+            // new department fields
             'name_department' => 'nullable|string|max:255',
             'description'     => 'nullable|string',
             'hod_id'          => 'nullable|exists:users,id',
             'is_hod'          => 'nullable|boolean',
         ]);
 
-        // If fails, ALL inserts are rolled back automatically
-        DB::transaction(function () use ($validated, $tenantId) {
-
-            // ── 1. CREATE USER FIRST ───────────────────────────────
-            // User is created first (without department_id) because if
-            // is_hod is true, we need $user->id to assign as hod_id
-            $user = User::create([
-                'name'      => $validated['name'],
-                'email'     => $validated['email'],
-                'password'  => bcrypt($validated['password']),
-                'role_id'   => $validated['role_id'],
-                'tenant_id' => $tenantId,
-            ]);
-
-            // ── 2. HANDLE DEPARTMENT ───────────────────────────────
-            $departmentId = null;
-            $supervisorId = null;
-
-            if (!empty($validated['name_department'])) {
-                // "Others" was selected → create brand new department
-                // If is_hod is true, assign new user as HOD immediately
-                $department = Department::create([
-                    'tenant_id'   => $tenantId,
-                    'name'        => $validated['name_department'],
-                    'description' => $validated['description'] ?? null,
-                    'hod_id'      => !empty($validated['is_hod']) 
-                                        ? $user->id 
-                                        : ($validated['hod_id'] ?? null),
-                ]);
-                $departmentId = $department->id;
-                // If new staff is NOT the HOD, and someone was assigned as HOD,
-                // that person becomes the supervisor
-                if (empty($validated['is_hod']) && !empty($validated['hod_id'])) {
-                    $supervisorId = $validated['hod_id'];
-                }
-
-            } else {
-                // Existing department was selected from dropdown
-                $departmentId = $validated['department_id'] ?? null;
-
-                 if ($departmentId) {
-                    $department = Department::find($departmentId);
-
-                    if (!empty($validated['is_hod'])) {
-                        // New staff is HOD — log replacement if dept already has one
-                        if ($department->hod_id) {
-                            Log::info("HOD replaced for department {$department->id}: old hod_id={$department->hod_id}, new hod_id={$user->id}");
-                        }
-                        $department->update(['hod_id' => $user->id]);
-
-                    } else {
-                        // Regular staff → supervisor = current HOD of the department
-                        $supervisorId = $department->hod_id ?? null;
-                    }
-                }
-            }
-
-            // ── 3. UPDATE USER WITH DEPARTMENT ────────────────────
-                    $user->update([
-                        'department_id' => $departmentId,
-                        'supervisor_id' => $supervisorId,
-                    ]);
-            // ── 4. CREATE PROFILE ──────────────────────────────────
-            $user->profile()->create([
-                'ic_number'          => $validated['ic_number'],
-                'user_gender'        => $validated['user_gender'] ?? null,
-                'dob'                => $validated['dob'] ?? null,
-                'phone'              => $validated['phone'] ?? null,
-                'join_date'          => $validated['join_date'] ?? null,
-                'address_line_1'     => $validated['address_line_1'] ?? null,
-                'address_line_2'     => $validated['address_line_2'] ?? null,
-                'city'               => $validated['city'] ?? null,
-                'postcode'           => $validated['postcode'] ?? null,
-                'state'              => $validated['state'] ?? null,
-                'waris_name'         => $validated['waris_name'] ?? null,
-                'waris_gender'       => $validated['waris_gender'] ?? null,
-                'waris_relationship' => $validated['waris_relationship'] ?? null,
-                'waris_ic'           => $validated['waris_ic'] ?? null,
-                'waris_phone'        => $validated['waris_phone'] ?? null,
-            ]);
-
-            // ── 5. CREATE FINANCES ─────────────────────────────────
-            $user->finance()->create([
-                'basic_salary'      => $validated['basic_salary'] ?? 0,
-                'bank_name'         => $validated['bank_name'] ?? null,
-                'bank_account_no'   => $validated['bank_account_no'] ?? null,
-                'epf_no'            => $validated['epf_no'] ?? null,
-                'epf_rate_employee' => $validated['epf_rate_employee'] ?? 11.00,
-                'epf_rate_employer' => $validated['epf_rate_employer'] ?? 13.00,
-                'socso_no'          => $validated['socso_no'] ?? null,
-                'socso_type'        => $validated['socso_type'] ?? null,
-                'tax_no'            => $validated['tax_no'] ?? null,
-                'eis_enabled'       => $validated['eis_enabled'] ?? true,
-            ]);
-        });
+        // ── This one line replaces ALL the DB logic ──
+        $this->staffService->createStaff($validated, auth()->user()->tenant_id);
 
         return back()->with('success', "{$validated['name']} has been created successfully.");
     }

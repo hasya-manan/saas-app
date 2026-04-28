@@ -73,6 +73,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     // Staff Management
     Route::get('/staff/list', [StaffController::class, 'index'])->name('admin_company.users.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('admin_company.users.create');
+    Route::post('/staff/create', [StaffController::class, 'store'])->name('admin_company.users.store');
     Route::post('/staff', [StaffController::class, 'store'])->name('admin_company.users.store');
     
     // "View Details" button!

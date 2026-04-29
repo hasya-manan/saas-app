@@ -10,6 +10,7 @@ import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X, Archive } from 'lucide-vue-next';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({
     tenants: Object,        // Changed from Array to Object
@@ -130,19 +131,18 @@ const closeModal = () => {
     <Head title="Manage Companies" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <!--Button on board-->
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Manage Companies</h2>
-                    <p class="text-sm text-gray-500">Overview of all client workspaces</p>
-                </div>
-                <Link :href="route('tenants.create')"
-                    class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
-                    + Onboard New
-                </Link>
-            </div>
+        
+         <template #header>
+            <PageHeader title="Manage Companies" subtitle="Overview of all client workspaces">
+                <template #actions>
+                    <Link :href="route('tenants.create')"
+                        class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
+                       + Onboard New
+                    </Link>
+                </template>
+            </PageHeader>
         </template>
+       
 
         <div class="py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="mb-8">

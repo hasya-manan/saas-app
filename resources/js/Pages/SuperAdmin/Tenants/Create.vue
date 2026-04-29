@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import {ref, watch, computed } from 'vue';
-
+import PageHeader from '@/Components/PageHeader.vue';
 
 
 const syncEmail = ref(false);
@@ -43,10 +43,11 @@ const submit = () => {
     <Head title="Onboard New Company" />
 
     <AuthenticatedLayout>
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Onboard New Company</h1>
-            <p class="text-sm text-gray-500">Register a new client organization and assign their first system administrator.</p>
-        </div>
+       
+         <template #header>
+            <PageHeader title="Onboard New Company"
+                subtitle="Register a new client organization and assign their first system administrator." />
+        </template>
 
         <div class="max-w-4xl">
             <form @submit.prevent="submit" class="bg-white rounded-2xl shadow-sm border border-primary-border/30 overflow-hidden">

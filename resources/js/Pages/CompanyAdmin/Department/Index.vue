@@ -6,6 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
 import { Edit2, X, UserCheck, UserX, Eye } from 'lucide-vue-next';
 import BaseButton from '@/Components/BaseButton.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 
 
 const props = defineProps({
@@ -69,20 +70,16 @@ const submitForm = () => {
     <Head title="Department Management" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-black text-gray-800 tracking-tight">Manage Departments</h2>
-                    <p class="text-sm text-gray-500 font-medium">Organize your company structure and assign leadership</p>
-                </div>
-                
-                <button @click="openCreatePanel" 
-                    class="group flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all duration-300">
-                    <Plus :size="20" class="group-hover:rotate-90 transition-transform duration-300" />
-                     + Add New Department
-                </button>
-                
-            </div>
+       <template #header>
+            <PageHeader title="Manage Departments" subtitle="Organize your company structure and assign leadership">
+                <template #actions>
+                    <button @click="openCreatePanel"
+                        class="group flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all duration-300">
+                        <Plus :size="20" class="group-hover:rotate-90 transition-transform duration-300" />
+                        Add New Department
+                    </button>
+                </template>
+            </PageHeader>
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">

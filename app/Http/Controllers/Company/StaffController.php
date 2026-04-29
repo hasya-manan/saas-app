@@ -119,6 +119,7 @@ class StaffController extends Controller
 
             // user_profiles table
             'ic_number'      => 'required|string|unique:user_profiles',
+            'position'       => 'nullable|string',
             'phone'          => 'nullable|string',
             'user_gender'    => 'nullable|string',
             'dob'            => 'nullable|date',

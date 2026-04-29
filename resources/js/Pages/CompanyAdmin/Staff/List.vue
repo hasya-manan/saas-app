@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { Edit2, X, UserCheck, UserX, Eye } from 'lucide-vue-next';
 import BaseButton from '@/Components/BaseButton.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({
     employees: Object,
@@ -52,17 +53,15 @@ const submitUpdate = () => {
     <Head title="Staff Directory" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Staff Directory</h2>
-                    <p class="text-sm text-gray-500">Manage your company's team members and access levels</p>
-                </div>
-                <Link :href="route('admin_company.users.create')"
-                    class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
-                    + Add Staff Member
-                </Link>
-            </div>
+       <template #header>
+            <PageHeader title="Staff Directory" subtitle="Manage your company's team members and access levels">
+                <template #actions>
+                    <Link :href="route('admin_company.users.create')"
+                        class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
+                        + Add Staff Member
+                    </Link>
+                </template>
+            </PageHeader>
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">

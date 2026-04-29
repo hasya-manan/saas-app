@@ -38,6 +38,7 @@ class StaffService
                 'user_gender'        => $validated['user_gender'] ?? null,
                 'dob'                => $validated['dob'] ?? null,
                 'phone'              => $validated['phone'] ?? null,
+                'position'           => $validated['position'] ?? null,
                 'join_date'          => $validated['join_date'] ?? null,
                 'address_line_1'     => $validated['address_line_1'] ?? null,
                 'address_line_2'     => $validated['address_line_2'] ?? null,

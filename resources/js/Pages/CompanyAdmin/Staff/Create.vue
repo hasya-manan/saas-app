@@ -1,10 +1,14 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
-
+import {
+    Eye, EyeOff , Plus 
+     
+} from 'lucide-vue-next';
 const props = defineProps({
     roles: Array,
     departments: Array,
@@ -16,7 +20,8 @@ const currentStep = ref(1);
 const isLastStep = computed(() => currentStep.value === steps.length);
 const hasDepartments = computed(() => props.departments && props.departments.length > 0)
 const isOthers = computed(() => form.department_id === 'others')
-
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
 
 const steps = [
     { id: 1, title: 'Account Setup', desc: 'Login & System Access' },
@@ -34,6 +39,9 @@ const form = useForm({
     // Step 2 : Personal
     name: '',// name need to change for user staff
     ic_number: '',
+    user_gender: '',
+    position: '',
+    join_date: '',
     phone: '',
     address_line_1: '',
     address_line_2: '',
@@ -128,7 +136,35 @@ const stepValidation = computed(() => ({
     5: form.waris_name !== '' && form.waris_phone !== '' && isValidMYIC(form.waris_ic),
 }));
 
+// Auto-fill Date of Birth (DOB) based on IC Number
+watch(() => form.ic_number, (newIc) => {
+    // Remove non-numeric characters (like dashes)
+    const cleanIc = newIc.replace(/\D/g, '');
 
+    // Proceed once we have the first 6 digits (YYMMDD)
+    if (cleanIc.length >= 6) {
+        const year = cleanIc.substring(0, 2);
+        const month = cleanIc.substring(2, 4);
+        const day = cleanIc.substring(4, 6);
+
+        /**
+         * Determine Century (19xx vs 20xx)
+         * Current Year is 2026, so yearThreshold is 26.
+         * * Logic for HR System:
+         * 1. If IC year is > 26 (e.g., 70, 80, 99), they were born in 19xx.
+         * 2. If IC year is <= 26 (e.g., 00, 10, 25), they were born in 20xx.
+         * * Assumption: Employees are under 100 years old. 100 and above do not work anymore
+         */
+        const yearThreshold = new Date().getFullYear() % 100;
+        const fullYear = parseInt(year) > yearThreshold ? `19${year}` : `20${year}`;
+
+        // Ensure the month and day are valid before updating the form
+        if (parseInt(month) <= 12 && parseInt(day) <= 31) {
+            // Format: YYYY-MM-DD (Required by HTML5 date input)
+            form.dob = `${fullYear}-${month}-${day}`;
+        }
+    }
+});
 
 const submit = () => {
     form.post(route('admin_company.users.store'), {
@@ -149,7 +185,7 @@ const submit = () => {
 
 const nextStep = () => {
     if (isLastStep.value) {
-        submit() // ← add this! calls submit on last step
+        submit() 
     } else {
         currentStep.value++
     }
@@ -159,6 +195,16 @@ const prevStep = () => {
     if (currentStep.value > 1) currentStep.value--;
 };
 
+
+
+// 2. Auto Check Confirmation
+const passwordMismatch = computed(() => {
+    // Only show mismatch if both fields have values
+    if (form.password && form.password_confirmation) {
+        return form.password !== form.password_confirmation;
+    }
+    return false;
+});
 </script>
 
 <template>
@@ -166,36 +212,28 @@ const prevStep = () => {
     <Head title="Add New Staff" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800 tracking-tight">Staff Registration</h2>
-                    <p class="text-sm text-gray-500">Onboard new team members and configure their professional profile
-                    </p>
-                </div>
-
-                <Link :href="route('admin_company.users.index')"
-                    class="text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-                    &larr; Back to Directory
-                </Link>
-            </div>
+       
+      <template #header>
+            <PageHeader :back-route="route('admin_company.users.index')" title="Staff Registration"
+                subtitle="Onboard new team members and configure their professional profile" />
         </template>
 
-        <div
-            class="flex min-h-[calc(100vh-200px)] bg-white rounded-2xl overflow-hidden shadow-sm border border-surface-100">
+       <div
+            class="flex flex-col lg:flex-row min-h-[calc(100vh-200px)] bg-white rounded-2xl overflow-hidden shadow-sm border border-surface-100">
 
             <RegistrationWizard v-model:currentStep="currentStep" :steps="steps" :validationSchema="stepValidation">
                 <template #title>New Staff</template>
             </RegistrationWizard>
 
+
             <main class="flex-1 bg-white flex flex-col">
-            <!-- add this anywhere visible on your form page -->
-<pre style="background: #f1f1f1; padding: 10px; font-size: 11px;">
-{{ form.data() }}
-</pre>
-<pre style="background: #ffe0e0; padding: 10px; font-size: 11px;">
-{{ form.errors }}
-</pre>
+               <!-- DEBUG:: form -->
+                <!-- <pre style="background: #f1f1f1; padding: 10px; font-size: 11px;">
+                {{ form.data() }}
+                </pre>
+                <pre style="background: #ffe0e0; padding: 10px; font-size: 11px;">
+                {{ form.errors }}
+                </pre> -->
                 <div class="p-12 max-w-2xl mx-auto w-full flex-1">
                     <div class="mb-10">
                         <span class="text-xs font-bold text-primary tracking-widest uppercase">Step {{ currentStep }} of
@@ -218,22 +256,46 @@ const prevStep = () => {
                                     </p>
                                 </div>
                                 <!--TODO:: need to add view icon eye the password field-->
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                                    <input v-model="form.password" type="password"
-                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                        placeholder="e.g. need to have at least 8 characters">
+                               <div class="relative"> <label
+                                        class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
 
-                                        
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                                    <input v-model="form.password_confirmation" type="password"
-                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                        placeholder="e.g. need to have at least 8 characters">
+                                    <div class="relative"> <input v-model="form.password"
+                                            :type="showPassword ? 'text' : 'password'"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 pr-12 transition-all"
+                                            placeholder="e.g. need to have at least 8 characters">
+
+                                        <button type="button" @click="showPassword = !showPassword"
+                                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                            <Eye v-if="!showPassword" :size="20" />
+                                            <EyeOff v-else :size="20" />
+                                        </button>
+                                    </div>
 
                                     <p v-if="form.errors.password" class="mt-1 text-xs text-red-500">
                                         {{ form.errors.password }}
+                                    </p>
+                                </div>
+
+                                <div class="mt-4">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Confirm
+                                        Password</label>
+
+                                    <div class="relative">
+                                        <input v-model="form.password_confirmation"
+                                            :type="showConfirmPassword ? 'text' : 'password'"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 pr-12 transition-all"
+                                            :class="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': passwordMismatch }"
+                                            placeholder="Confirm your password">
+
+                                        <button type="button" @click="showConfirmPassword = !showConfirmPassword"
+                                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                            <Eye v-if="!showConfirmPassword" :size="20" />
+                                            <EyeOff v-else :size="20" />
+                                        </button>
+                                    </div>
+
+                                    <p v-if="passwordMismatch" class="mt-1 text-xs text-red-500">
+                                        Passwords do not match.
                                     </p>
                                 </div>
 
@@ -253,11 +315,32 @@ const prevStep = () => {
 
                                 <div class="grid grid-cols-2 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
-                                        <input v-model="form.ic_number" type="text"
+                                       <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
+                                        <input v-model="form.ic_number" type="text" maxlength="12"
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                            placeholder="000308000000">
+                                            placeholder="eg. 000308010000">
+                                        <p v-if="form.errors.ic_number" class="mt-1 text-xs text-red-500">{{
+                                            form.errors.ic_number }}</p>
                                     </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Date of
+                                            Birth</label>
+                                        <input v-model="form.dob" type="date"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-slate-50 px-4 py-3 transition-all"
+                                            :class="{ 'opacity-70': form.dob }">
+                                        <p class="mt-1 text-[10px] text-slate-400">Auto-filled based on IC Number</p>
+                                        <p v-if="form.errors.dob" class="mt-1 text-xs text-red-500">{{ form.errors.dob
+                                            }}</p>
+                                    </div>
+                                     <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                                        <RoundedSelect v-model="form.user_gender" variant="form" label="Select Gender"
+                                            :options="$page.props.lookups.genders" option-label="label"
+                                            option-value="key" />
+
+                                    </div>
+
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
                                             Number</label>
@@ -273,14 +356,7 @@ const prevStep = () => {
                                             label="Select Status" :options="$page.props.lookups.marital_statuses"
                                             option-label="label" option-value="key" />
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Date of Birth</label>
-
-                                        <input v-model="form.dob" type="date"
-                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                            >
-                                    </div>
-                                    <!--TODO:: add DOB and other columns-->
+                                   
 
                                 </div>
                             </div>
@@ -346,83 +422,108 @@ const prevStep = () => {
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Staff Role </label>
                                     <RoundedSelect v-model="form.role_id" variant="form" label="Select a role..."
                                         :options="roles" option-label="display_name" option-value="id" />
-                                </div>
+                               </div>
                             </div>
 
-                            <div class="pt-6 border-t border-slate-100">
-                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Department
+
+                         <div class="pt-6 border-t border-slate-100">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">
+                                    Employment Details
                                 </h3>
 
-                                <div class="grid grid-cols-1 gap-5">
+                                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Job
+                                            Position</label>
+                                        <input v-model="form.position" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
+                                            placeholder="e.g. Senior Software Engineer">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Joining Date</label>
+                                        <input v-model="form.join_date" type="date"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all">
+                                    </div>
+                                   
+                                </div>
+                               <div class="grid grid-cols-1 gap-6 py-2">
                                     <div>
                                         <label
                                             class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
+                                        <RoundedSelect v-model="form.department_id" variant="form"
+                                            label="Select a department..." :options="departments"
+                                            :extra-options="[{ id: 'others', name: 'Others (Create new)' }]"
+                                            option-label="name" option-value="id" />
+                                    </div>
+                                </div>
 
-                                        <!-- CASE 1: Tenant has departments → show dropdown -->
-                                        <div v-if="hasDepartments">
-                                            <RoundedSelect v-model="form.department_id" variant="form"
-                                                label="Select a department..." :options="departments"
-                                                :extra-options="[{ id: 'others', name: 'Others (Create new)' }]"
-                                                option-label="name" option-value="id" />
+                                <transition enter-active-class="transition duration-200 ease-out"
+                                    enter-from-class="transform scale-95 opacity-0"
+                                    enter-to-class="transform scale-100 opacity-100"
+                                    leave-active-class="transition duration-150 ease-in"
+                                    leave-from-class="transform scale-100 opacity-100"
+                                    leave-to-class="transform scale-95 opacity-0">
+                                    <div v-if="isOthers"
+                                        class="bg-primary/5 border border-primary/10 rounded-2xl p-6 relative overflow-hidden">
+                                     
+                                        <div class="flex items-center gap-2 mb-4">
+                                            <div class="p-2 bg-primary text-white rounded-lg">
+                                                <Plus :size="16" />
+                                            </div>
+                                            <h4 class="text-sm font-bold text-slate-800">New Department Setup</h4>
+                                        </div>
 
-                                            <!-- Show text input only when "Others" is picked -->
-                                           <div v-if="isOthers" class="mt-2 space-y-3">
-                                                <div>
-                                                    <label
-                                                        class="block text-sm font-semibold text-slate-700 mb-2">Department
-                                                        Name</label>
-                                                    <input v-model="form.name_department" type="text"
-                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                        placeholder="Enter new department name" />
-                                                </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <div>
+                                                <label
+                                                    class="block text-xs font-bold text-slate-800  mb-2">Department
+                                                    Name</label>
+                                                <input v-model="form.name_department" type="text"
+                                                    class="w-full border-white rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-white px-4 py-3 text-sm"
+                                                    placeholder="Enter name" />
+                                            </div>
 
-                                                <div>
-                                                    <label
-                                                        class="block text-sm font-semibold text-slate-700 mb-2">Description
-                                                        <span class="normal-case font-normal">(Optional)</span></label>
-                                                    <input v-model="form.description" type="text"
-                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                        placeholder="Department description (optional)" />
-                                                </div>
+                                            <div>
+                                                <label
+                                                    class="block text-xs font-bold text-slate-800  mb-2">Description</label>
+                                                <input v-model="form.description" type="text"
+                                                    class="w-full border-white rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-white px-4 py-3 text-sm"
+                                                    placeholder="Briefly describe the unit" />
+                                            </div>
 
-                                                <!-- HOD Assignment (Optional) -->
-                                                <div>
-                                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Head
-                                                        of Department
-                                                        <span class="normal-case font-normal">(Optional)</span></label>
+                                            <div class="md:col-span-2 pt-2">
+                                                <div
+                                                    class="flex flex-col p-4 bg-slate-50/50 rounded-xl border border-slate-100 transition-all duration-200">
 
-                                                    <!-- Toggle: assign this new staff as HOD -->
-                                                    <label
-                                                        class="flex items-center gap-2 mb-2 cursor-pointer select-none">
-                                                        <input type="checkbox" v-model="form.is_hod"
-                                                            class="rounded border-primary-border text-primary focus:ring-primary" />
-                                                        <span class="text-sm text-slate-600">Assign this new staff as
-                                                            HOD</span>
+                                                    <label class="flex items-start gap-4 cursor-pointer select-none">
+                                                        <div class="pt-1"> <input type="checkbox" v-model="form.is_hod"
+                                                                class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <p class="text-sm font-bold text-slate-700 leading-tight">
+                                                                Assign as Head of Department (HOD)
+                                                            </p>
+                                                            <p class="text-xs text-slate-500 mt-1">
+                                                                Should this new staff manage this department?
+                                                            </p>
+                                                        </div>
                                                     </label>
 
-                                                    <!-- If not assigning new staff, pick existing staff as HOD -->
-                                                    <RoundedSelect v-if="!form.is_hod" v-model="form.hod_id"
-                                                        variant="form" label="Select existing staff as HOD..."
-                                                        :options="staffList" option-label="name" option-value="id" />
+                                                    <div v-if="!form.is_hod"
+                                                        class="mt-4 pt-4 border-t border-slate-100/50">
+                                                        <RoundedSelect v-model="form.hod_id" variant="form"
+                                                            label="Who will this staff report to?" :options="staffList"
+                                                            option-label="name" option-value="id" class="w-full" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- CASE 2: No departments yet → always show text input -->
-                                        <div v-else>
-                                            <input v-model="form.name_department" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                placeholder="Enter department name" />
-                                            <input v-model="form.description" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                placeholder="Enter description department" />
-                                        </div>
-
                                     </div>
-
-                                </div>
+                                </transition>
                             </div>
-                        </div>
 
+
+                        </div>
                         <div v-if="currentStep === 4" class="space-y-8 animate-fade-in">
 
                             <div class="grid grid-cols-1 gap-6">
@@ -437,7 +538,7 @@ const prevStep = () => {
                                         placeholder="e.g. 3500.00">
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 2xl:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Bank Name</label>
 
@@ -455,11 +556,11 @@ const prevStep = () => {
                                 </div>
                             </div>
 
-                            <div class="pt-6 border-t border-slate-100">
+                           <div class="pt-6 border-t border-slate-100">
                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Statutory
                                     Contributions</h3>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 2xl:grid-cols-2 gap-6">
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-2">EPF

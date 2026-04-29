@@ -129,7 +129,7 @@ Users (The Actual Data):
 - Global Lookup System: Centralized database-driven management for statuses and categories.
 - Side navigation menu
 
-### 🏢 SuperAdmin Management (In Progress)
+### 🏢 SuperAdmin Management (Done)
 - [x] Tenant Registration: Onboarding flow for new companies
 - [x] Tenant List:  data tables with filtering and tabbed views (Active/Trash).
 - [x] Recovery System: Soft-deleting tenants with Restore/Force Delete functionality.

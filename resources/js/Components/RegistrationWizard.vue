@@ -41,7 +41,7 @@ watch(() => props.currentStep, () => {
         
         <div class="mb-6 lg:mb-10">
             <h2 class="text-xl font-bold text-slate-800">
-                <slot name="title">Registration</slot>
+                <slot name="title">Form Wizard</slot>
             </h2>
         </div>
 

@@ -114,7 +114,7 @@ const submitUpdate = () => {
                                         </td>
 
                                         <td class="px-6 py-4 rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border text-right space-x-2">
-                                            <Link :href="route('admin_company.users.show', user.id)" 
+                                            <Link :href="route('admin_company.users.show', user)"
                                                 class="inline-flex items-center p-2 text-gray-400 hover:text-primary transition-colors">
                                                 <Eye :size="18" />
                                             </Link>

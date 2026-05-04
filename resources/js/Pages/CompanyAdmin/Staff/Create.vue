@@ -253,6 +253,7 @@ const passwordMismatch = computed(() => {
                                     <p v-if="form.errors.email" class="mt-1 text-xs text-red-500 font-medium">
                                         {{ form.errors.email }}
                                     </p>
+                                    
                                 </div>
                                 <!--TODO:: need to add view icon eye the password field-->
                                <div class="relative"> <label
@@ -522,7 +523,7 @@ const passwordMismatch = computed(() => {
                             </div>
 
 
-                        </div>
+                       </div>
                         <div v-if="currentStep === 4" class="space-y-8 animate-fade-in">
 
                             <div class="grid grid-cols-1 gap-6">
@@ -537,10 +538,9 @@ const passwordMismatch = computed(() => {
                                         placeholder="e.g. 3500.00">
                                 </div>
 
-                                <div class="grid grid-cols-1 2xl:grid-cols-2 gap-5">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Bank Name</label>
-
                                         <RoundedSelect v-model="form.bank_name" variant="form" label="Select Bank"
                                             :options="$page.props.lookups.banks" option-label="label"
                                             option-value="key" />
@@ -555,152 +555,190 @@ const passwordMismatch = computed(() => {
                                 </div>
                             </div>
 
-                           <div class="pt-6 border-t border-slate-100">
+                            <div class="pt-6 mt-6 border-t border-slate-100">
                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">Statutory
                                     Contributions</h3>
 
-                                <div class="grid grid-cols-1 2xl:grid-cols-2 gap-6">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-2">EPF
-                                                Number</label>
-                                            <input v-model="form.epf_no" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all">
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-8">
+                                    <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Employee
-                                                    %</label>
-                                                <input v-model="form.epf_rate_employee" type="number"
-                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all">
+                                                <label class="block text-sm font-semibold text-slate-700 mb-2">EPF
+                                                    Number</label>
+                                                <input v-model="form.epf_no" type="text" placeholder="e.g. 123456789"
+                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 bg-white">
                                             </div>
-                                            <div>
-                                                <label class="text-[10px] font-bold text-slate-500 uppercase">Employer
-                                                    %</label>
-                                                <input v-model="form.epf_rate_employer" type="number"
-                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all" ">
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label
+                                                        class="text-[10px] font-bold text-slate-500 uppercase mb-2 block">Employee
+                                                        %</label>
+                                                    <input v-model="form.epf_rate_employee" type="number"
+                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 bg-white">
+                                                </div>
+                                                <div>
+                                                    <label
+                                                        class="text-[10px] font-bold text-slate-500 uppercase mb-2 block">Employer
+                                                        %</label>
+                                                    <input v-model="form.epf_rate_employer" type="number"
+                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 bg-white">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class=" space-y-4">
-                                                <div>
-                                                    <label class="block text-sm font-semibold text-slate-700 mb-2">SOCSO
-                                                        Number</label>
-                                                    <input v-model="form.socso_no" type="text"
-                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all">
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tax
-                                                        (LHDN)
-                                                        Number</label>
-                                                    <input v-model="form.tax_no" type="text"
-                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all">
-                                                </div>
+                                    <div class="space-y-4 px-1">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-slate-700 mb-2">SOCSO
+                                                    Number</label>
+                                                <input v-model="form.socso_no" type="text"
+                                                    placeholder="e.g. 850101145522"
+                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-slate-700 mb-2">SOCSO
+                                                    Category</label>
+                                                <select v-model="form.socso_type"
+                                                    class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3 bg-white">
+                                                    <option value="" disabled>Select Category</option>
+                                                    <option v-for="item in $page.props.lookups.socso_types"
+                                                        :key="item.key" :value="item.key">
+                                                        {{ item.label }}
+                                                    </option>
+                                                </select>
                                             </div>
                                         </div>
-
-                                        <label
-                                            class="mt-6 flex items-center justify-between p-4 bg-slate-100/50 hover:bg-slate-100 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-slate-200">
-                                            <div>
-                                                <p class="text-sm font-bold text-slate-900">EIS Contribution</p>
-                                                <p class="text-xs text-slate-600">
-                                                    Enable Employment Insurance System contribution
+                                        <transition enter-active-class="transition duration-200 ease-out"
+                                            enter-from-class="opacity-0 -translate-y-1"
+                                            enter-to-class="opacity-100 translate-y-0">
+                                            <div v-if="form.socso_type"
+                                                class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl">
+                                                <p class="text-[11px] text-blue-700 leading-tight">
+                                                    <span class="font-bold uppercase mr-1">Coverage:</span>
+                                                    {{$page.props.lookups.socso_types.find(i => i.key ===
+                                                    form.socso_type)?.description }}
                                                 </p>
                                             </div>
-                                            <input v-model="form.eis_enabled" type="checkbox"
-                                                class="w-6 h-6 text-primary rounded-md border-slate-400 focus:ring-primary cursor-pointer">
-                                        </label>
+                                        </transition>
                                     </div>
+
+                                    <div class="px-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Tax (LHDN)
+                                            Number</label>
+                                        <input v-model="form.tax_no" type="text" placeholder="e.g. SG 1234567890"
+                                            class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3">
+                                    </div>
+
+                                    <label
+                                        class="flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl cursor-pointer transition-all border border-slate-200/50">
+                                        <div class="flex items-center gap-4">
+                                            <div class="bg-white p-2 rounded-lg shadow-sm border border-slate-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-slate-900">EIS Contribution</p>
+                                                <p class="text-xs text-slate-600 leading-tight">Employment Insurance
+                                                    System</p>
+                                            </div>
+                                        </div>
+                                        <input v-model="form.eis_enabled" type="checkbox"
+                                            class="w-6 h-6 text-primary rounded-md border-slate-300 focus:ring-primary cursor-pointer transition-all">
+                                    </label>
                                 </div>
-                                <div v-if="currentStep === 5" class="space-y-8 animate-fade-in">
-
-                                    <div class="grid grid-cols-1 gap-6">
-                                        <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Next of Kin
-                                            Information
-                                        </h3>
-
-                                        <div>
-                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name as
-                                                per
-                                                IC</label>
-                                            <input v-model="form.waris_name" type="text"
-                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
-                                                placeholder="e.g. Ali Bin Abu">
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-6">
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-semibold text-slate-700 mb-2">Relationship</label>
-                                                <RoundedSelect v-model="form.waris_relationship" variant="form"
-                                                    label="Select Relationship"
-                                                    :options="$page.props.lookups.relationships" option-label="label"
-                                                    option-value="key" />
-
-                                                <div v-if="form.waris_relationship === 'other'" class="mt-3">
-                                                    <label class="block text-xs font-medium text-slate-500 mb-1">Please
-                                                        specify
-                                                        relationship</label>
-                                                    <input v-model="form.waris_relationship_other" type="text"
-                                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
-                                                        placeholder="e.g. Uncle, Guardian, Cousin">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
-                                                <RoundedSelect v-model="form.waris_gender" variant="form"
-                                                    label="Select Gender" :options="$page.props.lookups.genders"
-                                                    option-label="label" option-value="key" />
-
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="pt-6 border-t border-slate-100">
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                                            <div>
-                                                <label class="block text-sm font-semibold text-slate-700 mb-2">Number
-                                                    IC</label>
-                                                <input v-model="form.waris_ic" type="text"
-                                                    class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3 focus:ring-primary focus:border-primary">
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
-                                                    Number</label>
-                                                <input v-model="form.waris_phone" type="text"
-                                                    class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3 focus:ring-primary focus:border-primary">
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- <div v-if="currentStep > 4" class="animate-fade-in text-slate-400 italic flex items-center justify-center h-48 border-2 border-dashed border-slate-100 rounded-2xl">
-                            Configuration for {{ steps[currentStep-1].title }} is in progress...
-                        </div> -->
-                            </div>
-
-                            <div
-                                class="mt-16 flex items-center justify-end gap-4 border-t border-surface-100 pt-10 px-4 sm:px-0">
-                                <button v-if="currentStep > 1" @click="prevStep"
-                                    class="px-6 py-3 text-sm font-bold text-slate-400 hover:text-primary transition-colors active:scale-95">
-                                    Back
-                                </button>
-
-                               <button @click="nextStep" :disabled="!stepValidation[currentStep]" :class="[
-                                    'px-10 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-lg',
-                                    stepValidation[currentStep]
-                                        ? 'bg-primary hover:bg-primary-dark text-white shadow-primary-light'
-                                        : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-                                ]">
-                                    <!-- Show loading when submitting -->
-                                    <span v-if="form.processing">Saving...</span>
-                                    <span v-else>{{ isLastStep ? 'Complete Registration' : 'Next Step' }}</span>
-                                </button>
                             </div>
                         </div>
+                        <div v-if="currentStep === 5" class="space-y-8 animate-fade-in">
+
+                            <div class="grid grid-cols-1 gap-6">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Next of Kin
+                                    Information
+                                </h3>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name as
+                                        per
+                                        IC</label>
+                                    <input v-model="form.waris_name" type="text"
+                                        class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
+                                        placeholder="e.g. Ali Bin Abu">
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label
+                                            class="block text-sm font-semibold text-slate-700 mb-2">Relationship</label>
+                                        <RoundedSelect v-model="form.waris_relationship" variant="form"
+                                            label="Select Relationship" :options="$page.props.lookups.relationships"
+                                            option-label="label" option-value="key" />
+
+                                        <div v-if="form.waris_relationship === 'other'" class="mt-3">
+                                            <label class="block text-xs font-medium text-slate-500 mb-1">Please
+                                                specify
+                                                relationship</label>
+                                            <input v-model="form.waris_relationship_other" type="text"
+                                                class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary px-4 py-3"
+                                                placeholder="e.g. Uncle, Guardian, Cousin">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                                        <RoundedSelect v-model="form.waris_gender" variant="form" label="Select Gender"
+                                            :options="$page.props.lookups.genders" option-label="label"
+                                            option-value="key" />
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 border-t border-slate-100">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Number
+                                            IC</label>
+                                        <input v-model="form.waris_ic" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3 focus:ring-primary focus:border-primary">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
+                                            Number</label>
+                                        <input v-model="form.waris_phone" type="text"
+                                            class="w-full border-primary-border rounded-xl shadow-sm px-4 py-3 focus:ring-primary focus:border-primary">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div v-if="currentStep > 4" class="animate-fade-in text-slate-400 italic flex items-center justify-center h-48 border-2 border-dashed border-slate-100 rounded-2xl">
+                            Configuration for {{ steps[currentStep-1].title }} is in progress...
+                        </div> -->
+                    </div>
+
+                    <div
+                        class="mt-16 flex items-center justify-end gap-4 border-t border-surface-100 pt-10 px-4 sm:px-0">
+                        <button v-if="currentStep > 1" @click="prevStep"
+                            class="px-6 py-3 text-sm font-bold text-slate-400 hover:text-primary transition-colors active:scale-95">
+                            Back
+                        </button>
+
+                        <button @click="nextStep" :disabled="!stepValidation[currentStep]" :class="[
+                            'px-10 py-3 rounded-xl font-bold transition-all active:scale-95 shadow-lg',
+                            stepValidation[currentStep]
+                                ? 'bg-primary hover:bg-primary-dark text-white shadow-primary-light'
+                                : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                        ]">
+                            <!-- Show loading when submitting -->
+                            <span v-if="form.processing">Saving...</span>
+                            <span v-else>{{ isLastStep ? 'Complete Registration' : 'Next Step' }}</span>
+                        </button>
+                    </div>
+                </div>
             </main>
         </div>
     </AuthenticatedLayout>

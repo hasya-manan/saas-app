@@ -140,7 +140,6 @@ const submitUpdate = () => {
                                                     {{ user.tenant?.company_name || 'System Internal' }}
                                                 </span>
 
-                                                
                                                <div class="flex flex-col items-start gap-1">
                                                     <span
                                                         class="text-[10px] text-gray-400 font-medium tracking-widest uppercase">

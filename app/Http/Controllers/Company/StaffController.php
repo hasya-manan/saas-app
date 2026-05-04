@@ -136,16 +136,16 @@ class StaffController extends Controller
             'waris_phone'        => 'nullable|string',
 
             // staff_finances table
-            'basic_salary'      => 'nullable|numeric',
-            'bank_name'         => 'nullable|string',
-            'bank_account_no'   => 'nullable|string',
-            'epf_no'            => 'nullable|string',
-            'epf_rate_employee' => 'nullable|numeric',
-            'epf_rate_employer' => 'nullable|numeric',
-            'socso_no'          => 'nullable|string',
-            'socso_type'        => 'nullable|string',
-            'tax_no'            => 'nullable|string',
-            'eis_enabled'       => 'nullable|boolean',
+            'basic_salary'      => 'required|numeric|min:0', // Required for payroll logic
+            'bank_name'         => 'nullable|string|max:255',
+            'bank_account_no'   => 'nullable|string|max:50',
+            'epf_no'            => 'nullable|string|max:50',
+            'epf_rate_employee' => 'required|numeric|between:0,100', // Added safety range
+            'epf_rate_employer' => 'required|numeric|between:0,100', // Added safety range
+            'socso_no'          => 'nullable|string|max:50',
+            'socso_type'        => 'required|string', 
+            'tax_no'            => 'nullable|string|max:50',
+            'eis_enabled'       => 'required|boolean',
 
             // new department fields
             'name_department' => 'nullable|string|max:255',
@@ -160,13 +160,16 @@ class StaffController extends Controller
         return back()->with('success', "{$validated['name']} has been created successfully.");
     }
 
-    public function show()
+        public function show(User $user) // Laravel finds the user by UUID automatically
     {
+        // Load the relationships needed for your profile cards
+        //$user->load(['role', 'profile', 'supervisor']);
+
         return Inertia::render('CompanyAdmin/Staff/View', [
-            
+            'user'    => $user,
             'roles'   => Role::where('id', '!=', 1)
-                        ->select('id', 'name', 'display_name')
-                        ->get(),
+                            ->select('id', 'name', 'display_name')
+                            ->get(),
         ]);
     }
 }

@@ -76,6 +76,12 @@ class HandleInertiaRequests extends Middleware
                     ->orderBy('sort_order')
                     ->get(['key', 'label']);
             }),
+            'socso_types' => Cache::rememberForever('socso_type', function () {
+                return GlobalLookup::where('category', 'socso_type')
+                    ->where('is_active', 1)
+                    ->orderBy('sort_order')
+                    ->get(['key', 'label', 'description']); 
+            }),
         ],
         ];
     }

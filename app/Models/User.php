@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
+use Illuminate\Database\Eloquent\Concerns\HasUuids; 
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes;
+    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -94,5 +95,10 @@ class User extends Authenticatable
         })->when($filters['tenant_id'] ?? null, function ($q, $tenantId) {
             $q->where('tenant_id', $tenantId);
         });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 }

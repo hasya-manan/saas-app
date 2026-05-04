@@ -137,7 +137,8 @@ Users (The Actual Data):
 ### 🏢 CompanyAdmin Management (In Progress)
 - [x] Department Management: Add and update departments
 - [x] Staff List: View users within tenant
-- [ ] Staff Creation: Onboarding new staff (in progress)
+- [x] Staff Creation: Onboarding new staff 
+- [/] Staff Profile: View and edit staff details (In Progress)
 - [ ] Attendance & Leave
 - [ ] Payroll
 

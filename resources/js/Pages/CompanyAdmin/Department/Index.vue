@@ -120,6 +120,11 @@ const submitForm = () => {
                                         </td>
 
                                         <td class="px-6 py-4 rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border text-right">
+                                            <!-- TODO:: add icon eye to display staff every department -->
+                                            <!-- <Link :href="route('admin_company.departments.show', dept.id)"
+                                                class="inline-flex items-center p-2 text-gray-400 hover:text-primary transition-colors">
+                                                <Eye :size="18" />
+                                            </Link> -->
                                             <button @click="openEditPanel(dept)" class="p-2 text-gray-400 hover:text-primary transition-colors">
                                                 <Edit2 :size="18" />
                                             </button>

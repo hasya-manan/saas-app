@@ -40,7 +40,7 @@ class GlobalLookupSeeder extends Seeder
             ['category' => 'marital_status', 'key' => 'divorced', 'label' => 'Divorced', 'description' => '', 'sort_order' => 30],
             ['category' => 'marital_status', 'key' => 'widowed', 'label' => 'Widowed', 'description' => '', 'sort_order' => 40],
 
-        // States of Malaysia
+            // States of Malaysia
             ['category' => 'state', 'key' => 'johor', 'label' => 'Johor', 'description' => '', 'sort_order' => 10],
             ['category' => 'state', 'key' => 'kedah', 'label' => 'Kedah', 'description' => '', 'sort_order' => 20],
             ['category' => 'state', 'key' => 'kelantan', 'label' => 'Kelantan', 'description' => '', 'sort_order' => 30], // Added this

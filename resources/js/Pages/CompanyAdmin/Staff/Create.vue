@@ -124,7 +124,12 @@ const stepValidation = computed(() => ({
     1: form.email.includes('@') && !form.errors.email && form.password.length >= 8,
 
     // Step 2: User IC
-    2: isValidMYIC(form.ic_number),
+    2: !!form.name && 
+       !!form.dob && 
+       !!form.user_gender && 
+       !!form.phone && 
+       !!form.marital_status && 
+       isValidMYIC(form.ic_number),
 
     // Step 3: Role and Department (role_id moved here)
     3: validateStep3(), // ← call a function instead
@@ -134,7 +139,25 @@ const stepValidation = computed(() => ({
     4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== '',
 
     // Step 5: Emergency Contact + IC Check
-    5: form.waris_name !== '' && form.waris_phone !== '' && isValidMYIC(form.waris_ic),
+    //5: form.waris_name !== '' && form.waris_phone !== '' && isValidMYIC(form.waris_ic),
+    5: (() => {
+        // 1. If the name is empty, consider the whole step valid (it's skipped)
+        if (!form.waris_name) return true;
+
+        // 2. If they entered a name, require a phone number
+        const hasPhone = !!form.waris_phone;
+
+        // 3. If they selected "Other", require the specification text
+        const hasOtherSpecified = form.waris_relationship === 'other' 
+            ? !!form.waris_relationship_other 
+            : true;
+
+        // 4. (Optional) Check IC only if they actually typed something in the IC box
+        const isIcValid = form.waris_ic ? isValidMYIC(form.waris_ic) : true;
+
+        return hasPhone && hasOtherSpecified && isIcValid;
+    })(),
+    
 }));
 
 // Auto-fill Date of Birth (DOB) based on IC Number
@@ -246,7 +269,7 @@ const passwordMismatch = computed(() => {
                         <div v-if="currentStep === 1" class="space-y-6 animate-fade-in">
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
-                                   <label class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                                   <label class="block text-sm font-semibold text-slate-700 mb-2">Email Address <span class="text-red-500">*</span></label>
                                     <input v-model="form.email" type="email" @blur="checkEmailUnique"
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
                                         :class="{ 'border-red-500': form.errors.email }"
@@ -258,7 +281,7 @@ const passwordMismatch = computed(() => {
                                 </div>
                                 <!--TODO:: need to add view icon eye the password field-->
                                <div class="relative"> <label
-                                        class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                                        class="block text-sm font-semibold text-slate-700 mb-2">Password<span class="text-red-500">*</span></label>
 
                                     <div class="relative"> <input v-model="form.password"
                                             :type="showPassword ? 'text' : 'password'"
@@ -279,7 +302,7 @@ const passwordMismatch = computed(() => {
 
                                 <div class="mt-4">
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Confirm
-                                        Password</label>
+                                        Password<span class="text-red-500">*</span></label>
 
                                     <div class="relative">
                                         <input v-model="form.password_confirmation"
@@ -308,7 +331,7 @@ const passwordMismatch = computed(() => {
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name (as per
-                                        IC)</label>
+                                        IC)<span class="text-red-500">*</span></label>
                                     <input v-model="form.name" type="text"
                                         class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
                                         placeholder="e.g. Ahmad bin Ibrahim">
@@ -316,7 +339,7 @@ const passwordMismatch = computed(() => {
 
                                 <div class="grid grid-cols-2 md:grid-cols-2 gap-6">
                                     <div>
-                                       <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
+                                       <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number<span class="text-red-500">*</span></label>
                                         <input v-model="form.ic_number" type="text" maxlength="12"
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
                                             placeholder="eg. 000308010000">
@@ -326,7 +349,7 @@ const passwordMismatch = computed(() => {
 
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Date of
-                                            Birth</label>
+                                            Birth<span class="text-red-500">*</span></label>
                                         <input v-model="form.dob" type="date"
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-slate-50 px-4 py-3 transition-all"
                                             :class="{ 'opacity-70': form.dob }">
@@ -335,7 +358,7 @@ const passwordMismatch = computed(() => {
                                             }}</p>
                                     </div>
                                      <div>
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender<span class="text-red-500">*</span></label>
                                         <RoundedSelect v-model="form.user_gender" variant="form" label="Select Gender"
                                             :options="$page.props.lookups.genders" option-label="label"
                                             option-value="key" />
@@ -344,14 +367,14 @@ const passwordMismatch = computed(() => {
 
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
-                                            Number</label>
+                                            Number<span class="text-red-500">*</span></label>
                                         <input v-model="form.phone" type="text"
                                             class="w-full border-primary-border rounded-xl shadow-sm focus:ring-primary focus:border-primary placeholder:text-slate-300 px-4 py-3 transition-all"
                                             placeholder="0123456789">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Marital
-                                            Status</label>
+                                            Status<span class="text-red-500">*</span></label>
 
                                         <RoundedSelect v-model="form.marital_status" variant="form"
                                             label="Select Status" :options="$page.props.lookups.marital_statuses"
@@ -420,7 +443,7 @@ const passwordMismatch = computed(() => {
 
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Staff Role </label>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Staff Role <span class="text-red-500">*</span></label>
                                     <RoundedSelect v-model="form.role_id" variant="form" label="Select a role..."
                                         :options="roles" option-label="display_name" option-value="id" />
                                </div>
@@ -525,6 +548,8 @@ const passwordMismatch = computed(() => {
 
 
                        </div>
+                        <!--Step 4 :: -->
+
                         <div v-if="currentStep === 4" class="space-y-8 animate-fade-in">
 
                             <div class="grid grid-cols-1 gap-6">

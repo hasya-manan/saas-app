@@ -82,7 +82,6 @@ class User extends Authenticatable
     }
 
     //filtering 
-   
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($q, $search) {

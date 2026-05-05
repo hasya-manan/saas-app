@@ -123,6 +123,7 @@ class StaffController extends Controller
             'phone'          => 'nullable|string',
             'user_gender'    => 'nullable|string',
             'dob'            => 'nullable|date',
+            'marital_status' => 'nullable|string',
             'join_date'      => 'nullable|date',
             'address_line_1' => 'nullable|string',
             'address_line_2' => 'nullable|string',
@@ -132,6 +133,7 @@ class StaffController extends Controller
             'waris_name'         => 'nullable|string',
             'waris_gender'       => 'nullable|string',
             'waris_relationship' => 'nullable|string',
+            'waris_relationship_other' => 'nullable|string|max:50',
             'waris_ic'           => 'nullable|string',
             'waris_phone'        => 'nullable|string',
 
@@ -154,6 +156,7 @@ class StaffController extends Controller
             'is_hod'          => 'nullable|boolean',
         ]);
 
+       
         // ── This one line replaces ALL the DB logic ──
         $this->staffService->createStaff($validated, auth()->user()->tenant_id);
 

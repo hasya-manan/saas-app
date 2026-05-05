@@ -32,11 +32,22 @@ class StaffService
                 'supervisor_id' => $supervisorId,
             ]);
 
+             // PREPARE DATA: Clean up the UI-specific "other" logic
+            // ── 4. RESOLVE RELATIONSHIP LOGIC ─────────────────
+            // If 'other' is selected, use the custom text. Otherwise use dropdown value.
+            $finalRelationship = ($validated['waris_relationship'] === 'other') 
+                ? ($validated['waris_relationship_other'] ?: 'Other') 
+                : $validated['waris_relationship'];
+            // Force everything to lowercase and replace spaces with underscores
+            // This makes "Step Father" become "step_father"
+            $finalRelationship = strtolower(str_replace(' ', '_', trim($rawRelationship)));
+
             // ── 4. CREATE PROFILE ─────────────────────────────
             $user->profile()->create([
                 'ic_number'          => $validated['ic_number'],
                 'user_gender'        => $validated['user_gender'] ?? null,
                 'dob'                => $validated['dob'] ?? null,
+                'marital_status'     => $validated['marital_status'] ?? null,
                 'phone'              => $validated['phone'] ?? null,
                 'position'           => $validated['position'] ?? null,
                 'join_date'          => $validated['join_date'] ?? null,
@@ -47,7 +58,7 @@ class StaffService
                 'state'              => $validated['state'] ?? null,
                 'waris_name'         => $validated['waris_name'] ?? null,
                 'waris_gender'       => $validated['waris_gender'] ?? null,
-                'waris_relationship' => $validated['waris_relationship'] ?? null,
+                'waris_relationship' => $validated['finalRelationship'] ?? null,
                 'waris_ic'           => $validated['waris_ic'] ?? null,
                 'waris_phone'        => $validated['waris_phone'] ?? null,
             ]);

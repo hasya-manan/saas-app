@@ -59,17 +59,17 @@ class GlobalLookupSeeder extends Seeder
             ['category' => 'state', 'key' => 'terengganu', 'label' => 'Terengganu', 'description' => '', 'sort_order' => 160],
             
             // Common Malaysian Banks (To fill the dropdown for staff_finances)
-            ['category' => 'bank', 'key' => 'alliance_bank', 'label' => 'Alliance Bank', 'description' => '', 'sort_order' => 10],
-            ['category' => 'bank', 'key' => 'ambank', 'label' => 'AmBank', 'description' => '', 'sort_order' => 20],
-            ['category' => 'bank', 'key' => 'bank_islam', 'label' => 'Bank Islam', 'description' => '', 'sort_order' => 1],
-            ['category' => 'bank', 'key' => 'cimb', 'label' => 'CIMB', 'description' => '', 'sort_order' => 30],
-            ['category' => 'bank', 'key' => 'hong_leong_bank', 'label' => 'Hong Leong Bank', 'description' => '', 'sort_order' => 40],
-            ['category' => 'bank', 'key' => 'hsbc', 'label' => 'HSBC', 'description' => '', 'sort_order' => 50],
-            ['category' => 'bank', 'key' => 'maybank', 'label' => 'Maybank', 'description' => '', 'sort_order' => 60],
-            ['category' => 'bank', 'key' => 'public_bank', 'label' => 'Public Bank', 'description' => '', 'sort_order' => 70],
-            ['category' => 'bank', 'key' => 'rhb', 'label' => 'RHB', 'description' => '', 'sort_order' => 80],
-            ['category' => 'bank', 'key' => 'uob', 'label' => 'UOB', 'description' => '', 'sort_order' => 90],
-            ['category' => 'bank', 'key' => 'standard_chartered', 'label' => 'Standard Chartered', 'description' => '', 'sort_order' => 100],
+            ['category' => 'bank', 'key' => 'bank_islam', 'label' => 'Bank Islam', 'description' => '', 'sort_order' => 10],
+            ['category' => 'bank', 'key' => 'alliance_bank', 'label' => 'Alliance Bank', 'description' => '', 'sort_order' => 20],
+            ['category' => 'bank', 'key' => 'ambank', 'label' => 'AmBank', 'description' => '', 'sort_order' => 30],
+            ['category' => 'bank', 'key' => 'cimb', 'label' => 'CIMB', 'description' => '', 'sort_order' => 40],
+            ['category' => 'bank', 'key' => 'hong_leong_bank', 'label' => 'Hong Leong Bank', 'description' => '', 'sort_order' => 50],
+            ['category' => 'bank', 'key' => 'hsbc', 'label' => 'HSBC', 'description' => '', 'sort_order' => 60],
+            ['category' => 'bank', 'key' => 'maybank', 'label' => 'Maybank', 'description' => '', 'sort_order' => 70],
+            ['category' => 'bank', 'key' => 'public_bank', 'label' => 'Public Bank', 'description' => '', 'sort_order' => 80],
+            ['category' => 'bank', 'key' => 'rhb', 'label' => 'RHB', 'description' => '', 'sort_order' => 90],
+            ['category' => 'bank', 'key' => 'uob', 'label' => 'UOB', 'description' => '', 'sort_order' => 100],
+            ['category' => 'bank', 'key' => 'standard_chartered', 'label' => 'Standard Chartered', 'description' => '', 'sort_order' => 110],
             
             
         

@@ -41,6 +41,8 @@ const form = useForm({
     ic_number: '',
     user_gender: '',
     position: '',
+    dob: '',
+    marital_status: '',
     join_date: '',
     phone: '',
     address_line_1: '',
@@ -63,8 +65,6 @@ const form = useForm({
     bank_name: '',
     bank_account_no: '',
     epf_no: '',
-    epf_rate_employee: '',
-    epf_rate_employer: '',
     socso_no: '',
     socso_type: '',
     tax_no: '',
@@ -76,6 +76,7 @@ const form = useForm({
     waris_relationship: '',
     waris_ic: '',
     waris_phone: '',
+    waris_gender: '',
 
 });
 
@@ -653,6 +654,7 @@ const passwordMismatch = computed(() => {
                                 </div>
                             </div>
                         </div>
+                          <!-- Step 5: Emergency Contact  -->
                         <div v-if="currentStep === 5" class="space-y-8 animate-fade-in">
 
                             <div class="grid grid-cols-1 gap-6">

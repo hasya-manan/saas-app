@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
-use Illuminate\Database\Eloquent\Concerns\HasUuids; 
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes, HasUuids;
+    // 1. REMOVE::The HasUuids trait is designed to turn the id into a UUID. 
+    // If you use it, it will break your auto-incrementing id.
+    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +28,8 @@ class User extends Authenticatable
         'email',
         'password',
         'tenant_id',
+        'department_id',
+        'supervisor_id',
         'role_id',
         'deleted_at',
     ];
@@ -97,6 +100,18 @@ class User extends Authenticatable
         });
     }
 
+   // 2. Add this to automatically create the UUID when a user is born
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
+
+    // 3. Keep this: "When you see a User in the URL, look at the uuid column.instead display a raw id"
     public function getRouteKeyName()
     {
         return 'uuid';

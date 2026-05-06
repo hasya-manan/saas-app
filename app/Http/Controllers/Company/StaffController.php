@@ -43,24 +43,8 @@ class StaffController extends Controller
                         ->get(),
         ]);
     }
-    /**
-     * Update an existing staff member's details.
-     * 
-     * Uses route model binding (User $user) so Laravel automatically
-     * resolves the staff member by ID from the URL.
-     * 
-     * Multi-tenancy is enforced via Global Scope — only users belonging
-     * to the authenticated tenant can be updated.
-     */    
-    public function update(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'role_id' => 'required|exists:roles,id',
-        ]);
-        $user->update($validated);
-        return back()->with('success', "{$user->name} has been updated successfully.");
-    }
+       
+   
 
     /**
      * Show the form to create a new staff member.
@@ -166,7 +150,7 @@ class StaffController extends Controller
         public function show(User $user) // Laravel finds the user by UUID automatically
     {
         // Load the relationships needed for your profile cards
-        //$user->load(['role', 'profile', 'supervisor']);
+        $user->load(['role', 'profile', 'supervisor']);
 
         return Inertia::render('CompanyAdmin/Staff/View', [
             'user'    => $user,
@@ -174,5 +158,60 @@ class StaffController extends Controller
                             ->select('id', 'name', 'display_name')
                             ->get(),
         ]);
+    }
+
+    /**
+     * Update an existing staff member's details.
+     * 
+     * Uses route model binding (User $user) so Laravel automatically
+     * resolves the staff member by ID from the URL.
+     * 
+     * Multi-tenancy is enforced via Global Scope — only users belonging
+     * to the authenticated tenant can be updated.
+     */ 
+   public function update(Request $request, User $user)
+    {
+    // 1. Safety check for the profile ID if user do not have to others table
+        $profileId = $user->profile?->id ?? 'NULL';
+
+        $validated = $request->validate([
+            // user table
+            'name' => 'sometimes|required|string|max:255',
+            'role_id' => 'sometimes|required|exists:roles,id',
+            'department_id' => 'sometimes|required|exists:departments,id',
+
+            // user_profiles table 
+            'position' => 'sometimes|nullable|string',
+            'user_gender' => 'sometimes|nullable|string',
+            'phone' => 'sometimes|required|nullable|string',
+            'dob' => 'sometimes|nullable|date',
+            'marital_status' => 'sometimes|nullable|string',
+            'join_date' => 'sometimes|required|date',
+            'address_line_1' => 'sometimes|nullable|string',
+            'address_line_2' => 'sometimes|nullable|string',
+            'city' => 'sometimes|nullable|string',
+            'postcode' => 'sometimes|nullable|string',
+            'state' => 'sometimes|nullable|string',
+            'waris_name' => 'sometimes|nullable|string',
+            'waris_gender' => 'sometimes|nullable|string',
+            'waris_relationship' => 'sometimes|nullable|string',
+            //'waris_relationship_other' => 'sometimes|string|max:50',
+            'waris_ic' => 'sometimes|nullable|string',
+            'waris_phone' => 'sometimes|nullable|string',
+            
+            // The Fix: unique check while ignoring the current user's profile
+            'ic_number' => [
+                'sometimes',
+                'required',
+                'string',
+                "unique:user_profiles,ic_number,{$profileId}" 
+            ],
+        ]);
+
+        // 2. Use the service you declared in the constructor
+        $this->staffService->updateStaff($user, $validated);
+
+        // 3. Return back to refresh the data in the UI
+        return back()->with('success', "{$user->name} has been updated successfully.");
     }
 }

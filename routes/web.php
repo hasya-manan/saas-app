@@ -75,12 +75,10 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     Route::get('/staff/create', [StaffController::class, 'create'])->name('admin_company.users.create');
     Route::post('/staff/create', [StaffController::class, 'store'])->name('admin_company.users.store');
     Route::post('/staff', [StaffController::class, 'store'])->name('admin_company.users.store');
-    
     // "View Details" button!
-    Route::get('/staff/{user}', [StaffController::class, 'show'])->name('admin_company.users.show');
-    
-    //  "Update Permissions" button in the edit panel:
-    Route::put('/staff/{user}', [StaffController::class, 'update'])->name('admin_company.users.update');
+    Route::get('/staff/view/{user}', [StaffController::class, 'show'])->name('admin_company.users.show');
+    //  "Update profile" button in the edit panel:
+    Route::put('/staff/view/{user}', [StaffController::class, 'update'])->name('admin_company.users.update');
 
    // department management
     Route::get('/department/index', [DepartmentController::class, 'index'])->name('admin_company.departments.index');

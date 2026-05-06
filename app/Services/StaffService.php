@@ -123,4 +123,38 @@ class StaffService
 
         return [$departmentId, $supervisorId];
     }
+
+    /**
+     * Handle staff updates (Independent segments)
+     */
+    public function updateStaff(User $user, array $data)
+{
+    return DB::transaction(function () use ($user, $data) {
+        // 1. Update User Table 
+        // Only updates fields like name, role, or department if they are in the request
+        $user->update(array_intersect_key($data, array_flip([
+            'name', 
+            'role_id', 
+            'department_id'
+        ])));
+
+        // 2. Map Profile Data
+        // We filter the data so we don't accidentally overwrite columns with NULL
+        $profileFields = ['ic_number', 'user_gender', 'phone', 'position', 
+                          'dob', 'marital_status', 'join_date', 'address_line_1', 'address_line_2', 
+                          'city', 'postcode', 'state', 'waris_name', 'waris_gender', 'waris_relationship', 
+                          'waris_ic', 'waris_phone'];
+        $profileData = array_intersect_key($data, array_flip($profileFields));
+
+        // 3. The updateOrCreate Logic
+        if (!empty($profileData)) {
+            $user->profile()->updateOrCreate(
+                ['user_id' => $user->id], // The Search Criteria
+                $profileData              // The Data to Sync
+            );
+        }
+
+        return $user;
+    });
+}
 }

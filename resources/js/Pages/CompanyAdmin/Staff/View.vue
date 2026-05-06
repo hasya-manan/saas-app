@@ -269,22 +269,22 @@ const cancelEdit = (segment) => {
                             <div v-if="currentStep === 2" class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
                                 <div class="flex justify-between items-center mb-10">
                                     <h3 class="text-xl font-bold text-gray-900 tracking-tight">Address & Identity</h3>
-                                     <!-- Action Buttons with Transition -->
+                                     <!-- Action Buttons step 2 -->
                                     <div class="flex gap-2">
                                         <transition name="fade" mode="out-in">
-                                            <div :key="editingSegment.personal" class="flex gap-2">
-                                                <template v-if="editingSegment.personal">
-                                                    <button @click="cancelEdit('personal')"
+                                            <div :key="editingSegment.address" class="flex gap-2">
+                                                <template v-if="editingSegment.address">
+                                                    <button @click="cancelEdit('address')"
                                                         class="px-4 py-2 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition-all">
                                                         Cancel
                                                     </button>
-                                                    <button @click="saveSegment('personal')" :disabled="form.processing"
+                                                    <button @click="saveSegment('address')" :disabled="form.processing"
                                                         class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
                                                         Save
                                                         <Check :size="16" />
                                                     </button>
                                                 </template>
-                                                <button v-else @click="editingSegment.personal = true"
+                                                <button v-else @click="editingSegment.address = true"
                                                     class="px-5 py-2 border border-primary-border text-primary font-bold rounded-2xl hover:bg-primary-light transition-all flex items-center gap-2">
                                                     Edit
                                                     <Pencil :size="14" />
@@ -299,7 +299,7 @@ const cancelEdit = (segment) => {
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Address 
                                             1</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-address1'"
+                                            <p v-if="!editingSegment.address" :key="'view-address1'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user.profile?.address_line_1 || 'Not Set' }}
                                             </p>
@@ -315,7 +315,7 @@ const cancelEdit = (segment) => {
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">Address 
                                             2</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-address2'"
+                                            <p v-if="!editingSegment.address" :key="'view-address2'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user.profile?.address_line_2 || 'Not Set' }}
                                             </p>
@@ -330,7 +330,7 @@ const cancelEdit = (segment) => {
                                     <div class="space-y-1">
                                         <label class="block text-sm font-semibold text-slate-700 mb-2">City</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-city'"
+                                            <p v-if="!editingSegment.address" :key="'view-city'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user.profile?.city || 'Not Set' }}
                                             </p>

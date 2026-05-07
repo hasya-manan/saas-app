@@ -7,9 +7,11 @@ import { ref } from 'vue';
 import {Pencil, Check, X} from 'lucide-vue-next';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import BaseInput from '@/Components/BaseInput.vue';
-
+import { useIcParser } from '@/Composables/useIcParser';
 const props = defineProps({
-    user: Object
+    user: Object,
+    roles: Array,
+    departments: Array,
 });
 
 const currentStep = ref(1);
@@ -80,6 +82,10 @@ const cancelEdit = (segment) => {
     editingSegment.value[segment] = false;
     form.reset(); // Reset form to original props
 };
+
+// Auto-fill Date of Birth (DOB) based on IC Number -> composables(useIcParser.js)
+const { startWatchingIc } = useIcParser(form);
+startWatchingIc();
 </script>
 
 <template>
@@ -207,8 +213,24 @@ const cancelEdit = (segment) => {
                                             </p>
                                             <div v-else :key="'edit-name'">
 
-                                                <BaseInput v-model="form.ic_number" placeholder="Enter full name"
+                                                <BaseInput v-model="form.ic_number" placeholder="IC Number"
                                                     :error="form.errors.ic_number" />
+                                            </div>
+                                        </transition>
+                                    </div>
+
+                                    <!--dob-->
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Date of Birth</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.personal" :key="'view-dob'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.profile?.dob || 'Not Set' }}
+                                            </p>
+                                            <div v-else :key="'edit-dob'">
+
+                                                <BaseInput v-model="form.dob" placeholder="Date of Birth" type="date"
+                                                    :error="form.errors.dob" />
                                             </div>
                                         </transition>
                                     </div>
@@ -387,10 +409,12 @@ const cancelEdit = (segment) => {
                             </div>
 
                             <!--Step 3: Roles and Departments -->
-                            <div v-if="currentStep === 3" class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
-                                 <div class="flex justify-between items-center mb-10">
-                                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Departments and Roles </h3>
-                                     <!-- Action Buttons step 2 -->
+                           <div v-if="currentStep === 3"
+                                class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
+                                <div class="flex justify-between items-center mb-10">
+                                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Departments and Roles
+                                    </h3>
+                                    <!-- Action Buttons step 2 -->
                                     <div class="flex gap-2">
                                         <transition name="fade" mode="out-in">
                                             <div :key="editingSegment.roles" class="flex gap-2">
@@ -414,34 +438,47 @@ const cancelEdit = (segment) => {
                                         </transition>
                                     </div>
                                 </div>
-                               
+
                                 <div class="space-y-5">
                                     <!--roles -->
-                                   <div class="space-y-1">
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Staff Role</label>
-                                    
-                                    <transition name="fade" mode="out-in">
-                                        <!-- VIEW MODE: Show the role name from the loaded relationship -->
-                                        <p v-if="!editingSegment.roles" :key="'view-role'" class="text-gray-900 font-semibold text-md py-3">
-                                            {{ user.role?.display_name || 'No Role Assigned' }}
-                                        </p>
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Staff
+                                            Role</label>
 
-                                        <!-- EDIT MODE: Show the dropdown using the roles prop -->
-                                        <div v-else :key="'edit-role'">
-                                            <RoundedSelect 
-                                                v-model="form.role_id" 
-                                                variant="form" 
-                                                label="Select a role..."
-                                                :options="roles" 
-                                                option-label="display_name" 
-                                                option-value="id" 
-                                            />
-                                            <p v-if="form.errors.role_id" class="text-red-500 text-xs mt-1">
-                                                {{ form.errors.role_id }}
+                                        <transition name="fade" mode="out-in">
+                                            <!-- VIEW MODE: Show the role name from the loaded relationship -->
+                                            <p v-if="!editingSegment.roles" :key="'view-role'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.role?.display_name || 'No Role Assigned' }}
                                             </p>
-                                        </div>
-                                    </transition>
-                                </div>
+
+                                            <!-- EDIT MODE: Show the dropdown using the roles prop -->
+                                            <div v-else :key="'edit-role'">
+                                                <RoundedSelect v-model="form.role_id" variant="form"
+                                                    label="Select a role..." :options="roles"
+                                                    option-label="display_name" option-value="id" />
+                                                <p v-if="form.errors.role_id" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.role_id }}
+                                                </p>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                    <!--Joining Date-->
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Joining
+                                            Date</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.roles" :key="'view-joining-date'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.profile?.join_date || 'Not Set' }}
+                                            </p>
+                                            <div v-else :key="'edit-joining-date'">
+                                                <BaseInput v-model="form.join_date" type="date"
+                                                    placeholder="Joining Date" :error="form.errors.join_date" />
+                                            </div>
+
+                                        </transition>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Step 4: Financial & Statutory -->

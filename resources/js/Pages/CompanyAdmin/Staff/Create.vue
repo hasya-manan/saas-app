@@ -5,6 +5,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
+import { useIcParser } from '@/Composables/useIcParser'; 
+import { useEmailValidation } from '@/Composables/useEmailValidation';
 import {
     Eye, EyeOff , Plus 
      
@@ -82,28 +84,10 @@ const form = useForm({
 
 
 
-// Function to check email uniqueness (called on @blur)
 const isValidMYIC = (ic) => /^\d{12}$/.test(ic);
 
 // Global Email Check using Inertia
-const checkEmailUnique = () => {
-    if (!form.email.includes('@')) return;
-
-    router.post(route('validation.email'), {
-        email: form.email
-    }, {
-        preserveState: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            // Clear error manually if backend passed
-            form.clearErrors('email');
-        },
-        onError: (errors) => {
-            // This is the "Global" part: we map the response to our form
-            form.setError('email', errors.email);
-        }
-    });
-};
+const { checkEmailUnique } = useEmailValidation(form);
 
 const validateStep3 = () => {
     if (!form.role_id) return false
@@ -161,33 +145,8 @@ const stepValidation = computed(() => ({
 }));
 
 // Auto-fill Date of Birth (DOB) based on IC Number
-watch(() => form.ic_number, (newIc) => {
-    // Remove non-numeric characters (like dashes)
-    const cleanIc = newIc.replace(/\D/g, '');
-
-    // Proceed once we have the first 6 digits (YYMMDD)
-    if (cleanIc.length >= 6) {
-        const year = cleanIc.substring(0, 2);
-        const month = cleanIc.substring(2, 4);
-        const day = cleanIc.substring(4, 6);
-
-        /**
-         * Determine Century (19xx vs 20xx)
-         * Current Year is 2026, so yearThreshold is 26.
-         * * Logic for HR System:
-         * 1. If IC year is > 26 (e.g., 70, 80, 99), they were born in 19xx.
-         * 2. If IC year is <= 26 (e.g., 00, 10, 25), they were born in 20xx.
-         * * Assumption: Employees are under 100 years old. 100 and above do not working anymore
-         */
-        const yearThreshold = new Date().getFullYear() % 100;
-        const fullYear = parseInt(year) > yearThreshold ? `19${year}` : `20${year}`;
-
-        // Ensure the month and day are valid before updating the form
-        if (parseInt(month) <= 12 && parseInt(day) <= 31) {
-            form.dob = `${fullYear}-${month}-${day}`;
-        }
-    }
-});
+const { startWatchingIc } = useIcParser(form);
+startWatchingIc();
 
 const submit = () => {
     form.post(route('admin_company.users.store'), {
@@ -195,9 +154,8 @@ const submit = () => {
             form.reset()
             currentStep.value = 1
         },
-        onError: (errors) => {
-           
 
+        onError: (errors) => {
             if (errors.email || errors.password) currentStep.value = 1
             if (errors.name || errors.ic_number) currentStep.value = 2
             if (errors.role_id || errors.department_id) currentStep.value = 3
@@ -217,7 +175,6 @@ const nextStep = () => {
 const prevStep = () => {
     if (currentStep.value > 1) currentStep.value--;
 };
-
 
 
 // 2. Auto Check Confirmation
@@ -448,8 +405,6 @@ const passwordMismatch = computed(() => {
                                         :options="roles" option-label="display_name" option-value="id" />
                                </div>
                             </div>
-
-
                          <div class="pt-6 border-t border-slate-100">
                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">
                                     Employment Details

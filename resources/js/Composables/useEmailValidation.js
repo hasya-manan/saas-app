@@ -14,7 +14,7 @@ export function useEmailValidation(form) {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                // If the backend says it's okay, clear the error
+               
                 form.clearErrors('email');
             },
             onError: (errors) => {

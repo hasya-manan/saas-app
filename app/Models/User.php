@@ -80,6 +80,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(StaffFinance::class);
     }
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
     //filtering 
     public function scopeFilter($query, array $filters)

@@ -1,10 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm} from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue'; // Import your component
-import { ref } from 'vue';
-import {Pencil, Check, X} from 'lucide-vue-next';
+import { ref, computed, watch} from 'vue';
+import {Pencil, Check, X, Plus} from 'lucide-vue-next';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import BaseInput from '@/Components/BaseInput.vue';
 import { useIcParser } from '@/Composables/useIcParser';
@@ -12,10 +12,12 @@ const props = defineProps({
     user: Object,
     roles: Array,
     departments: Array,
+    staffList: Array,
 });
 
 const currentStep = ref(1);
-
+//const hasDepartments = computed(() => props.departments && props.departments.length > 0)
+const isOthers = computed(() => form.department_id === 'others')
 // Define steps for the Profile View
 const steps = [
     { id: 1, title: 'Personal Information', desc: 'Identity & Contact' },
@@ -50,9 +52,18 @@ const form = useForm({
     waris_relationship: props.user.profile?.waris_relationship || '',
     waris_phone: props.user.profile?.waris_phone || '',
 
-    //segment employment
+    //segment employment/department
     position: props.user.profile?.position || '',
     department_id: props.user?.department_id || '',
+   // This one field handles BOTH existing and new descriptions
+    description: props.user?.department?.description || '', 
+    
+    is_hod: props.user?.id === props.user?.department?.hod_id,
+    
+    // Only name needs a separate "new" field because the dropdown 
+    // already holds the "existing" name
+    name_department: '', 
+    hod_id: '',
     
     // Add other fields for steps 2 and 3 here
 });
@@ -86,6 +97,31 @@ const cancelEdit = (segment) => {
 // Auto-fill Date of Birth (DOB) based on IC Number -> composables(useIcParser.js)
 const { startWatchingIc } = useIcParser(form);
 startWatchingIc();
+
+watch(() => form.department_id, (newId) => {
+    if (newId === 'others') {
+        // Prepare for fresh creation
+        form.description = ''; 
+        form.is_hod = false;
+        form.name_department = '';
+    } else {
+        // Find the existing department's data
+        const selectedDept = props.departments.find(d => d.id === newId);
+        if (selectedDept) {
+            form.description = selectedDept.description || '';
+            form.is_hod = props.user.id === selectedDept.hod_id;
+            form.name_department = ''; // Hide/ignore the "New Name" field
+        }
+    }
+});
+
+const selectedDeptHOD = computed(() => {
+    // 1. Find the department using the Department ID
+    const dept = props.departments.find(d => d.id === form.department_id);
+    
+    // 2. Return the HOD object (which contains the user uuid, name, etc.)
+    return dept ? dept.hod : null; 
+});
 </script>
 
 <template>
@@ -227,10 +263,12 @@ startWatchingIc();
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user.profile?.dob || 'Not Set' }}
                                             </p>
+                                            
                                             <div v-else :key="'edit-dob'">
-
                                                 <BaseInput v-model="form.dob" placeholder="Date of Birth" type="date"
                                                     :error="form.errors.dob" />
+                                                <p class="mt-1 text-[10px] text-slate-400">Auto-filled based on IC Number</p>
+
                                             </div>
                                         </transition>
                                     </div>
@@ -264,7 +302,6 @@ startWatchingIc();
                                                 {{ user.profile?.phone || 'Not Set' }}
                                             </p>
                                             <div v-else :key="'edit-name'">
-
                                                 <BaseInput v-model="form.phone" placeholder="0190909090"
                                                     :error="form.errors.phone" />
                                             </div>
@@ -463,22 +500,214 @@ startWatchingIc();
                                             </div>
                                         </transition>
                                     </div>
-                                    <!--Joining Date-->
-                                    <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Joining
-                                            Date</label>
-                                        <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.roles" :key="'view-joining-date'"
-                                                class="text-gray-900 font-semibold text-md py-3">
-                                                {{ user.profile?.join_date || 'Not Set' }}
-                                            </p>
-                                            <div v-else :key="'edit-joining-date'">
-                                                <BaseInput v-model="form.join_date" type="date"
-                                                    placeholder="Joining Date" :error="form.errors.join_date" />
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!--Position-->
+                                        <div class="space-y-1">
+                                            <label
+                                                class="block text-sm font-semibold text-slate-700 mb-2">Job Position</label>
+                                            <transition name="fade" mode="out-in">
+                                                <p v-if="!editingSegment.roles" :key="'view-position'"
+                                                    class="text-gray-900 font-semibold text-md py-3">
+                                                    {{ user.profile?.position || 'Not Set' }}
+                                                </p>
+                                                <div v-else :key="'edit-position'">
+                                                    <BaseInput v-model="form.position" type="text"
+                                                        placeholder="Position" :error="form.errors.position" />
+                                                </div>
+                                            </transition>
+                                        </div>
+                                        <!--Joining Date-->
+
+                                        <div class="space-y-1">
+                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Joining
+                                                Date</label>
+                                            <transition name="fade" mode="out-in">
+                                                <p v-if="!editingSegment.roles" :key="'view-joining-date'"
+                                                    class="text-gray-900 font-semibold text-md py-3">
+                                                    {{ user.profile?.join_date || 'Not Set' }}
+                                                </p>
+                                                <div v-else :key="'edit-joining-date'">
+                                                    <BaseInput v-model="form.join_date" type="date"
+                                                        placeholder="Joining Date" :error="form.errors.join_date" />
+                                                </div>
+                                            </transition>
+                                        </div>
+                            
+                                    </div>
+                                    <!--Department-->
+                                        <div class="space-y-1">
+                                            <label
+                                                class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
+                                            <transition name="fade" mode="out-in">
+                                            <div v-if="!editingSegment.roles" class="grid grid-cols-2 gap-4 py-3">
+                                                <div>
+                                                    <p class="text-gray-900 font-semibold text-md">
+                                                        {{ user.department?.name || 'No Department' }}
+                                                    </p>
+                                                    <p class="text-gray-500 text-xs">
+                                                        {{ user.department?.description || 'No description available' }}
+                                                    </p>
+                                               </div>
+
+                                                <div v-if="user.id === user.department?.hod_id" class="pt-1">
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
+                                                        Head of Department (HOD)
+                                                    </span>
+                                                </div>
                                             </div>
 
+                                            <div v-else :key="'edit-dept'" class="space-y-4">
+                                                    <RoundedSelect v-model="form.department_id" variant="form"
+                                                        label="Select a department..." :options="departments"
+                                                        :extra-options="[{ id: 'others', name: 'Others (Create new)' }]"
+                                                        option-label="name" option-value="id" />
+
+                                                     <div class="space-y-1">
+                                                    <label
+                                                        class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                                                    <transition name="fade" mode="out-in">
+
+                                                        <div :key="'edit-dept'">
+                                                            <BaseInput v-model="form.description" type="text"
+                                                                placeholder="Description"
+                                                                :error="form.errors.description" />
+                                                        </div>
+                                                    </transition>
+                                                </div>
+                                                     
+                                                <div v-if="form.department_id && !isOthers" class="mt-3">
+                                                    <div
+                                                        class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                                                        <div class="flex-1">
+                                                            <p
+                                                                class="text-[10px] uppercase tracking-wider font-bold text-slate-500">
+                                                                Current HOD Status</p>
+                                                            <p class="text-sm font-semibold text-slate-700">
+                                                                <template v-if="selectedDeptHOD">
+                                                                    <span v-if="selectedDeptHOD.id === user.uuid"
+                                                                        class="text-emerald-600">
+                                                                        You are currently the Head
+                                                                    </span>
+                                                                    <span v-else class="text-slate-700">
+                                                                        Managed by: {{ selectedDeptHOD.name }}
+                                                                    </span>
+                                                                </template>
+                                                                <template v-else>
+                                                                    <span class="text-slate-400 italic">No HOD
+                                                                        assigned</span>
+                                                                </template>
+                                                            </p>
+                                                        </div>
+                                                        <label
+                                                            class="relative inline-flex items-center cursor-pointer group">
+                                                           <input type="checkbox" v-model="form.is_hod"
+                                                                class="sr-only peer">
+
+                                                            
+
+                                                            <div
+                                                                class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                                                            </div>
+
+                                                            <span
+                                                                class="ml-3 text-xs font-bold uppercase tracking-tight">
+                                                                <template v-if="selectedDeptHOD">
+                                                                    <span v-if="selectedDeptHOD.uuid !== user.uuid"
+                                                                        class="text-amber-600">
+                                                                        Replace {{ selectedDeptHOD.name }}
+                                                                    </span>
+                                                                    <span v-else class="text-emerald-600">
+                                                                        Current HOD
+                                                                    </span>
+                                                                </template>
+                                                                <span v-else class="text-slate-500">
+                                                                    Assign as HOD
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+
+                                                    <!--confirm modal if user wants to replace HOD-->
+                                                    <HODStatusWarning :is-hod="form.is_hod"
+                                                                :selected-hod="selectedDeptHOD"
+                                                                :current-user-uuid="user.uuid"
+                                                                :current-user-name="user.name" />
+                                                </div>
+
+                                                <transition enter-active-class="transition duration-200 ease-out"
+                                                    enter-from-class="transform scale-95 opacity-0"
+                                                    enter-to-class="transform scale-100 opacity-100"
+                                                    leave-active-class="transition duration-150 ease-in"
+                                                    leave-from-class="transform scale-100 opacity-100"
+                                                    leave-to-class="transform scale-95 opacity-0">
+                                                    <div v-if="isOthers"
+                                                        class="bg-primary/5 border border-primary/10 rounded-2xl p-6 relative overflow-hidden">
+
+                                                        <div class="flex items-center gap-2 mb-4">
+                                                            <div class="p-2 bg-primary text-white rounded-lg">
+                                                                <Plus :size="16" />
+                                                            </div>
+                                                            <h4 class="text-sm font-bold text-slate-800">New Department
+                                                                Setup</h4>
+                                                        </div>
+
+                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                            <div>
+                                                                <label
+                                                                    class="block text-xs font-bold text-slate-800  mb-2">Department
+                                                                    Name</label>
+                                                                <input v-model="form.name_department" type="text"
+                                                                    class="w-full border-white rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-white px-4 py-3 text-sm"
+                                                                    placeholder="Enter name" />
+                                                            </div>
+
+                                                            <div>
+                                                                <label
+                                                                    class="block text-xs font-bold text-slate-800  mb-2">Description</label>
+                                                                <input v-model="form.description" type="text"
+                                                                    class="w-full border-white rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-white px-4 py-3 text-sm"
+                                                                    placeholder="Briefly describe the unit" />
+                                                            </div>
+
+                                                            <div class="md:col-span-2 pt-2">
+                                                                <div
+                                                                    class="flex flex-col p-4 bg-slate-50/50 rounded-xl border border-slate-100 transition-all duration-200">
+
+                                                                    <label
+                                                                        class="flex items-start gap-4 cursor-pointer select-none">
+                                                                        <div class="pt-1"> <input type="checkbox"
+                                                                                v-model="form.is_hod"
+                                                                                class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
+                                                                        </div>
+                                                                        <div class="flex-1">
+                                                                            <p
+                                                                                class="text-sm font-bold text-slate-700 leading-tight">
+                                                                                Assign as Head of Department (HOD)
+                                                                            </p>
+                                                                            <p class="text-xs text-slate-500 mt-1">
+                                                                                Should this new staff manage this
+                                                                                department?
+                                                                            </p>
+                                                                        </div>
+                                                                    </label>
+
+                                                                    <div v-if="!form.is_hod"
+                                                                        class="mt-4 pt-4 border-t border-slate-100/50">
+                                                                        <RoundedSelect v-model="form.hod_id"
+                                                                            variant="form"
+                                                                            label="Who will this staff report to?"
+                                                                            :options="staffList" option-label="name"
+                                                                            option-value="id" class="w-full" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </transition>
+                                            </div>
                                         </transition>
-                                    </div>
+                                        </div>
                                 </div>
                             </div>
                             <!-- Step 4: Financial & Statutory -->

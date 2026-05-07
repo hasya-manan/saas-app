@@ -54,7 +54,7 @@ class StaffController extends Controller
      */
     public function create()
     {
-        $tenantId = auth()->user()->tenant_id; // ← missing this!
+        $tenantId = auth()->user()->tenant_id; 
 
         return Inertia::render('CompanyAdmin/Staff/Create', [
             'roles' => Role::where('id', '!=', 1)
@@ -149,14 +149,27 @@ class StaffController extends Controller
 
         public function show(User $user) // Laravel finds the user by UUID automatically
     {
+        $tenantId = auth()->user()->tenant_id; 
+
         // Load the relationships needed for your profile cards
-        $user->load(['role', 'profile', 'supervisor']);
+        $user->load(['role', 'profile', 'supervisor', 'department']);
 
         return Inertia::render('CompanyAdmin/Staff/View', [
             'user'    => $user,
             'roles'   => Role::where('id', '!=', 1)
                             ->select('id', 'name', 'display_name')
                             ->get(),
+          'departments' => Department::where('tenant_id', $tenantId)
+                            ->with(['hod' => function($query) {
+                                // We MUST select the primary key (id) AND the uuid for Vue
+                                $query->select('id', 'uuid', 'name'); 
+                            }]) 
+                            ->orderBy('name')
+                            ->get(['id', 'name', 'description', 'hod_id']), // Added hod_id here
+            'staffList'   => User::where('tenant_id', $tenantId)
+                            ->select('id', 'name')
+                            ->orderBy('name')
+                            ->get()
         ]);
     }
 
@@ -171,7 +184,7 @@ class StaffController extends Controller
      */ 
    public function update(Request $request, User $user)
     {
-    // 1. Safety check for the profile ID if user do not have to others table
+    // 1. Safety check for the profile ID if user do not have the others table
         $profileId = $user->profile?->id ?? 'NULL';
 
         $validated = $request->validate([
@@ -206,6 +219,14 @@ class StaffController extends Controller
                 'string',
                 "unique:user_profiles,ic_number,{$profileId}" 
             ],
+
+            //table department 
+            // Department Logic
+            'department_id'  => 'required', // Removed exists:departments,id because it might be 'others'
+            'name_department'=> 'required_if:department_id,others|nullable|string|max:255',
+            'description'    => 'nullable|string',
+            'hod_id'         => 'nullable|exists:users,id',
+            'is_hod'         => 'boolean',
         ]);
 
         // 2. Use the service you declared in the constructor

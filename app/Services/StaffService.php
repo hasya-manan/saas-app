@@ -127,34 +127,78 @@ class StaffService
     /**
      * Handle staff updates (Independent segments)
      */
-    public function updateStaff(User $user, array $data)
+  public function updateStaff(User $user, array $data)
 {
     return DB::transaction(function () use ($user, $data) {
-        // 1. Update User Table 
-        // Only updates fields like name, role, or department if they are in the request
+        $tenantId = auth()->user()->tenant_id;
+
+        // ---  CLEANUP STEP ---
+        // If they are being assigned a department, clear their HOD status from ALL departments first
+        // This prevents them from being HOD in two places at once.
+        if (isset($data['department_id'])) {
+            Department::where('tenant_id', $tenantId)
+                ->where('hod_id', $user->id)
+                ->update(['hod_id' => null]);
+        }
+
+        // 1. Handle Department Creation/Selection
+        if (isset($data['department_id'])) {
+            if ($data['department_id'] === 'others') {
+                // Priority: 1. Specific hod_id from dropdown, 2. Current user if is_hod is checked
+                $finalHodId = $data['hod_id'] ?? (($data['is_hod'] ?? false) ? $user->id : null);
+
+                // Create new department for the tenant
+                $department = Department::create([
+                    'tenant_id'   => $tenantId,
+                    'name'        => $data['name_department'] ?? 'New Department',
+                    'description' => $data['description'] ?? null,
+                    'hod_id'      => $finalHodId,
+                ]);
+
+                // CRITICAL: Overwrite 'others' with the new real ID so $user->update() works
+                $data['department_id'] = $department->id;
+                
+            } else {
+                // Update HOD status for an existing department
+                if ($data['is_hod'] ?? false) {
+                    Department::where('id', $data['department_id'])
+                        ->where('tenant_id', $tenantId)
+                        ->update(['hod_id' => $user->id]);
+                } else {
+                    // Optional: Remove HOD status if they were the HOD but are no longer
+                    Department::where('id', $data['department_id'])
+                        ->where('tenant_id', $tenantId)
+                        ->where('hod_id', $user->id)
+                        ->update(['hod_id' => null]);
+                }
+            }
+        }
+
+        // 2. Update User Table (This links the user to the new or existing department_id)
         $user->update(array_intersect_key($data, array_flip([
             'name', 
             'role_id', 
             'department_id'
         ])));
 
-        // 2. Map Profile Data
-        // We filter the data so we don't accidentally overwrite columns with NULL
-        $profileFields = ['ic_number', 'user_gender', 'phone', 'position', 
-                          'dob', 'marital_status', 'join_date', 'address_line_1', 'address_line_2', 
-                          'city', 'postcode', 'state', 'waris_name', 'waris_gender', 'waris_relationship', 
-                          'waris_ic', 'waris_phone'];
+        // 3. Map Profile Data
+        $profileFields = [
+            'ic_number', 'user_gender', 'phone', 'position', 
+            'dob', 'marital_status', 'join_date', 'address_line_1', 'address_line_2', 
+            'city', 'postcode', 'state', 'waris_name', 'waris_gender', 'waris_relationship', 
+            'waris_ic', 'waris_phone'
+        ];
         $profileData = array_intersect_key($data, array_flip($profileFields));
 
-        // 3. The updateOrCreate Logic
+        // 4. Update or Create Profile (Fixes "No Department/No Profile" issues)
         if (!empty($profileData)) {
             $user->profile()->updateOrCreate(
-                ['user_id' => $user->id], // The Search Criteria
-                $profileData              // The Data to Sync
+                ['user_id' => $user->id],
+                $profileData
             );
         }
 
-        return $user;
+        return $user->load(['profile', 'department', 'role']);
     });
 }
 }

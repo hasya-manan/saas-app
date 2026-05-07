@@ -16,9 +16,12 @@ const currentStep = ref(1);
 
 // Define steps for the Profile View
 const steps = [
-    { id: 1, title: 'Personal Info', desc: 'Identity & Contact' },
-    { id: 2, title: 'Address & Identity', desc: 'Location & Staff ID' },
-    { id: 3, title: 'Employment', desc: 'Roles & Department' },
+    { id: 1, title: 'Personal Information', desc: 'Identity & Contact' },
+    { id: 2, title: 'Address', desc: 'Location' },
+    { id: 3, title: 'Employment Details', desc: 'Roles & Department' },
+    { id: 4, title: 'Financial & Statutory', desc: 'Salary, EPF, SOCSO' },
+    { id: 5, title: 'Emergency Contact', desc: 'Contact Person' },
+
 ];
 
 // Inertia Form for handling updates
@@ -57,7 +60,10 @@ const form = useForm({
 const editingSegment = ref({
     personal: false,    
     address: false,     
-    employment: false   
+    employment: false,
+    roles: false,
+    financial: false,
+    emergency: false 
 });
 
 const saveSegment = (segment) => {
@@ -268,7 +274,7 @@ const cancelEdit = (segment) => {
                             <!-- Step 2: Address & Identity -->
                             <div v-if="currentStep === 2" class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
                                 <div class="flex justify-between items-center mb-10">
-                                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Address & Identity</h3>
+                                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Address </h3>
                                      <!-- Action Buttons step 2 -->
                                     <div class="flex gap-2">
                                         <transition name="fade" mode="out-in">
@@ -340,12 +346,104 @@ const cancelEdit = (segment) => {
                                                     :error="form.errors.city" />
                                             </div>
                                         </transition>
-                                </div>
+                                     </div>
+                                     <!--Postcode-->
+                                     <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Postcode</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.address" :key="'view-postcode'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.profile?.postcode || 'Not Set' }}
+                                            </p>
+                                            <div v-else :key="'edit-postcode'">
+
+                                                <BaseInput v-model="form.postcode" placeholder="Postcode"
+                                                    :error="form.errors.postcode" />
+                                            </div>
+                                        </transition>
+                                     </div>
+                                     <!--State-->
+                                       <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">State</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.address" :key="'view-state'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                <!-- Find label by comparing the key to the user's stored gender -->
+                                                {{$page.props.lookups.states.find(g => g.key ===
+                                                    user.profile?.state)?.label || 'Not Set'}}
+                                            </p>
+                                            <div v-else :key="'edit-state'">
+                                                <RoundedSelect v-model="form.states" variant="form"
+                                                    label="Select Marital Status" :options="$page.props.lookups.states"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.states" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.states }}
+                                                </p>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                    
                             </div>
                             </div>
 
                             <!--Step 3: Roles and Departments -->
-                            
+                            <div v-if="currentStep === 3" class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
+                                 <div class="flex justify-between items-center mb-10">
+                                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Departments and Roles </h3>
+                                     <!-- Action Buttons step 2 -->
+                                    <div class="flex gap-2">
+                                        <transition name="fade" mode="out-in">
+                                            <div :key="editingSegment.roles" class="flex gap-2">
+                                                <template v-if="editingSegment.roles">
+                                                    <button @click="cancelEdit('roles')"
+                                                        class="px-4 py-2 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition-all">
+                                                        Cancel
+                                                    </button>
+                                                    <button @click="saveSegment('roles')" :disabled="form.processing"
+                                                        class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
+                                                        Save
+                                                        <Check :size="16" />
+                                                    </button>
+                                                </template>
+                                                <button v-else @click="editingSegment.roles = true"
+                                                    class="px-5 py-2 border border-primary-border text-primary font-bold rounded-2xl hover:bg-primary-light transition-all flex items-center gap-2">
+                                                    Edit
+                                                    <Pencil :size="14" />
+                                                </button>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                </div>
+                               
+                                <div class="space-y-5">
+                                    <!--roles -->
+                                   <div class="space-y-1">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Staff Role</label>
+                                    
+                                    <transition name="fade" mode="out-in">
+                                        <!-- VIEW MODE: Show the role name from the loaded relationship -->
+                                        <p v-if="!editingSegment.roles" :key="'view-role'" class="text-gray-900 font-semibold text-md py-3">
+                                            {{ user.role?.display_name || 'No Role Assigned' }}
+                                        </p>
+
+                                        <!-- EDIT MODE: Show the dropdown using the roles prop -->
+                                        <div v-else :key="'edit-role'">
+                                            <RoundedSelect 
+                                                v-model="form.role_id" 
+                                                variant="form" 
+                                                label="Select a role..."
+                                                :options="roles" 
+                                                option-label="display_name" 
+                                                option-value="id" 
+                                            />
+                                            <p v-if="form.errors.role_id" class="text-red-500 text-xs mt-1">
+                                                {{ form.errors.role_id }}
+                                            </p>
+                                        </div>
+                                    </transition>
+                                </div>
+                                </div>
+                            </div>
                             <!-- Step 4: Financial & Statutory -->
 
                             <!-- Step 5: Emergency Contact -->

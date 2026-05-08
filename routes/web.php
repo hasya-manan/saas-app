@@ -83,6 +83,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
    // department management
     Route::get('/department/index', [DepartmentController::class, 'index'])->name('admin_company.departments.index');
     Route::post('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');
+    Route::put('/department/{department}', [DepartmentController::class, 'update'])->name('admin_company.departments.update');
     });
 
 

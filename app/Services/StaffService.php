@@ -130,7 +130,14 @@ class StaffService
   public function updateStaff(User $user, array $data)
 {
     return DB::transaction(function () use ($user, $data) {
-        $tenantId = auth()->user()->tenant_id;
+        $currentUser = auth()->user();
+
+        // --- THE FIX FOR NULL TENANT_ID ---
+        // If I am a SuperAdmin, I use the company ID of the user I am editing.
+        // If I am a Company Admin, I use my own company ID.
+        $tenantId = ($currentUser->role_id === 1) 
+            ? $user->tenant_id 
+            : $currentUser->tenant_id;
 
         // ---  CLEANUP STEP ---
         // If they are being assigned a department, clear their HOD status from ALL departments first
@@ -174,14 +181,28 @@ class StaffService
             }
         }
 
-        // 2. Update User Table (This links the user to the new or existing department_id)
+        // 3. ROLE ASSIGNMENT (Manual because not fillable) security purposes
+        if (isset($data['role_id'])) {
+            $newRole = (int)$data['role_id'];
+            
+            // Only SuperAdmin can assign Role 1
+            if ($newRole === 1 && $currentUser->role_id !== 1) {
+                abort(403, 'Unauthorized.');
+            }
+
+            if ($currentUser->role_id === 1 || in_array($newRole, [2, 3])) {
+                $user->role_id = $newRole;
+            }
+        }
+
+        // 4. Update User Table (This links the user to the new or existing department_id)
         $user->update(array_intersect_key($data, array_flip([
             'name', 
             'role_id', 
             'department_id'
         ])));
 
-        // 3. Map Profile Data
+        // 5. Update Profile Table
         $profileFields = [
             'ic_number', 'user_gender', 'phone', 'position', 
             'dob', 'marital_status', 'join_date', 'address_line_1', 'address_line_2', 

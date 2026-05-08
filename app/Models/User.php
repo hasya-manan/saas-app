@@ -27,10 +27,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'tenant_id',
+        // 'tenant_id',
         'department_id',
         'supervisor_id',
-        'role_id',
+        // 'role_id',
         'deleted_at',
     ];
 

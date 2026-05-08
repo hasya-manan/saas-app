@@ -50,8 +50,8 @@ class DepartmentController extends Controller
         $department = Department::create($validated);
 
         // 2. Update the User (Optional: only if you want the HOD to be IN the dept)
-        if ($request->manager_id) {
-            User::where('id', $request->manager_id)->update([
+        if ($request->hod_id) {
+            User::where('id', $request->hod_id)->update([
                 'department_id' => $department->id
             ]);
         }
@@ -59,5 +59,25 @@ class DepartmentController extends Controller
         return redirect()->back()->with('success', 'Department and HOD updated!');
     }
 
+    public function update(Request $request, Department $department) 
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'hod_id' => 'nullable|exists:users,id',
+            'description' => 'nullable|string',
+        ]);
+
+        // Update the department with new data
+        $department->update($validated);
+
+        // Update the User/HOD if needed
+        if ($request->hod_id) {
+            User::where('id', $request->hod_id)->update([
+                'department_id' => $department->id
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Department updated!');
+    }
     
 }

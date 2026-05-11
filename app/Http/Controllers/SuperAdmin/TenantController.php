@@ -159,10 +159,8 @@ public function userList(Request $request)
         ->whereNotNull('tenant_id')
         // 1. Apply existing User filters (Name, Email, Role)
         ->filter($filters) 
-        // 2. Add the Tenant search logic ONLY for this controller
         ->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
             $query->orWhereHas('tenant', function ($q) use ($filters) {
-                // This reuses the Tenant model's scopeFilter!
                 $q->withTrashed()->filter($filters);
             });
         })

@@ -69,5 +69,3 @@ If role_id is in $fillable: When you run $user->update($request->all()), Laravel
 
 If role_id is NOT in $fillable: Laravel will see the 1, compare it against the $fillable list, see it's not there, and ignore it completely. The user stays a regular staff member.
 
-in progess ( remove role_id and tenant_id for security purpose )
-need to change inside logic controller and services that use role_id 

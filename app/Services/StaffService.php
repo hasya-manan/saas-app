@@ -19,18 +19,29 @@ class StaffService
                 'name'      => $validated['name'],
                 'email'     => $validated['email'],
                 'password'  => bcrypt($validated['password']),
-                'role_id'   => $validated['role_id'],
-                'tenant_id' => $tenantId,
+                //'role_id'   => $validated['role_id'],
+                //'tenant_id' => $tenantId,
             ]);
+
+            // Manually assign the protected fields
+            $user->role_id = $validated['role_id'];
+            $user->tenant_id = $tenantId;
+
+            // Note: We don't call $user->save() yet because we want to 
+            // include department/supervisor in the same database hit.
 
             // ── 2. HANDLE DEPARTMENT ──────────────────────────
             [$departmentId, $supervisorId] = $this->resolveDepartment($validated, $tenantId, $user);
 
-            // ── 3. UPDATE USER WITH DEPARTMENT ────────────────
+            // ── 3. UPDATE USER WITH DEPARTMENT , only fillable fields ─────────────────
             $user->update([
                 'department_id' => $departmentId,
                 'supervisor_id' => $supervisorId,
             ]);
+
+            // This one save() call pushes name, email, password, role_id, 
+            // tenant_id, department_id, and supervisor_id to the DB.
+            $user->save();
 
              // PREPARE DATA: Clean up the UI-specific "other" logic
             // ── 4. RESOLVE RELATIONSHIP LOGIC ─────────────────
@@ -86,6 +97,7 @@ class StaffService
     {
         $departmentId = null;
         $supervisorId = null;
+        $isHod = !empty($validated['is_hod']);
 
         if (!empty($validated['name_department'])) {
             // New department
@@ -93,9 +105,7 @@ class StaffService
                 'tenant_id'   => $tenantId,
                 'name'        => $validated['name_department'],
                 'description' => $validated['description'] ?? null,
-                'hod_id'      => !empty($validated['is_hod'])
-                                    ? $user->id
-                                    : ($validated['hod_id'] ?? null),
+                'hod_id'      => $isHod ? $user->id : ($validated['hod_id'] ?? null),
             ]);
             $departmentId = $department->id;
 
@@ -104,22 +114,36 @@ class StaffService
             }
 
         } else {
-            // Existing department
-            $departmentId = $validated['department_id'] ?? null;
+        // --- 2. EXISTING DEPARTMENT LOGIC ---
+        $requestedId = $validated['department_id'] ?? null;
 
-            if ($departmentId) {
-                $department = Department::find($departmentId);
+        if ($requestedId) {
+            // SECURITY: Manually enforce tenant_id check. 
+            // This prevents a SuperAdmin (who bypasses the Global Scope) 
+            // from accidentally linking a user to a different company's department.
+            $department = Department::where('tenant_id', $tenantId)->find($requestedId);
 
-                if (!empty($validated['is_hod'])) {
-                    if ($department->hod_id) {
+            if ($department) {
+                $departmentId = $department->id;
+
+                if ($isHod) {
+                    // Update the department's HOD to be this user
+                    if ($department->hod_id && $department->hod_id !== $user->id) {
                         Log::info("HOD replaced for department {$department->id}: old={$department->hod_id}, new={$user->id}");
                     }
                     $department->update(['hod_id' => $user->id]);
                 } else {
-                    $supervisorId = $department->hod_id ?? null;
+                    // If not HOD, the existing HOD of this department is my supervisor
+                    $supervisorId = $department->hod_id;
                 }
+            } else {
+                // Security Measure: If the department ID is invalid for this tenant, 
+                // we treat it as no department.
+                $departmentId = null;
+                Log::warning("Unauthorized or invalid department access attempt for tenant $tenantId");
             }
         }
+    }
 
         return [$departmentId, $supervisorId];
     }
@@ -166,41 +190,57 @@ class StaffService
                 $data['department_id'] = $department->id;
                 
             } else {
-                // Update HOD status for an existing department
+                // Update HOD/ description status for an existing department
+                
+                $updateData = [];
+                if (isset($data['description'])) {
+                    $updateData['description'] = $data['description'];
+                }
+
                 if ($data['is_hod'] ?? false) {
-                    Department::where('id', $data['department_id'])
-                        ->where('tenant_id', $tenantId)
-                        ->update(['hod_id' => $user->id]);
+                    $updateData['hod_id'] = $user->id;
                 } else {
-                    // Optional: Remove HOD status if they were the HOD but are no longer
+                    // Remove HOD status if they were the HOD
                     Department::where('id', $data['department_id'])
                         ->where('tenant_id', $tenantId)
                         ->where('hod_id', $user->id)
                         ->update(['hod_id' => null]);
                 }
+
+                // Apply the updates to the existing department
+                if (!empty($updateData)) {
+                    Department::where('id', $data['department_id'])
+                        ->where('tenant_id', $tenantId)
+                        ->update($updateData);
+                }
             }
         }
 
         // 3. ROLE ASSIGNMENT (Manual because not fillable) security purposes
+        // ... inside updateStaff ...
+
         if (isset($data['role_id'])) {
             $newRole = (int)$data['role_id'];
             
-            // Only SuperAdmin can assign Role 1
-            if ($newRole === 1 && $currentUser->role_id !== 1) {
+            // Security check: Admin Company (Role 2) cannot promote someone to SuperAdmin (Role 1)
+            if ($newRole === 1 && auth()->user()->role_id !== 1) {
                 abort(403, 'Unauthorized.');
             }
 
-            if ($currentUser->role_id === 1 || in_array($newRole, [2, 3])) {
-                $user->role_id = $newRole;
-            }
+            // Assign directly to the property
+            $user->role_id = $newRole; 
         }
 
-        // 4. Update User Table (This links the user to the new or existing department_id)
-        $user->update(array_intersect_key($data, array_flip([
+        // 2. The Mass Assignment (This uses $fillable)
+        $user->fill(array_intersect_key($data, array_flip([
             'name', 
-            'role_id', 
             'department_id'
         ])));
+
+
+        // save() will persist BOTH the fillable fields AND your manual role_id change
+        $user->save();
+
 
         // 5. Update Profile Table
         $profileFields = [

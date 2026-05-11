@@ -37,6 +37,7 @@ const openEditPanel = (user) => {
     form.email = user.email;
 
     form.company_name = user.tenant?.company_name || '';
+    form.tenant_id = user.tenant_id;
     form.role_id = user.role_id || '';
 };
 const closeEditPanel = () => {

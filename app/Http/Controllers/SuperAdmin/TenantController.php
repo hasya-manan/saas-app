@@ -148,18 +148,24 @@ public function list(Request $request)
     // this is for the page user list all tenant
     // =========================================    
     
-    public function userList(Request $request) 
+public function userList(Request $request) 
 {
     $filters = $request->only(['search', 'role', 'tenant_id']);
 
     $users = User::withoutGlobalScopes()
-    // FIX: Tell the tenant relationship to include soft-deleted companies
         ->with(['tenant' => function ($query) {
             $query->withTrashed();
         }, 'role'])
-        //->with(['tenant', 'role'])
         ->whereNotNull('tenant_id')
-        ->filter($filters) // Everything is hidden here!
+        // 1. Apply existing User filters (Name, Email, Role)
+        ->filter($filters) 
+        // 2. Add the Tenant search logic ONLY for this controller
+        ->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
+            $query->orWhereHas('tenant', function ($q) use ($filters) {
+                // This reuses the Tenant model's scopeFilter!
+                $q->withTrashed()->filter($filters);
+            });
+        })
         ->latest()
         ->paginate(10)
         ->withQueryString();
@@ -176,23 +182,26 @@ public function list(Request $request)
     ]);
 }
 
-    public function updateUser(Request $request, $id)
+ public function updateUser(Request $request, $id)
 {
-    // Use withoutGlobalScopes so superadmin can access any tenant's user
     $user = User::withoutGlobalScopes()->findOrFail($id);
-
-    // Security check for multi-tenancy
-    if (auth()->user()->role_id !== 1 && $user->tenant_id !== auth()->user()->tenant_id) {
-        abort(403, 'Unauthorized access.');
-    }
 
     $validated = $request->validate([
         'name'    => 'required|string|max:255',
         'email'   => 'required|email|unique:users,email,' . $user->id,
         'role_id' => 'required|integer|exists:roles,id',
+        // Notice: we don't even bother validating tenant_id here 
+        // because we aren't going to let them change it anyway.
     ]);
 
-    $user->update($validated);
+    $user->fill($validated);
+    $user->role_id = $validated['role_id'];
+
+    // DO NOT set $user->tenant_id = $request->tenant_id here.
+    // By simply not touching the tenant_id field, Laravel 
+    // keeps the existing value in the database.
+
+    $user->save();
 
     return redirect()->route('users.list')->with('success', 'User updated successfully.');
 }

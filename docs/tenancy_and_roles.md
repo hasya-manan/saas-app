@@ -50,5 +50,24 @@ Key Features:
 
         The Action: It looks at the person logged in, grabs their tenant_id, and "stamps" it onto the new data before it hits the database.
 
-Why it's great: You don't have to write $request->tenant_id in your Controller. It happens automatically in the background.
+Why it's great: You don't have to write $request->tenant_id in the Controller. It happens automatically in the background.
 addGlobalScope: It ensures that every time the Model talks to the database, it follows the privacy rules (TenantScope).
+
+4. Rules ( validation exist )
+
+4.1. Validation vs. Global Scopes
+Laravel's default exists:table,column validation rule uses a raw database query. It does not know about the TenantScope because validation usually happens before a Model is even involved.
+
+Without the TenantExists rule, an Admin from Company A could send an ID belonging to Company B. The default validator would see the ID exists in the database and say "OK!", leading to data corruption. Your custom rule is the "Guard" at the front door.
+
+5. Why remove role_id from $fillable?
+It's all about Mass Assignment Vulnerability.
+
+Imagine a hacker or a curious user opens the Browser DevTools and manually adds an input to your form: <input name="role_id" value="1">.
+
+If role_id is in $fillable: When you run $user->update($request->all()), Laravel will see the 1 and automatically update that user to a SuperAdmin. They just hacked your system.
+
+If role_id is NOT in $fillable: Laravel will see the 1, compare it against the $fillable list, see it's not there, and ignore it completely. The user stays a regular staff member.
+
+in progess ( remove role_id and tenant_id for security purpose )
+need to change inside logic controller and services that use role_id 

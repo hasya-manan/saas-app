@@ -31,7 +31,7 @@ const steps = [
 // Inertia Form for handling updates
 const form = useForm({
     name: props.user?.name || '',
-
+    role_id: props.user?.role_id || '',
     //table user_profiles
     ic_number: props.user.profile?.ic_number || '',
     user_gender: props.user.profile?.user_gender || '',

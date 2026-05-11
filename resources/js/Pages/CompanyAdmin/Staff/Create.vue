@@ -123,7 +123,6 @@ const stepValidation = computed(() => ({
     4: form.basic_salary > 0 && form.bank_name !== '' && form.bank_account_no !== '',
 
     // Step 5: Emergency Contact + IC Check
-    //5: form.waris_name !== '' && form.waris_phone !== '' && isValidMYIC(form.waris_ic),
     5: (() => {
         // 1. If the name is empty, consider the whole step valid (it's skipped)
         if (!form.waris_name) return true;
@@ -144,12 +143,24 @@ const stepValidation = computed(() => ({
     
 }));
 
+const stepsCompleted = computed(() => ({
+    // For required steps, completion is usually the same as validation
+    1: stepValidation.value[1],
+    2: stepValidation.value[2],
+    3: stepValidation.value[3],
+    4: stepValidation.value[4],
+
+    // For Step 5, we only show the tick if the form fill
+    5: !!form.waris_name && !!form.waris_phone && !!form.waris_relationship
+}));
+
 // Auto-fill Date of Birth (DOB) based on IC Number
 const { startWatchingIc } = useIcParser(form);
 startWatchingIc();
 
 const submit = () => {
     form.post(route('admin_company.users.store'), {
+
         onSuccess: () => {
             form.reset()
             currentStep.value = 1
@@ -163,6 +174,7 @@ const submit = () => {
         }
     })
 }
+
 
 const nextStep = () => {
     if (isLastStep.value) {
@@ -201,7 +213,7 @@ const passwordMismatch = computed(() => {
        <div
             class="flex flex-col lg:flex-row min-h-[calc(100vh-200px)] bg-white rounded-2xl overflow-hidden shadow-sm border border-surface-100">
 
-            <RegistrationWizard v-model:currentStep="currentStep" :steps="steps" :validationSchema="stepValidation">
+            <RegistrationWizard v-model:currentStep="currentStep" :steps="steps" :validationSchema="stepValidation":completedSteps="stepsCompleted">
                 <template #title>New Staff</template>
             </RegistrationWizard>
 

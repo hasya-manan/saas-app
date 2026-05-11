@@ -6,6 +6,10 @@ const props = defineProps({
     validationSchema: {
         type: Object,
         default: () => ({})
+    },
+    completedSteps: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -55,11 +59,11 @@ watch(() => props.currentStep, () => {
                     'relative z-10 w-8 h-8 flex flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 text-xs font-bold',
                     currentStep === step.id
                         ? 'bg-primary border-primary text-white shadow-md scale-110'
-                        : validationSchema[step.id]
+                            : completedSteps[step.id]                            
                             ? 'bg-green-500 border-green-500 text-white'
                             : 'bg-white border-primary-border text-primary'
                 ]">
-                    <span v-if="validationSchema[step.id]">✓</span>
+                    <span v-if="completedSteps[step.id]">✓</span>
                     <span v-else>{{ step.id }}</span>
                 </div>
 

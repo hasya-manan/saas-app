@@ -65,7 +65,13 @@ const form = useForm({
     name_department: '', 
     hod_id: '',
     
-    // Add other fields for steps 2 and 3 here
+    // financial
+    basic_salary: props.user.finance?.basic_salary || '',
+    epf: props.user.finance?.epf || '',
+    socso: props.user.finance?.socso || '',
+    bank_name: props.user.finance?.bank_name || '',
+    bank_account: props.user.finance?.bank_account || '',
+    bank_account_name: props.user.finance?.bank_account_name || '',
 });
 
 
@@ -711,6 +717,152 @@ const selectedDeptHOD = computed(() => {
                                 </div>
                             </div>
                             <!-- Step 4: Financial & Statutory -->
+                             <div v-if="currentStep === 4" class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
+                                <div class="flex justify-between items-center mb-10">
+                                     <h3 class="text-xl font-bold text-gray-900 tracking-tight">Financial & Statutory
+                                    </h3>
+                                    <!--Button-->
+                                    <div class="flex gap-2">
+                                        <transition name="fade" mode="out-in">
+                                            <div :key="editingSegment.financial" class="flex gap-2">
+                                                <template v-if="editingSegment.financial">
+                                                    <button @click="cancelEdit('financial')"
+                                                        class="px-4 py-2 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition-all">
+                                                        Cancel
+                                                    </button>
+                                                    <button @click="saveSegment('financial')" :disabled="form.processing"
+                                                        class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
+                                                        Save
+                                                        <Check :size="16" />
+                                                    </button>
+                                                </template>
+                                                <button v-else @click="editingSegment.financial = true"
+                                                    class="px-5 py-2 border border-primary-border text-primary font-bold rounded-2xl hover:bg-primary-light transition-all flex items-center gap-2">
+                                                    Edit
+                                                    <Pencil :size="14" />
+                                                </button>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                </div>
+                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Banking Information
+                                </h3>
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Basic Salary</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.financial" :key="'view-name'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.finance.basic_salary || '-' }}
+                                            </p>
+                                            <div v-else>
+                                                <BaseInput v-model="form.basic_salary" placeholder="Enter full name"
+                                                    :error="form.errors.basic_salary" />
+                                            </div>
+                                        </transition>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Bank Name
+                                            </label>
+                                        <p class="text-gray-900 font-semibold text-md py-3">{{ user.finance.bank_name || '-' }}</p>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="editingSegment.financial" :key="'view-name'"
+                                                class="text-[10px] text-slate-400 block -mt-2">
+                                            {{ user.finance.bank_name || 'Not Set' }}
+                                        </p>
+                                        </transition>
+                                    </div>
+                                    <!--IC Number-->
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Account Number</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.finance" :key="'view-name'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.finance.bank_account_no || 'Not Set' }}
+                                            </p>
+                                            <div v-else :key="'edit-name'">
+
+                                                <BaseInput v-model="form.bank_account_no" placeholder="Account Number"
+                                                    :error="form.errors.bank_account_no" />
+                                            </div>
+                                        </transition>
+                                    </div>
+
+                                    <!--dob-->
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Epf Number</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.finance" :key="'view-epf'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.finance.epf_no || 'Not Set' }}
+                                            </p>
+                                            
+                                            <div v-else :key="'edit-epf'">
+                                                <BaseInput v-model="form.epf_no" placeholder="Epf Number" type="number"
+                                                    :error="form.errors.epf_no" />
+
+                                            </div>
+                                        </transition>
+                                    </div>
+                                    <!-- Gender  -->
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.personal" :key="'view-gender'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                <!-- Find label by comparing the key to the user's stored gender -->
+                                                {{$page.props.lookups.genders.find(g => g.key ===
+                                                    user.profile?.user_gender)?.label || 'Not Set'}}
+                                            </p>
+                                            <div v-else :key="'edit-gender'">
+                                                <RoundedSelect v-model="form.user_gender" variant="form"
+                                                    label="Select Gender" :options="$page.props.lookups.genders"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.user_gender" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.user_gender }}
+                                                </p>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                    <!-- Phone Number -->
+                                    <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
+                                            Number</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.personal" :key="'view-name'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.profile?.phone || 'Not Set' }}
+                                            </p>
+                                            <div v-else :key="'edit-name'">
+                                                <BaseInput v-model="form.phone" placeholder="0190909090"
+                                                    :error="form.errors.phone" />
+                                            </div>
+                                        </transition>
+                                    </div>
+                                    <!--Marital Status-->
+                                     <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Marital Status</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.personal" :key="'view-gender'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                <!-- Find label by comparing the key to the user's stored gender -->
+                                                {{$page.props.lookups.genders.find(g => g.key ===
+                                                    user.profile?.marital_status)?.label || 'Not Set'}}
+                                            </p>
+                                            <div v-else :key="'edit-marital'">
+                                                <RoundedSelect v-model="form.marital_status" variant="form"
+                                                    label="Select Marital Status" :options="$page.props.lookups.marital_statuses"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.marital_status" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.marital_status }}
+                                                </p>
+                                            </div>
+                                        </transition>
+                                    </div>
+                                </div>
+
+
+                             </div>
 
                             <!-- Step 5: Emergency Contact -->
 

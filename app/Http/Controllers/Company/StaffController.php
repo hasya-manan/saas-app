@@ -152,7 +152,7 @@ class StaffController extends Controller
         $tenantId = auth()->user()->tenant_id; 
 
         // Load the relationships needed for your profile cards
-        $user->load(['role', 'profile', 'supervisor', 'department']);
+        $user->load(['role', 'profile', 'supervisor', 'department', 'finance']);
 
         return Inertia::render('CompanyAdmin/Staff/View', [
             'user'    => $user,

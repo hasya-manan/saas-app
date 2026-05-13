@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue'; 
-import { Head, Link, useForm} from '@inertiajs/vue3';
+import { Head, useForm} from '@inertiajs/vue3';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import BaseInput from '@/Components/BaseInput.vue';
 import HODStatusWarning  from '@/Components/Staff/HODStatusWarning.vue';
@@ -10,7 +10,7 @@ import HODStatusWarning  from '@/Components/Staff/HODStatusWarning.vue';
 import { ref, computed, watch} from 'vue';
 import {Pencil, CircleCheck , Plus} from 'lucide-vue-next';
 import { useIcParser } from '@/Composables/useIcParser';
-
+import { useMasking } from '@/Composables/useMasking';
 
 
 const props = defineProps({
@@ -138,6 +138,9 @@ const selectedDeptHOD = computed(() => {
     // 2. Return the HOD object (which contains the user uuid, name, etc.)
     return dept ? dept.hod : null; 
 });
+
+const { maskAccount } = useMasking();
+const displayAccount = computed(() => maskAccount(props.user.finance?.bank_account_no));
 </script>
 
 <template>
@@ -793,7 +796,7 @@ const selectedDeptHOD = computed(() => {
                                             <div v-else :key="'edit-bank-name'">
                                                
                                                     <RoundedSelect v-model="form.bank_name" variant="form"
-                                                    label="Select Gender" :options="$page.props.lookups.banks"
+                                                    label="Select bank name" :options="$page.props.lookups.banks"
                                                     option-label="label" option-value="key" />
                                                 <p v-if="form.errors.bank_name" class="text-red-500 text-xs mt-1">
                                                     {{ form.errors.bank_name }}
@@ -807,7 +810,7 @@ const selectedDeptHOD = computed(() => {
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.financial" :key="'view-accountnum'"
                                                 class="text-gray-900 font-semibold text-md py-3">
-                                                {{ user.finance?.bank_account_no || 'Not Set' }}
+                                              {{ displayAccount }}
                                             </p>
                                                <div v-else :key="'edit-accountnum'">
                                                 <BaseInput v-model="form.bank_account_no" placeholder="Enter bank account number"
@@ -887,7 +890,7 @@ const selectedDeptHOD = computed(() => {
                                     <!-- Socso Category-->
 
                                      <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Socso Type</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Socso Category</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.financial" :key="'view-socso'"
                                                 class="text-gray-900 font-semibold text-md py-3">
@@ -897,10 +900,22 @@ const selectedDeptHOD = computed(() => {
                                             </p>
                                                <div v-else :key="'edit-socso'">
                                                 <RoundedSelect v-model="form.socso_type" variant="form"
-                                                    label="Select Gender" :options="$page.props.lookups.socso_types"
+                                                    label="Select Catehory" :options="$page.props.lookups.socso_types"
                                                     option-label="label" option-value="key" />
                                                 <p v-if="form.errors.socso_type" class="text-red-500 text-xs mt-1">
                                                     {{ form.errors.socso_type }}
+                                                </p>
+                                            </div>
+                                        </transition>
+                                          <transition enter-active-class="transition duration-200 ease-out"
+                                            enter-from-class="opacity-0 -translate-y-1"
+                                            enter-to-class="opacity-100 translate-y-0">
+                                            <div v-if="form.socso_type"
+                                                class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl">
+                                                <p class="text-[11px] text-blue-700 leading-tight">
+                                                    <span class="font-bold uppercase mr-1">Coverage:</span>
+                                                    {{$page.props.lookups.socso_types.find(i => i.key ===
+                                                    form.socso_type)?.description }}
                                                 </p>
                                             </div>
                                         </transition>

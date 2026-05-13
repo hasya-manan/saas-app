@@ -1,13 +1,18 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm} from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
-import RegistrationWizard from '@/Components/RegistrationWizard.vue'; // Import your component
-import { ref, computed, watch} from 'vue';
-import {Pencil, Check, X, Plus} from 'lucide-vue-next';
+import RegistrationWizard from '@/Components/RegistrationWizard.vue'; 
+import { Head, Link, useForm} from '@inertiajs/vue3';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import BaseInput from '@/Components/BaseInput.vue';
+import HODStatusWarning  from '@/Components/Staff/HODStatusWarning.vue';
+
+import { ref, computed, watch} from 'vue';
+import {Pencil, CircleCheck , Plus} from 'lucide-vue-next';
 import { useIcParser } from '@/Composables/useIcParser';
+
+
+
 const props = defineProps({
     user: Object,
     roles: Array,
@@ -67,11 +72,16 @@ const form = useForm({
     
     // financial
     basic_salary: props.user.finance?.basic_salary || '',
-    epf: props.user.finance?.epf || '',
-    socso: props.user.finance?.socso || '',
     bank_name: props.user.finance?.bank_name || '',
-    bank_account: props.user.finance?.bank_account || '',
-    bank_account_name: props.user.finance?.bank_account_name || '',
+    bank_account_no: props.user.finance?.bank_account_no || '',
+    epf_no: props.user.finance?.epf_no || '',
+    epf_rate_employee: props.user.finance?.epf_rate_employee || '',
+    epf_rate_employer: props.user.finance?.epf_rate_employer || '',
+    socso_no: props.user.finance?.socso_no || '',
+    socso_type: props.user.finance?.socso_type || '',
+    tax_no: props.user.finance?.tax_no || '',
+    eis_enabled: props.user.finance?.eis_enabled || '',
+   
 });
 
 
@@ -205,7 +215,7 @@ const selectedDeptHOD = computed(() => {
                                                     <button @click="saveSegment('personal')" :disabled="form.processing"
                                                         class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
                                                         Save
-                                                        <Check :size="16" />
+                                                        <CircleCheck :size="16" />
                                                     </button>
                                                 </template>
                                                 <button v-else @click="editingSegment.personal = true"
@@ -221,13 +231,13 @@ const selectedDeptHOD = computed(() => {
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
                                     <!-- Full Name -->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                                       <label class="block text-sm font-semibold text-slate-700 mb-1">Full Name</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.personal" :key="'view-name'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user?.name || '-' }}
                                             </p>
-                                            <div v-else>
+                                            <div v-else :key="'edit-name'">
                                                 <BaseInput v-model="form.name" placeholder="Enter full name"
                                                     :error="form.errors.name" />
                                             </div>
@@ -235,7 +245,7 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!-- Email Address (Username - Locked) -->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Email
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Email
                                             Address</label>
                                         <p class="text-gray-900 font-semibold text-md py-3">{{ user?.email || '-' }}</p>
                                         <transition name="fade">
@@ -247,13 +257,13 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!--IC Number-->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">IC Number</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">IC Number</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-name'"
+                                            <p v-if="!editingSegment.personal" :key="'view-ic'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user.profile?.ic_number || 'Not Set' }}
                                             </p>
-                                            <div v-else :key="'edit-name'">
+                                            <div v-else :key="'edit-ic'">
 
                                                 <BaseInput v-model="form.ic_number" placeholder="IC Number"
                                                     :error="form.errors.ic_number" />
@@ -263,7 +273,7 @@ const selectedDeptHOD = computed(() => {
 
                                     <!--dob-->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Date of Birth</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Date of Birth</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.personal" :key="'view-dob'"
                                                 class="text-gray-900 font-semibold text-md py-3">
@@ -280,7 +290,7 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!-- Gender  -->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Gender</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.personal" :key="'view-gender'"
                                                 class="text-gray-900 font-semibold text-md py-3">
@@ -300,14 +310,14 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!-- Phone Number -->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Phone
                                             Number</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-name'"
+                                            <p v-if="!editingSegment.personal" :key="'view-phone'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 {{ user.profile?.phone || 'Not Set' }}
                                             </p>
-                                            <div v-else :key="'edit-name'">
+                                            <div v-else :key="'edit-phone'">
                                                 <BaseInput v-model="form.phone" placeholder="0190909090"
                                                     :error="form.errors.phone" />
                                             </div>
@@ -315,9 +325,9 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!--Marital Status-->
                                      <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Marital Status</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Marital Status</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-gender'"
+                                            <p v-if="!editingSegment.personal" :key="'view-marital'"
                                                 class="text-gray-900 font-semibold text-md py-3">
                                                 <!-- Find label by comparing the key to the user's stored gender -->
                                                 {{$page.props.lookups.genders.find(g => g.key ===
@@ -352,7 +362,7 @@ const selectedDeptHOD = computed(() => {
                                                     <button @click="saveSegment('address')" :disabled="form.processing"
                                                         class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
                                                         Save
-                                                        <Check :size="16" />
+                                                        <CircleCheck :size="16" />
                                                     </button>
                                                 </template>
                                                 <button v-else @click="editingSegment.address = true"
@@ -367,7 +377,7 @@ const selectedDeptHOD = computed(() => {
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
                                     <!-- Address 1 -->
                                    <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Address 
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Address 
                                             1</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.address" :key="'view-address1'"
@@ -383,7 +393,7 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!-- Address 2 -->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Address 
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Address 
                                             2</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.address" :key="'view-address2'"
@@ -399,7 +409,7 @@ const selectedDeptHOD = computed(() => {
                                     </div>
                                     <!--city-->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">City</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">City</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.address" :key="'view-city'"
                                                 class="text-gray-900 font-semibold text-md py-3">
@@ -414,7 +424,7 @@ const selectedDeptHOD = computed(() => {
                                      </div>
                                      <!--Postcode-->
                                      <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Postcode</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Postcode</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.address" :key="'view-postcode'"
                                                 class="text-gray-900 font-semibold text-md py-3">
@@ -429,7 +439,7 @@ const selectedDeptHOD = computed(() => {
                                      </div>
                                      <!--State-->
                                        <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">State</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">State</label>
                                         <transition name="fade" mode="out-in">
                                             <p v-if="!editingSegment.address" :key="'view-state'"
                                                 class="text-gray-900 font-semibold text-md py-3">
@@ -469,7 +479,7 @@ const selectedDeptHOD = computed(() => {
                                                     <button @click="saveSegment('roles')" :disabled="form.processing"
                                                         class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
                                                         Save
-                                                        <Check :size="16" />
+                                                        <CircleCheck :size="16" />
                                                     </button>
                                                 </template>
                                                 <button v-else @click="editingSegment.roles = true"
@@ -485,7 +495,7 @@ const selectedDeptHOD = computed(() => {
                                 <div class="space-y-5">
                                     <!--roles -->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Staff
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Staff
                                             Role</label>
 
                                         <transition name="fade" mode="out-in">
@@ -510,7 +520,7 @@ const selectedDeptHOD = computed(() => {
                                         <!--Position-->
                                         <div class="space-y-1">
                                             <label
-                                                class="block text-sm font-semibold text-slate-700 mb-2">Job Position</label>
+                                                class="block text-sm font-semibold text-slate-700 mb-1">Job Position</label>
                                             <transition name="fade" mode="out-in">
                                                 <p v-if="!editingSegment.roles" :key="'view-position'"
                                                     class="text-gray-900 font-semibold text-md py-3">
@@ -525,7 +535,7 @@ const selectedDeptHOD = computed(() => {
                                         <!--Joining Date-->
 
                                         <div class="space-y-1">
-                                            <label class="block text-sm font-semibold text-slate-700 mb-2">Joining
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Joining
                                                 Date</label>
                                             <transition name="fade" mode="out-in">
                                                 <p v-if="!editingSegment.roles" :key="'view-joining-date'"
@@ -543,7 +553,7 @@ const selectedDeptHOD = computed(() => {
                                     <!--Department-->
                                         <div class="space-y-1">
                                             <label
-                                                class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
+                                                class="block text-sm font-semibold text-slate-700 mb-1">Department</label>
                                             <transition name="fade" mode="out-in">
                                             <div v-if="!editingSegment.roles" class="grid grid-cols-2 gap-4 py-3">
                                                 <div>
@@ -571,7 +581,7 @@ const selectedDeptHOD = computed(() => {
 
                                                      <div class="space-y-1">
                                                     <label
-                                                        class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                                                        class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
                                                     <transition name="fade" mode="out-in">
 
                                                         <div :key="'edit-dept'">
@@ -609,8 +619,6 @@ const selectedDeptHOD = computed(() => {
                                                             class="relative inline-flex items-center cursor-pointer group">
                                                            <input type="checkbox" v-model="form.is_hod"
                                                                 class="sr-only peer">
-
-                                                            
 
                                                             <div
                                                                 class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
@@ -661,7 +669,7 @@ const selectedDeptHOD = computed(() => {
                                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                             <div>
                                                                 <label
-                                                                    class="block text-xs font-bold text-slate-800  mb-2">Department
+                                                                    class="block text-xs font-bold text-slate-800  mb-1">Department
                                                                     Name</label>
                                                                 <input v-model="form.name_department" type="text"
                                                                     class="w-full border-white rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-white px-4 py-3 text-sm"
@@ -670,43 +678,43 @@ const selectedDeptHOD = computed(() => {
 
                                                             <div>
                                                                 <label
-                                                                    class="block text-xs font-bold text-slate-800  mb-2">Description</label>
+                                                                    class="block text-xs font-bold text-slate-800  mb-1">Description</label>
                                                                 <input v-model="form.description" type="text"
                                                                     class="w-full border-white rounded-xl shadow-sm focus:ring-primary focus:border-primary bg-white px-4 py-3 text-sm"
                                                                     placeholder="Briefly describe the unit" />
                                                             </div>
 
                                                             <div class="md:col-span-2 pt-2">
-                                                                <div
-                                                                    class="flex flex-col p-4 bg-slate-50/50 rounded-xl border border-slate-100 transition-all duration-200">
+                                                            <div
+                                                                class="flex flex-col p-4 bg-slate-50/50 rounded-xl border border-slate-100 transition-all duration-200">
 
-                                                                    <label
-                                                                        class="flex items-start gap-4 cursor-pointer select-none">
-                                                                        <div class="pt-1"> <input type="checkbox"
-                                                                                v-model="form.is_hod"
-                                                                                class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
-                                                                        </div>
-                                                                        <div class="flex-1">
-                                                                            <p
-                                                                                class="text-sm font-bold text-slate-700 leading-tight">
-                                                                                Assign as Head of Department (HOD)
-                                                                            </p>
-                                                                            <p class="text-xs text-slate-500 mt-1">
-                                                                                Should this new staff manage this
-                                                                                department?
-                                                                            </p>
-                                                                        </div>
-                                                                    </label>
-
-                                                                    <div v-if="!form.is_hod"
-                                                                        class="mt-4 pt-4 border-t border-slate-100/50">
-                                                                        <RoundedSelect v-model="form.hod_id"
-                                                                            variant="form"
-                                                                            label="Who will this staff report to?"
-                                                                            :options="staffList" option-label="name"
-                                                                            option-value="id" class="w-full" />
+                                                                <label
+                                                                    class="flex items-start gap-4 cursor-pointer select-none">
+                                                                    <div class="pt-1"> <input type="checkbox"
+                                                                            v-model="form.is_hod"
+                                                                            class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
                                                                     </div>
+                                                                    <div class="flex-1">
+                                                                        <p
+                                                                            class="text-sm font-bold text-slate-700 leading-tight">
+                                                                            Assign as Head of Department (HOD)
+                                                                        </p>
+                                                                        <p class="text-xs text-slate-500 mt-1">
+                                                                            Should this new staff manage this
+                                                                            department?
+                                                                        </p>
+                                                                    </div>
+                                                                </label>
+
+                                                                <div v-if="!form.is_hod"
+                                                                    class="mt-4 pt-4 border-t border-slate-100/50">
+                                                                    <RoundedSelect v-model="form.hod_id"
+                                                                        variant="form"
+                                                                        label="Who will this staff report to?"
+                                                                        :options="staffList" option-label="name"
+                                                                        option-value="id" class="w-full" />
                                                                 </div>
+                                                            </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -733,7 +741,7 @@ const selectedDeptHOD = computed(() => {
                                                     <button @click="saveSegment('financial')" :disabled="form.processing"
                                                         class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
                                                         Save
-                                                        <Check :size="16" />
+                                                        <CircleCheck  :size="16" />
                                                     </button>
                                                 </template>
                                                 <button v-else @click="editingSegment.financial = true"
@@ -745,127 +753,208 @@ const selectedDeptHOD = computed(() => {
                                         </transition>
                                     </div>
                                 </div>
-                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Banking Information
-                                </h3>
-                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
-                                    <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Basic Salary</label>
+                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
+                                 <!-- Section Header: Uses col-span-full to sit above both columns -->
+                                  
+                                    <h3 class="col-span-full text-xs font-bold text-primary uppercase tracking-widest ">
+                                        Banking Information
+                                    </h3>
+                                    <!--Basic Salary-->
+                                    <div class="space-y-1 ">
+                                      
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Basic Salary</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.financial" :key="'view-name'"
+                                            <p v-if="!editingSegment.financial" :key="'view-salary'"
                                                 class="text-gray-900 font-semibold text-md py-3">
-                                                {{ user.finance.basic_salary || '-' }}
+                                                {{ user.finance?.basic_salary ?
+                                                    Number(user.finance?.basic_salary).toLocaleString('en-MY', {
+                                                minimumFractionDigits: 2 }) : '0.00' }}
                                             </p>
-                                            <div v-else>
-                                                <BaseInput v-model="form.basic_salary" placeholder="Enter full name"
-                                                    :error="form.errors.basic_salary" />
+
+                                            <div v-else :key="'edit-salary'">
+                                                <BaseInput v-model="form.basic_salary" type="number" step="0.01"
+                                                    placeholder="0.00" :error="form.errors.basic_salary" />
+                                                <p class="text-[10px] text-slate-500 mt-1">Enter amount in RM (e.g.
+                                                    2500.50)</p>
                                             </div>
                                         </transition>
                                     </div>
+                                   <!--bank name-->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Bank Name
-                                            </label>
-                                        <p class="text-gray-900 font-semibold text-md py-3">{{ user.finance.bank_name || '-' }}</p>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Bank  Name</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="editingSegment.financial" :key="'view-name'"
-                                                class="text-[10px] text-slate-400 block -mt-2">
-                                            {{ user.finance.bank_name || 'Not Set' }}
-                                        </p>
+                                            <p v-if="!editingSegment.financial" :key="'view-bank-name'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                          
+                                                  <!-- Find label by comparing the key to the user's stored gender -->
+                                                {{$page.props.lookups.banks.find(g => g.key ===
+                                                    user.finance?.bank_name)?.label || 'Not Set'}}
+                                            </p>
+                                            <div v-else :key="'edit-bank-name'">
+                                               
+                                                    <RoundedSelect v-model="form.bank_name" variant="form"
+                                                    label="Select Gender" :options="$page.props.lookups.banks"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.bank_name" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.bank_name }}
+                                                </p>
+                                            </div>
                                         </transition>
                                     </div>
-                                    <!--IC Number-->
+                                   <!--Account Number-->
                                     <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Account Number</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Account Number</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.finance" :key="'view-name'"
+                                            <p v-if="!editingSegment.financial" :key="'view-accountnum'"
                                                 class="text-gray-900 font-semibold text-md py-3">
-                                                {{ user.finance.bank_account_no || 'Not Set' }}
+                                                {{ user.finance?.bank_account_no || 'Not Set' }}
                                             </p>
-                                            <div v-else :key="'edit-name'">
-
-                                                <BaseInput v-model="form.bank_account_no" placeholder="Account Number"
+                                               <div v-else :key="'edit-accountnum'">
+                                                <BaseInput v-model="form.bank_account_no" placeholder="Enter bank account number"
                                                     :error="form.errors.bank_account_no" />
                                             </div>
                                         </transition>
                                     </div>
+                                    <!-- Statutory Contributions Section -->
+                                   <h3 class="col-span-full text-xs font-bold text-primary uppercase tracking-widest ">
+                                        Statutory Contributions
+                                    </h3>
+                                    <!--3 column -->
+                                    <div class="col-span-full grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                                    <!--dob-->
-                                    <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Epf Number</label>
-                                        <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.finance" :key="'view-epf'"
-                                                class="text-gray-900 font-semibold text-md py-3">
-                                                {{ user.finance.epf_no || 'Not Set' }}
-                                            </p>
-                                            
-                                            <div v-else :key="'edit-epf'">
-                                                <BaseInput v-model="form.epf_no" placeholder="Epf Number" type="number"
-                                                    :error="form.errors.epf_no" />
-
-                                            </div>
-                                        </transition>
-                                    </div>
-                                    <!-- Gender  -->
-                                    <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Gender</label>
-                                        <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-gender'"
-                                                class="text-gray-900 font-semibold text-md py-3">
-                                                <!-- Find label by comparing the key to the user's stored gender -->
-                                                {{$page.props.lookups.genders.find(g => g.key ===
-                                                    user.profile?.user_gender)?.label || 'Not Set'}}
-                                            </p>
-                                            <div v-else :key="'edit-gender'">
-                                                <RoundedSelect v-model="form.user_gender" variant="form"
-                                                    label="Select Gender" :options="$page.props.lookups.genders"
-                                                    option-label="label" option-value="key" />
-                                                <p v-if="form.errors.user_gender" class="text-red-500 text-xs mt-1">
-                                                    {{ form.errors.user_gender }}
+                                        <!-- EPF Number -->
+                                        <div class="space-y-1">
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1">EPF
+                                                Number</label>
+                                            <transition name="fade" mode="out-in">
+                                                <p v-if="!editingSegment.financial" :key="'view-epf'"
+                                                    class="text-gray-900 font-semibold text-md py-3">
+                                                    {{ user.finance?.epf_no || 'Not Set' }}
                                                 </p>
-                                            </div>
-                                        </transition>
+                                                <div v-else :key="'edit-epf'">
+                                                    <BaseInput v-model="form.epf_no" type="number"
+                                                        :error="form.errors.epf_no" />
+                                                </div>
+                                            </transition>
+                                        </div>
+
+                                        <!-- Employee % -->
+                                        <div class="space-y-1">
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Employee
+                                                %</label>
+                                            <transition name="fade" mode="out-in">
+                                                <p v-if="!editingSegment.financial" :key="'view-emp-pct'"
+                                                    class="text-gray-900 font-semibold text-md py-3">
+                                                    {{ user.finance?.epf_rate_employee  }}%
+                                                </p>
+                                                <div v-else :key="'edit-emp-pct'">
+                                                    <BaseInput v-model="form.epf_rate_employee" type="number"
+                                                        :error="form.errors.epf_rate_employee" />
+                                                </div>
+                                            </transition>
+                                        </div>
+
+                                        <!-- Employer % -->
+                                        <div class="space-y-1">
+                                            <label class="block text-sm font-semibold text-slate-700 mb-1">Employer
+                                                %</label>
+                                            <transition name="fade" mode="out-in">
+                                                <p v-if="!editingSegment.financial" :key="'view-empr-pct'"
+                                                    class="text-gray-900 font-semibold text-md py-3">
+                                                    {{ user.finance?.epf_rate_employer }}%
+                                                </p>
+                                                <div v-else :key="'edit-empr-pct'">
+                                                    <BaseInput v-model="form.epf_rate_employer" type="number"
+                                                        :error="form.errors.epf_rate_employer" />
+                                                </div>
+                                            </transition>
+                                        </div>
                                     </div>
-                                    <!-- Phone Number -->
-                                    <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Phone
-                                            Number</label>
-                                        <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-name'"
-                                                class="text-gray-900 font-semibold text-md py-3">
-                                                {{ user.profile?.phone || 'Not Set' }}
-                                            </p>
-                                            <div v-else :key="'edit-name'">
-                                                <BaseInput v-model="form.phone" placeholder="0190909090"
-                                                    :error="form.errors.phone" />
-                                            </div>
-                                        </transition>
-                                    </div>
-                                    <!--Marital Status-->
+                                    <!--socso number-->
                                      <div class="space-y-1">
-                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Marital Status</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Socso Number</label>
                                         <transition name="fade" mode="out-in">
-                                            <p v-if="!editingSegment.personal" :key="'view-gender'"
+                                            <p v-if="!editingSegment.financial" :key="'view-socso'"
                                                 class="text-gray-900 font-semibold text-md py-3">
-                                                <!-- Find label by comparing the key to the user's stored gender -->
-                                                {{$page.props.lookups.genders.find(g => g.key ===
-                                                    user.profile?.marital_status)?.label || 'Not Set'}}
+                                                {{ user.finance?.socso_no || 'Not Set' }}
                                             </p>
-                                            <div v-else :key="'edit-marital'">
-                                                <RoundedSelect v-model="form.marital_status" variant="form"
-                                                    label="Select Marital Status" :options="$page.props.lookups.marital_statuses"
-                                                    option-label="label" option-value="key" />
-                                                <p v-if="form.errors.marital_status" class="text-red-500 text-xs mt-1">
-                                                    {{ form.errors.marital_status }}
-                                                </p>
+                                               <div v-else :key="'edit-socso'">
+                                                <BaseInput v-model="form.socso_no" placeholder="Enter socso  number"
+                                                    :error="form.errors.socso_no" />
                                             </div>
                                         </transition>
                                     </div>
+                                    <!--tax no-->
+                                     <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Tax (LHDN) Number
+                                        </label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.financial" :key="'view-tax'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                                {{ user.finance?.tax_no || 'Not Set' }}
+                                            </p>
+                                               <div v-else :key="'edit-tax'">
+                                                <BaseInput v-model="form.tax_no" placeholder="Enter tax (LHDN) number"
+                                                    :error="form.errors.tax_no" />
+                                            </div>
+                                       </transition>
+                                    </div>
+
+                                    <!-- EIS Enabled -->
+
+                                    <div class="space-y-3">
+                                        <label class="block text-sm font-semibold text-slate-700">
+                                            EIS Contribution
+                                        </label>
+
+                                        <transition name="fade" mode="out-in">
+                                            <!-- VIEW MODE: Logic for 1 (True) or 0 (False) -->
+                                            <div v-if="!editingSegment.financial" :key="'view-eis'" class="py-2">
+                                                <span
+                                                    :class="(form.eis_enabled ?? 0) == 1 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-50 text-slate-600 border-slate-100'"
+                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium">
+                                                    <div :class="(form.eis_enabled ?? 0) == 1 ? 'bg-emerald-500' : 'bg-slate-400'"
+                                                        class="w-1.5 h-1.5 rounded-full"></div>
+                                                    {{(form.eis_enabled ?? 0) == 1 ? 'Enabled' : 'Disabled' }}
+                                                </span>
+                                            </div>
+
+                                            <!-- EDIT MODE -->
+                                            <div v-else :key="'edit-eis'">
+                                                <label
+                                                    class="flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl cursor-pointer transition-all border border-slate-200/50">
+                                                    <div class="flex items-center gap-4">
+                                                        <div
+                                                            class="bg-white p-2 rounded-lg shadow-sm border border-slate-100">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="h-5 w-5 text-primary" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-bold text-slate-900">EIS Contribution
+                                                            </p>
+                                                            <p class="text-xs text-slate-600">Employment Insurance
+                                                                System</p>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Vue checkbox will bind true/false to form.eis_enabled -->
+                                                    <input v-model="form.eis_enabled" :true-value="1" :false-value="0"
+                                                        type="checkbox"
+                                                        class="w-6 h-6 text-primary rounded-md border-slate-300 focus:ring-primary cursor-pointer transition-all">
+                                                </label>
+                                            </div>
+                                        </transition>
+                                    </div>
+
                                 </div>
 
-
-                             </div>
+                            </div>
 
                             <!-- Step 5: Emergency Contact -->
-
                         </div>
                     </transition>
                 </div>

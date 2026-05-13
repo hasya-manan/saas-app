@@ -251,7 +251,7 @@ class StaffService
         ];
         $profileData = array_intersect_key($data, array_flip($profileFields));
 
-        // 4. Update or Create Profile (Fixes "No Department/No Profile" issues)
+       
         if (!empty($profileData)) {
             $user->profile()->updateOrCreate(
                 ['user_id' => $user->id],
@@ -259,7 +259,26 @@ class StaffService
             );
         }
 
-        return $user->load(['profile', 'department', 'role']);
+        // 6. FINANCE TABLE 
+        $financeFields = [
+            'basic_salary', 'bank_name', 'bank_account_no', 'epf_no', 
+            'epf_rate_employee', 'epf_rate_employer', 'socso_no', 
+            'socso_type', 'tax_no', 'eis_enabled'
+        ];
+        $financeData = array_intersect_key($data, array_flip($financeFields));
+
+       if (!empty($financeData)) {
+            // Ensure boolean conversion for tinyint(1)
+            if (isset($financeData['eis_enabled'])) {
+                $financeData['eis_enabled'] = (int) $financeData['eis_enabled'];
+            }
+
+            $user->finance()->updateOrCreate(
+                ['user_id' => $user->id],
+                $financeData
+            );
+        }
+        return $user->load(['profile', 'department', 'role', 'finance']);
     });
 }
 }

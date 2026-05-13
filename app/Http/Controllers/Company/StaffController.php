@@ -212,7 +212,7 @@ class StaffController extends Controller
             'waris_ic' => 'sometimes|nullable|string',
             'waris_phone' => 'sometimes|nullable|string',
             
-            // The Fix: unique check while ignoring the current user's profile
+            // unique check while ignoring the current user's profile
             'ic_number' => [
                 'sometimes',
                 'required',
@@ -221,12 +221,29 @@ class StaffController extends Controller
             ],
 
             //table department 
-            // Department Logic
+         
             'department_id'  => 'required', // Removed exists:departments,id because it might be 'others'
             'name_department'=> 'required_if:department_id,others|nullable|string|max:255',
             'description'    => 'nullable|string',
             'hod_id'         => 'nullable|exists:users,id',
             'is_hod'         => 'boolean',
+
+            //table finance
+            'basic_salary'      => 'nullable|numeric|min:0',
+            'bank_name'         => 'nullable|string|max:255',
+            'bank_account_no'   => 'nullable|string|max:50',
+            'epf_no'            => 'nullable|string|max:50',
+            
+           
+            'epf_rate_employee' => 'required|numeric|between:0,100',
+            'epf_rate_employer' => 'required|numeric|between:0,100',
+            
+            'socso_no'          => 'nullable|string|max:50',
+            'socso_type'        => 'required|string', 
+            'tax_no'            => 'nullable|string|max:50',
+            
+            
+            'eis_enabled'       => 'boolean',
         ]);
 
         // 2. Use the service you declared in the constructor

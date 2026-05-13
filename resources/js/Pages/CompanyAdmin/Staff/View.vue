@@ -884,6 +884,27 @@ const selectedDeptHOD = computed(() => {
                                             </div>
                                         </transition>
                                     </div>
+                                    <!-- Socso Category-->
+
+                                     <div class="space-y-1">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Socso Type</label>
+                                        <transition name="fade" mode="out-in">
+                                            <p v-if="!editingSegment.financial" :key="'view-socso'"
+                                                class="text-gray-900 font-semibold text-md py-3">
+                                               
+                                                  {{$page.props.lookups.socso_types.find(g => g.key ===
+                                                    user.finance?.socso_type)?.label || 'Not Set'}}
+                                            </p>
+                                               <div v-else :key="'edit-socso'">
+                                                <RoundedSelect v-model="form.socso_type" variant="form"
+                                                    label="Select Gender" :options="$page.props.lookups.socso_types"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.socso_type" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.socso_type }}
+                                                </p>
+                                            </div>
+                                        </transition>
+                                    </div>
                                     <!--tax no-->
                                      <div class="space-y-1">
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">Tax (LHDN) Number
@@ -901,8 +922,8 @@ const selectedDeptHOD = computed(() => {
                                     </div>
 
                                     <!-- EIS Enabled -->
-
-                                    <div class="space-y-3">
+                                    
+                                    <div class="space-y-3 col-span-full">
                                         <label class="block text-sm font-semibold text-slate-700">
                                             EIS Contribution
                                         </label>
@@ -944,7 +965,7 @@ const selectedDeptHOD = computed(() => {
                                                     <!-- Vue checkbox will bind true/false to form.eis_enabled -->
                                                     <input v-model="form.eis_enabled" :true-value="1" :false-value="0"
                                                         type="checkbox"
-                                                        class="w-6 h-6 text-primary rounded-md border-slate-300 focus:ring-primary cursor-pointer transition-all">
+                                                        class="w-6 h-6 text-primary rounded-md border-slate-600 focus:ring-primary cursor-pointer transition-all">
                                                 </label>
                                             </div>
                                         </transition>

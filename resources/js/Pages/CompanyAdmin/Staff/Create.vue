@@ -641,7 +641,7 @@ const passwordMismatch = computed(() => {
                                             </div>
                                         </div>
                                         <input v-model="form.eis_enabled" type="checkbox"
-                                            class="w-6 h-6 text-primary rounded-md border-slate-300 focus:ring-primary cursor-pointer transition-all">
+                                            class="w-6 h-6 text-primary rounded-md border-slate-600 focus:ring-primary cursor-pointer transition-all">
                                     </label>
                                 </div>
                             </div>

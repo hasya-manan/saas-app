@@ -14,6 +14,23 @@
 
 This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for  HR & payroll use cases and intentionally does **not** use domain-based tenant resolution.
 
+
+### 📸 System Walkthrough
+
+<details>
+  <summary><b>Click to view Super Admin Screenshots</b></summary>
+
+  #### 1. Registration & Onboarding
+  ![Onboard](./screenshots/super-admin/onboard.png)
+
+  #### 2. Company Management
+  ![Manage](./screenshots/super-admin/Manage_company.png)
+
+  #### 3. Edit Access
+  ![Edit](./screenshots/super-admin/Edit_company.png)
+
+</details>
+
 **Key Design Decisions:**
 - ✅ Shared database (no per-tenant DB)
 - ✅ No domain routing table (not needed for this architecture)
@@ -104,21 +121,6 @@ Users (The Actual Data):
 
 ---
 
-### 📸 System Walkthrough
-
-<details>
-  <summary><b>Click to view Super Admin Screenshots</b></summary>
-
-  #### 1. Registration & Onboarding
-  ![Onboard](./screenshots/super-admin/onboard.png)
-
-  #### 2. Company Management
-  ![Manage](./screenshots/super-admin/Manage_company.png)
-
-  #### 3. Edit Access
-  ![Edit](./screenshots/super-admin/Edit_company.png)
-
-</details>
 
 
 ## ✨ Features

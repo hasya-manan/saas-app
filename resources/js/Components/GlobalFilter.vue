@@ -10,9 +10,11 @@ const props = defineProps({
     tenants: { type: Array, default: () => [] },
     roles: { type: Array, default: () => [] },
     statusOptions: { type: Array, default: () => [] },
+    departments: { type: Array, default: () => [] }, 
     placeholder: String,
     showRole: Boolean,
     showTenant: Boolean,
+    showDepartment: { type: Boolean, default: false },
     showStatus: { type: Boolean, default: false },
     dataKey: { type: String, default: 'data' }
 });
@@ -21,6 +23,7 @@ const search = ref(props.filters.search || '');
 const role = ref(props.filters.role || null);
 const tenant_id = ref(props.filters.tenant_id || null);
 const status = ref(props.filters.status || null);
+const department_id = ref(props.filters.department_id || null);
 const isRoleOpen = ref(false);
 let timeout = null;
 
@@ -32,6 +35,7 @@ const performFilter = () => {
         if (props.showRole) query.role = role.value;
         if (props.showTenant) query.tenant_id = tenant_id.value;
         if (props.showStatus) query.status = status.value;
+        if (props.showDepartment) query.department_id = department_id.value;
 
         router.get(route(props.routeName), query, {
             preserveState: true,
@@ -41,7 +45,7 @@ const performFilter = () => {
     }, 300);
 };
 
-watch([search, role, tenant_id, status], () => performFilter());
+watch([search, role, tenant_id, status, department_id], () => performFilter());
 
 const formatRoleName = (name) => {
     if (!name) return '';
@@ -66,7 +70,7 @@ const formatRoleName = (name) => {
             :options="roles"
             label="All Roles"
             :icon="Users"
-            option-label="name"
+            option-label="display_name"
             option-value="name"
         />
 
@@ -90,5 +94,14 @@ const formatRoleName = (name) => {
             option-value="key"
         />
        
+        <RoundedSelect 
+            v-if="showDepartment"
+            v-model="department_id"
+            :options="departments"
+            label="All Departments"
+            :icon="Building2" 
+            option-label="name"
+            option-value="id"
+        />
     </div>
 </template>

@@ -1,16 +1,17 @@
 <script setup>
 
-import { ref, computed } from 'vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
-import { Edit2, X, UserCheck, UserX, Eye } from 'lucide-vue-next';
-import BaseButton from '@/Components/BaseButton.vue';
+import { Edit2, X, Plus  } from 'lucide-vue-next';
 
+import Pagination from '@/Components/Pagination.vue';
 
 
 const props = defineProps({
-    departments: Object, // Changed to Object if you are using pagination (.data)
+    departments: Object,// Changed to Object if you are using pagination (.data)
+    allDepartments: Array,
     users: Array,       // Staff list for HOD dropdown
     filters: Object,    // For the GlobalFilter
 });
@@ -83,8 +84,11 @@ const submitForm = () => {
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
+             <GlobalFilter routeName="admin_company.departments.index" :filters="filters" dataKey="departments" :departments="allDepartments" 
+                :showRole="false" :showDepartment="true" placeholder="Search staff by name department..." />
             <div class="flex flex-col lg:flex-row items-start gap-6">
-                
+               
+
                 <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']" class="transition-all duration-500">
                     <div class="bg-white overflow-hidden shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
                         <div class="overflow-x-auto">
@@ -133,7 +137,11 @@ const submitForm = () => {
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mt-8">
+                            <Pagination :links="departments.links" />
+                        </div>
                     </div>
+                     
                 </div>
 
                 <div v-if="isEditPanelOpen" class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-right duration-500">

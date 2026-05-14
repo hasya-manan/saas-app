@@ -12,6 +12,7 @@ const props = defineProps({
     employees: Object,
     roles: Array,
     filters: Object,
+    departments: Array,
 });
 
 const isEditPanelOpen = ref(false);
@@ -65,8 +66,8 @@ const submitUpdate = () => {
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
-            <GlobalFilter routeName="admin_company.users.index" :filters="filters" dataKey="employees" :roles="roles"
-                :showRole="true" :showTenant="false" placeholder="Search staff by name or email..." />
+            <GlobalFilter routeName="admin_company.users.index" :filters="filters" dataKey="employees" :roles="roles" :departments="departments"
+                :showRole="true" :showDepartment="true" placeholder="Search staff by name or email..." />
 
             <div class="flex flex-col lg:flex-row items-start gap-6">
                 

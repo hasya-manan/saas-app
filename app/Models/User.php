@@ -85,7 +85,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
-
+    public function hasRole(string $role): bool
+    {
+        // Adjust this logic to match how you store roles (e.g., a 'role' column)
+        return $this->role === $role;
+    }
     //filtering 
     public function scopeFilter($query, array $filters)
     {
@@ -102,6 +106,12 @@ class User extends Authenticatable
         })->when($filters['tenant_id'] ?? null, function ($q, $tenantId) {
             $q->where('tenant_id', $tenantId);
         });
+        $query->when($filters['department_id'] ?? null, function ($q, $departmentId) {
+        // Assuming your User model has a 'department_id' column
+        $q->where('department_id', $departmentId);
+        
+        
+    });
     }
 
    // 2. Add this to automatically create the UUID when a user is born

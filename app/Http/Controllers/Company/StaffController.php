@@ -29,20 +29,30 @@ class StaffController extends Controller
      * All staff are scoped to the authenticated user's tenant_id.
      * PAGE : /companyAdmin/staff/list
      */
-    public function index()
+    public function index(Request $request)
     {
+        $filters = $request->only(['search', 'role', 'department_id']);
         $employees = User::where('tenant_id', auth()->user()->tenant_id)
-            ->with(['role', 'profile'])
-            ->latest()
-            ->paginate(10);
+        ->with(['role', 'profile'])
+        // 2. Apply the filters to the query
+        ->filter($filters) 
+        ->latest()
+        ->paginate(10)
+        // 3. Keep the filters in the pagination links (important!)
+        ->withQueryString();
 
         return Inertia::render('CompanyAdmin/Staff/List', [
             'employees' => $employees,
-             'roles'   => Role::where('id', '!=', 1)
-                        ->select('id', 'name', 'display_name')
-                        ->get(),
+            'filters'   => $filters, // Pass back to Vue to keep the inputs filled
+            'roles'     => Role::where('id', '!=', 1)
+                            ->select('id', 'name', 'display_name')
+                            ->get(),
+            // 4. Added this so your Department Dropdown actually has options
+            'departments' => Department::forCurrentTenant()
+                            ->select('id', 'name')
+                            ->get(),
         ]);
-    }
+        }
        
    
 

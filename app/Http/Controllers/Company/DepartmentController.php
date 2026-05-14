@@ -16,24 +16,30 @@ class DepartmentController extends Controller
     /**
  * Display the department listing page.
  */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return Inertia::render('CompanyAdmin/Department/Index', [
-            // Fetch departments only for this tenant, including the manager's name
-            'departments' => Department::where('tenant_id', auth()->user()->tenant_id)
-                ->with('hod:id,name') 
-                ->latest()
-                ->get(),
+       $filters = $request->only(['search', 'department_id']);
 
-            // Fetch users for this tenant to populate the "Assign HOD" dropdown
-            'users' => User::where('tenant_id', auth()->user()->tenant_id)
-                ->select('id', 'name')
-                ->get(),
+    return Inertia::render('CompanyAdmin/Department/Index', [
+        'departments' => Department::forCurrentTenant()
+            ->with('hod:id,name') 
+            ->filter($filters) // Pass the array here
+            ->latest()
+            ->paginate(10) 
+            ->withQueryString(),
+
+        'allDepartments' => Department::forCurrentTenant()
+            ->select('id', 'name')
+            ->get(),
+
+        'users' => User::where('tenant_id', auth()->user()->tenant_id)
+            ->select('id', 'name')
+            ->get(),
             
-            // Flash messages (optional, if not handled globally)
-            'status' => session('success'),
-        ]);
-    }
+        'filters' => $filters,
+        'status' => session('success'),
+    ]);
+}
     //create a new department
    public function store(Request $request) 
     {

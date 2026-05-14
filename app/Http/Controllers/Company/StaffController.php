@@ -186,35 +186,35 @@ class StaffController extends Controller
     {
     // 1. Safety check for the profile ID if user do not have the others table
         $profileId = $user->profile?->id ?? 'NULL';
-
+        //dd($request->only('waris_ic'));
         $validated = $request->validate([
             // user table
-            'name' => 'sometimes|required|string|max:255',
-            'role_id' => 'sometimes|required|exists:roles,id',
-            'department_id' => 'sometimes|required|exists:departments,id',
+            'name' => 'required|string|max:255',
+            'role_id' => 'required|exists:roles,id',
+            'department_id' => 'required|exists:departments,id',
 
             // user_profiles table 
-            'position' => 'sometimes|nullable|string',
-            'user_gender' => 'sometimes|nullable|string',
-            'phone' => 'sometimes|required|nullable|string',
-            'dob' => 'sometimes|nullable|date',
-            'marital_status' => 'sometimes|nullable|string',
-            'join_date' => 'sometimes|required|date',
-            'address_line_1' => 'sometimes|nullable|string',
-            'address_line_2' => 'sometimes|nullable|string',
-            'city' => 'sometimes|nullable|string',
-            'postcode' => 'sometimes|nullable|string',
-            'state' => 'sometimes|nullable|string',
-            'waris_name' => 'sometimes|nullable|string',
-            'waris_gender' => 'sometimes|nullable|string',
-            'waris_relationship' => 'sometimes|nullable|string',
-            //'waris_relationship_other' => 'sometimes|string|max:50',
-            'waris_ic' => 'sometimes|nullable|string',
-            'waris_phone' => 'sometimes|nullable|string',
+            'position' => 'nullable|string',
+            'user_gender' => 'nullable|string',
+            'phone' => 'required|nullable|string',
+            'dob' => 'nullable|date',
+            'marital_status' => 'nullable|string',
+            'join_date' => 'required|date',
+            'address_line_1' => 'nullable|string',
+            'address_line_2' => 'nullable|string',
+            'city' => 'nullable|string',
+            'postcode' => 'nullable|string',
+            'state' => 'nullable|string',
+            'waris_name' => 'nullable|string',
+            'waris_gender' => 'nullable|string',
+            'waris_relationship' => 'nullable|string',
+            //'waris_relationship_other' => 'string|max:50',
+            'waris_ic' => 'nullable|string',
+            'waris_phone' => 'nullable|string',
             
             // unique check while ignoring the current user's profile
             'ic_number' => [
-                'sometimes',
+                
                 'required',
                 'string',
                 "unique:user_profiles,ic_number,{$profileId}" 

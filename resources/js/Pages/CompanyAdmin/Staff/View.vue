@@ -991,6 +991,127 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                             </div>
 
                             <!-- Step 5: Emergency Contact -->
+                            <div v-if="currentStep === 5" class="bg-white border border-primary-border rounded-[2.5rem] p-10 shadow-xl shadow-primary/5">
+                            <div class="flex justify-between items-center mb-10">
+                                <h3 class="text-xl font-bold text-gray-900 tracking-tight">Emergency Contact</h3>
+                                <!--Button-->
+                                    <div class="flex gap-2">
+                                        <transition name="fade" mode="out-in">
+                                            <div :key="editingSegment.emergency" class="flex gap-2">
+                                                <template v-if="editingSegment.emergency">
+                                                    <button @click="cancelEdit('emergency')"
+                                                        class="px-4 py-2 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition-all">
+                                                        Cancel
+                                                    </button>
+                                                    <button @click="saveSegment('emergency')" :disabled="form.processing"
+                                                        class="px-5 py-2 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2">
+                                                        Save
+                                                        <CircleCheck  :size="16" />
+                                                    </button>
+                                                </template>
+                                                <button v-else @click="editingSegment.emergency = true"
+                                                    class="px-5 py-2 border border-primary-border text-primary font-bold rounded-2xl hover:bg-primary-light transition-all flex items-center gap-2">
+                                                    Edit
+                                                    <Pencil :size="14" />
+                                                </button>
+                                            </div>
+                                        </transition>
+                                    </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
+                                  
+                                <h3 class="col-span-full text-xs font-bold text-primary uppercase tracking-widest ">
+                                    Next of Kin Information
+
+                                </h3>
+                                <!--Full Name IC-->
+                                <div class="space-y-1 ">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Full Name as per IC
+                                    </label>
+                                    <transition name="fade" mode="out-in">
+                                        <p v-if="!editingSegment.emergency" :key="'view-waris-name'"
+                                            class="text-gray-900 font-semibold text-md py-3">
+                                            {{ user.profile?.waris_name || 'Not Set' }}
+                                        </p>
+
+                                        <div v-else :key="'edit-waris-name'">
+                                            <BaseInput v-model="form.waris_name" type="text" 
+                                                placeholder="Ali Bin Abu" :error="form.errors.waris_name" />
+                                            
+                                        </div>
+                                    </transition>
+                                </div>
+                                <!--IC Number -->
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1">IC Number</label>
+                                    <transition name="fade" mode="out-in">
+                                        <p v-if="!editingSegment.emergency" :key="'view-waris-ic'"
+                                            class="text-gray-900 font-semibold text-md py-3">
+                                            {{ user.profile?.waris_ic || 'Not Set' }}
+                                        </p>
+                                        <div v-else :key="'edit-waris-ic'">
+                                            <BaseInput v-model="form.waris_ic" type="text" 
+                                                placeholder="560XXX01XXXX" :error="form.errors.waris_ic" />
+                                        </div>
+                                    </transition>
+                                </div>
+                                <!--Relationship -->
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1">Relationship</label>
+                                    <transition name="fade" mode="out-in">
+                                        <p v-if="!editingSegment.emergency" :key="'view-waris-relationship'"
+                                            class="text-gray-900 font-semibold text-md py-3">
+                                           
+                                             {{$page.props.lookups.relationships.find(g => g.key ===
+                                                    user.profile?.waris_relationship)?.label || 'Not Set'}}
+                                        </p>
+                                        <div v-else :key="'edit-waris-relationship'">
+                                           <RoundedSelect v-model="form.waris_relationship" variant="form"
+                                                    label="Select Relationship" :options="$page.props.lookups.relationships"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.waris_relationship" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.waris_relationship }}
+                                                </p>
+                                        </div>
+                                    </transition>
+                                </div>
+                                <!--Gender-->
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1">Gender</label>
+                                    <transition name="fade" mode="out-in">
+                                        <p v-if="!editingSegment.emergency" :key="'view-waris-gender'"
+                                            class="text-gray-900 font-semibold text-md py-3">
+                                           
+                                             {{$page.props.lookups.genders.find(g => g.key ===
+                                                    user.profile?.waris_gender)?.label || 'Not Set'}}
+                                        </p>
+                                        <div v-else :key="'edit-waris-gender'">
+                                           <RoundedSelect v-model="form.waris_gender" variant="form"
+                                                    label="Select Gender" :options="$page.props.lookups.genders"
+                                                    option-label="label" option-value="key" />
+                                                <p v-if="form.errors.waris_gender" class="text-red-500 text-xs mt-1">
+                                                    {{ form.errors.waris_gender }}
+                                                </p>
+                                        </div>
+                                    </transition>
+                                </div>
+                                <!--Phone Number   -->
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-semibold text-slate-700 mb-1">Phone Number</label>
+                                    <transition name="fade" mode="out-in">
+                                        <p v-if="!editingSegment.emergency" :key="'view-waris-phone'"
+                                            class="text-gray-900 font-semibold text-md py-3">
+                                            {{ user.profile?.waris_phone || 'Not Set' }}
+                                        </p>
+                                        <div v-else :key="'edit-waris-phone'">
+                                            <BaseInput v-model="form.waris_phone" type="text" 
+                                                placeholder="0123456789" :error="form.errors.waris_phone" />
+                                        </div>
+                                    </transition>
+                                </div>
+                            </div>
+
+                            </div>
                         </div>
                     </transition>
                 </div>

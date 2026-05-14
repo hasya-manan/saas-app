@@ -29,7 +29,7 @@ class UserProfile extends Model
         'waris_name',
         'waris_gender',
         'waris_relationship',
-        'waris_ic ',
+        'waris_ic', 
         'waris_phone'
 
     ];

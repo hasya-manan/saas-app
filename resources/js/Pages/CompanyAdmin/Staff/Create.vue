@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue';
-import PageHeader from '@/Components/PageHeader.vue';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import { useIcParser } from '@/Composables/useIcParser'; 
 import { useEmailValidation } from '@/Composables/useEmailValidation';

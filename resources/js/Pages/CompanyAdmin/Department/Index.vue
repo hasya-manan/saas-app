@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
 import { Edit2, X, UserCheck, UserX, Eye } from 'lucide-vue-next';
 import BaseButton from '@/Components/BaseButton.vue';
-import PageHeader from '@/Components/PageHeader.vue';
+
 
 
 const props = defineProps({

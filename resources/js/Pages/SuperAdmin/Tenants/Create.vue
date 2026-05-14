@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import {ref, watch, computed } from 'vue';
-import PageHeader from '@/Components/PageHeader.vue';
+
 
 
 const syncEmail = ref(false);

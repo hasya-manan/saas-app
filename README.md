@@ -8,8 +8,9 @@
 ![Package](https://img.shields.io/badge/tenancy-stancl%2Ftenancy-blue)
 
 ---
-
-## 📌 Overview
+<!-- TODO:: visual demo , image and video here -->
+<!-- ![Visual Demo](./screenshots/demo.gif)
+## 📌 Overview -->
 
 This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for  HR & payroll use cases and intentionally does **not** use domain-based tenant resolution.
 

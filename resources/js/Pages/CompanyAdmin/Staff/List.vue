@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { Edit2, X, UserCheck, UserX, Eye } from 'lucide-vue-next';
 import BaseButton from '@/Components/BaseButton.vue';
-import PageHeader from '@/Components/PageHeader.vue';
+
 
 const props = defineProps({
     employees: Object,

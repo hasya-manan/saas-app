@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import BaseButton from './Components/BaseButton.vue';
+import PageHeader from './Components/PageHeader.vue';
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css"; 
 
@@ -33,6 +34,7 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(Toast, toastOptions)
             .component('BaseButton', BaseButton)
+            .component('PageHeader', PageHeader)
             .mount(el);
     },
     progress: {

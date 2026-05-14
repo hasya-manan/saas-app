@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import PageHeader from '@/Components/PageHeader.vue';
+
 import RegistrationWizard from '@/Components/RegistrationWizard.vue'; 
 import { Head, useForm} from '@inertiajs/vue3';
 import RoundedSelect from '@/Components/RoundedSelect.vue';

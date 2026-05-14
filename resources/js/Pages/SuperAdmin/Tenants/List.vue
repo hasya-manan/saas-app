@@ -10,7 +10,7 @@ import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Trash2, RotateCcw, Edit2, ShieldAlert, X, Archive } from 'lucide-vue-next';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
-import PageHeader from '@/Components/PageHeader.vue';
+
 
 const props = defineProps({
     tenants: Object,        // Changed from Array to Object

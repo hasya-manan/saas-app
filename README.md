@@ -141,7 +141,7 @@ Users (The Actual Data):
 - [x] Department Management: Add and update departments
 - [x] Staff List: View users within tenant
 - [x] Staff Creation: Onboarding new staff 
-- [/] Staff Profile: View and edit staff details (In Progress)
+- [x] Staff Profile: View and edit staff details 
 - [ ] Attendance & Leave
 - [ ] Payroll
 

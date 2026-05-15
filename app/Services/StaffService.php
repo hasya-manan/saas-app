@@ -234,13 +234,13 @@ class StaffService
         // 2. The Mass Assignment (This uses $fillable)
         $user->fill(array_intersect_key($data, array_flip([
             'name', 
-            'department_id'
+            'department_id',
+            'supervisor_id'
         ])));
 
 
         // save() will persist BOTH the fillable fields AND your manual role_id change
         $user->save();
-
 
         // 5. Update Profile Table
         $profileFields = [

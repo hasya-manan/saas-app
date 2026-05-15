@@ -59,6 +59,7 @@ const form = useForm({
     //segment employment/department
     position: props.user.profile?.position || '',
     department_id: props.user?.department_id || '',
+    supervisor_id: props.user.supervisor_id || null, 
    // This one field handles BOTH existing and new descriptions
     description: props.user?.department?.description || '', 
     
@@ -571,26 +572,58 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                                     </div>
                                     <!--Department-->
                                         <div class="space-y-1">
-                                            <label
-                                                class="block text-sm font-semibold text-slate-700 mb-1">Department</label>
-                                            <transition name="fade" mode="out-in">
-                                            <div v-if="!editingSegment.roles" class="grid grid-cols-2 gap-4 py-3">
-                                                <div>
-                                                    <p class="text-gray-900 font-semibold text-md">
-                                                        {{ user.department?.name || 'No Department' }}
-                                                    </p>
-                                                    <p class="text-gray-500 text-xs">
-                                                        {{ user.department?.description || 'No description available' }}
-                                                    </p>
-                                               </div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Department</label>
+                                        
+                                        <transition name="fade" mode="out-in">
+                                            <div v-if="!editingSegment.roles" :key="'view-mode'">
+                                                
+                                                <div class="grid grid-cols-2 gap-4 py-3">
+                                                    <div>
+                                                        <p class="text-gray-900 font-semibold text-md">
+                                                            {{ user.department?.name || 'No Department' }}
+                                                        </p>
+                                                        <p class="text-gray-500 text-xs">
+                                                            {{ user.department?.description || 'No description available' }}
+                                                        </p>
+                                                    </div>
 
-                                                <div v-if="user.id === user.department?.hod_id" class="pt-1">
-                                                    <span
-                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
-                                                        Head of Department (HOD)
-                                                    </span>
+                                                    <div v-if="user.id === user.department?.hod_id" class="pt-1">
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
+                                                            Head of Department (HOD)
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                  <!-- Report to who? in view mode-->
+                                                <div class="mt-3 pt-3 border-t border-slate-100">
+                                                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">Reports To</p>
+                                                    
+                                                    <div v-if="user.supervisor" class="flex items-center gap-3">
+                                                        <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20">
+                                                            {{ user.supervisor.name ? user.supervisor.name.charAt(0) : '?' }}
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-semibold text-slate-700 leading-tight">{{ user.supervisor.name }}</p>
+                                                            <p class="text-[11px] text-slate-500 italic">
+                                                                {{ user.supervisor?.profile?.position || 'Primary Approver' }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-else class="flex items-center gap-3 opacity-60">
+                                                        <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs border border-slate-200">
+                                                            HR
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-semibold text-slate-700 leading-tight">Company Management</p>
+                                                            <p class="text-[11px] text-slate-500 italic">Managed by HR/Admin</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            
+                                          
+                                             
+                                             
 
                                             <div v-else :key="'edit-dept'" class="space-y-4">
                                                     <RoundedSelect v-model="form.department_id" variant="form"
@@ -617,7 +650,7 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                                                         Assign Supervisor <span class="text-red-500">*</span>
                                                     </label>
 
-                                                    <select v-model="form.supervisor_id" required
+                                                    <select v-model="form.supervisor_id" 
                                                         class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm">
 
                                                         <option value="" disabled>Select a supervisor</option>
@@ -641,6 +674,7 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                                                     <p class="mt-2 text-[11px] text-slate-400 italic">
                                                         * Assign who is responsible for approving this staff member's
                                                         claims and OT.
+                                                        * If unassigned, approval requests will automatically route to HR/Admin management.
                                                     </p>
                                                 </div>
                                                 <!--current HOD status -->

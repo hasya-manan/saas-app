@@ -162,7 +162,7 @@ class StaffController extends Controller
         $tenantId = auth()->user()->tenant_id; 
 
         // Load the relationships needed for your profile cards
-        $user->load(['role', 'profile', 'supervisor', 'department', 'finance']);
+        $user->load(['role', 'profile', 'supervisor.profile', 'department', 'finance']);
 
         return Inertia::render('CompanyAdmin/Staff/View', [
             'user'    => $user,
@@ -202,6 +202,7 @@ class StaffController extends Controller
             'name' => 'required|string|max:255',
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
+            'supervisor_id' => 'nullable|exists:users,id',
 
             // user_profiles table 
             'position' => 'nullable|string',
@@ -251,8 +252,6 @@ class StaffController extends Controller
             'socso_no'          => 'nullable|string|max:50',
             'socso_type'        => 'required|string', 
             'tax_no'            => 'nullable|string|max:50',
-            
-            
             'eis_enabled'       => 'boolean',
         ]);
 

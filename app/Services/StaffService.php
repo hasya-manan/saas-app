@@ -51,7 +51,7 @@ class StaffService
                 : $validated['waris_relationship'];
             // Force everything to lowercase and replace spaces with underscores
             // This makes "Step Father" become "step_father"
-            $finalRelationship = strtolower(str_replace(' ', '_', trim($rawRelationship)));
+            $finalRelationship = strtolower(str_replace(' ', '_', trim($finalRelationship)));
 
             // ── 4. CREATE PROFILE ─────────────────────────────
             $user->profile()->create([

@@ -177,7 +177,7 @@ class StaffController extends Controller
                             ->orderBy('name')
                             ->get(['id', 'name', 'description', 'hod_id']), // Added hod_id here
             'staffList'   => User::where('tenant_id', $tenantId)
-                            ->select('id', 'name')
+                            ->select('id', 'name', 'uuid', 'department_id')
                             ->orderBy('name')
                             ->get()
         ]);

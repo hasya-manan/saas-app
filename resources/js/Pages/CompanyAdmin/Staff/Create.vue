@@ -502,7 +502,7 @@ const passwordMismatch = computed(() => {
                                                     <div v-if="!form.is_hod"
                                                         class="mt-4 pt-4 border-t border-slate-100/50">
                                                         <RoundedSelect v-model="form.hod_id" variant="form"
-                                                            label="Who will this staff report to?" :options="staffList"
+                                                            label="Who will be the HOD?" :options="staffList"
                                                             option-label="name" option-value="id" class="w-full" />
                                                     </div>
                                                 </div>

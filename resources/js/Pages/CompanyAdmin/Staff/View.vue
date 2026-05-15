@@ -19,11 +19,33 @@ const props = defineProps({
     departments: Array,
     staffList: Array,
 });
+// Get the name of the selected department for the UI label
+const selectedDeptName = computed(() => {
+    // 1. Handle "null" or "empty" state early
+    if (!form.department_id) return 'the Department';
+
+    // 2. Find with type-safety
+    const targetId = Number(form.department_id);
+    const foundDept = props.departments.find(dept => Number(dept.id) === targetId);
+
+    // 3. Return a safe fallback
+    return foundDept ? foundDept.name : 'Unknown Department';
+});
+// Filter the staff list to show ONLY members of the chosen department
+// Filter the staff list to show ONLY members of the chosen department
+const departmentStaff = computed(() => {
+   
+    if (!form.department_id) return [];
+    
+    const targetId = Number(form.department_id);
+
+   
+    return props.staffList.filter(staff => Number(staff.department_id) === targetId);
+});
 
 const currentStep = ref(1);
-//const hasDepartments = computed(() => props.departments && props.departments.length > 0)
 const isOthers = computed(() => form.department_id === 'others')
-// Define steps for the Profile View
+
 const steps = [
     { id: 1, title: 'Personal Information', desc: 'Identity & Contact' },
     { id: 2, title: 'Address', desc: 'Location' },
@@ -116,7 +138,7 @@ startWatchingIc();
 
 watch(() => form.department_id, (newId) => {
     if (newId === 'others') {
-        // Prepare for fresh creation
+      
         form.description = ''; 
         form.is_hod = false;
         form.name_department = '';
@@ -592,9 +614,34 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                                                                 placeholder="Description"
                                                                 :error="form.errors.description" />
                                                         </div>
-                                                    </transition>
+                                                   </transition>
                                                 </div>
-                                                     
+                                                <!-- assign supervisor -->
+                                              <div v-if="form.department_id" class="mt-4">
+    <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-1">
+        Assign Supervisor <span class="text-red-500">*</span>
+    </label>
+
+    <select v-model="form.supervisor_id" required
+        class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm">
+        
+        <option value="" disabled>Select a supervisor</option>
+
+        <optgroup :label="`Staff in ${selectedDeptName}`">
+            <template v-for="staff in departmentStaff" :key="staff.id">
+                <option v-if="staff.uuid !== user.uuid" :value="staff.id">
+                    {{ staff.name }}
+                </option>
+            </template>
+        </optgroup>
+    </select>
+
+    <p class="mt-2 text-[11px] text-slate-400 italic">
+        * Assign who is responsible for approving this staff member's claims and OT.
+    </p>
+</div>
+                                                <!--current HOD status -->
+
                                                 <div v-if="form.department_id && !isOthers" class="mt-3">
                                                     <div
                                                         class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
@@ -713,7 +760,7 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                                                                     class="mt-4 pt-4 border-t border-slate-100/50">
                                                                     <RoundedSelect v-model="form.hod_id"
                                                                         variant="form"
-                                                                        label="Who will this staff report to?"
+                                                                        label="Who will be the HOD?"
                                                                         :options="staffList" option-label="name"
                                                                         option-value="id" class="w-full" />
                                                                 </div>

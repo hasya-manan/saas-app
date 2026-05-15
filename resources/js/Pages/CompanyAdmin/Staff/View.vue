@@ -19,29 +19,6 @@ const props = defineProps({
     departments: Array,
     staffList: Array,
 });
-// Get the name of the selected department for the UI label
-const selectedDeptName = computed(() => {
-    // 1. Handle "null" or "empty" state early
-    if (!form.department_id) return 'the Department';
-
-    // 2. Find with type-safety
-    const targetId = Number(form.department_id);
-    const foundDept = props.departments.find(dept => Number(dept.id) === targetId);
-
-    // 3. Return a safe fallback
-    return foundDept ? foundDept.name : 'Unknown Department';
-});
-// Filter the staff list to show ONLY members of the chosen department
-// Filter the staff list to show ONLY members of the chosen department
-const departmentStaff = computed(() => {
-   
-    if (!form.department_id) return [];
-    
-    const targetId = Number(form.department_id);
-
-   
-    return props.staffList.filter(staff => Number(staff.department_id) === targetId);
-});
 
 const currentStep = ref(1);
 const isOthers = computed(() => form.department_id === 'others')
@@ -159,6 +136,23 @@ const selectedDeptHOD = computed(() => {
     
     // 2. Return the HOD object (which contains the user uuid, name, etc.)
     return dept ? dept.hod : null; 
+});
+
+// Get the name of the selected department 
+const selectedDeptName = computed(() => {
+    // 1. Handle "null" or "empty" state early
+    if (!form.department_id) return 'the Department';
+    // 2. Find with type-safety
+    const targetId = Number(form.department_id);
+    const foundDept = props.departments.find(dept => Number(dept.id) === targetId);
+    return foundDept ? foundDept.name : 'Unknown Department';
+});
+// Filter the staff list to show ONLY members of the chosen department
+const departmentStaff = computed(() => {
+   
+    if (!form.department_id) return [];
+    const targetId = Number(form.department_id);
+    return props.staffList.filter(staff => Number(staff.department_id) === targetId);
 });
 
 const { maskAccount } = useMasking();
@@ -617,29 +611,38 @@ const displayAccount = computed(() => maskAccount(props.user.finance?.bank_accou
                                                    </transition>
                                                 </div>
                                                 <!-- assign supervisor -->
-                                              <div v-if="form.department_id" class="mt-4">
-    <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-1">
-        Assign Supervisor <span class="text-red-500">*</span>
-    </label>
+                                               <div v-if="form.department_id" class="mt-4">
+                                                    <label
+                                                        class="block text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-1">
+                                                        Assign Supervisor <span class="text-red-500">*</span>
+                                                    </label>
 
-    <select v-model="form.supervisor_id" required
-        class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm">
-        
-        <option value="" disabled>Select a supervisor</option>
+                                                    <select v-model="form.supervisor_id" required
+                                                        class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm">
 
-        <optgroup :label="`Staff in ${selectedDeptName}`">
-            <template v-for="staff in departmentStaff" :key="staff.id">
-                <option v-if="staff.uuid !== user.uuid" :value="staff.id">
-                    {{ staff.name }}
-                </option>
-            </template>
-        </optgroup>
-    </select>
+                                                        <option value="" disabled>Select a supervisor</option>
 
-    <p class="mt-2 text-[11px] text-slate-400 italic">
-        * Assign who is responsible for approving this staff member's claims and OT.
-    </p>
-</div>
+                                                        <optgroup :label="`Staff in ${selectedDeptName}`">
+                                                            <template v-if="departmentStaff.length > 0">
+                                                                <template v-for="staff in departmentStaff"
+                                                                    :key="staff.id">
+                                                                    <option v-if="staff.uuid !== user.uuid"
+                                                                        :value="staff.id">
+                                                                        {{ staff.name }}
+                                                                    </option>
+                                                                </template>
+                                                            </template>
+
+                                                            <option v-else disabled value="">
+                                                                No staff members found in this department
+                                                            </option>
+                                                        </optgroup>
+                                                    </select>
+                                                    <p class="mt-2 text-[11px] text-slate-400 italic">
+                                                        * Assign who is responsible for approving this staff member's
+                                                        claims and OT.
+                                                    </p>
+                                                </div>
                                                 <!--current HOD status -->
 
                                                 <div v-if="form.department_id && !isOthers" class="mt-3">

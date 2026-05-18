@@ -232,7 +232,6 @@ class StaffController extends Controller
             ],
 
             //table department 
-         
             'department_id'  => 'required', // Removed exists:departments,id because it might be 'others'
             'name_department'=> 'required_if:department_id,others|nullable|string|max:255',
             'description'    => 'nullable|string',
@@ -244,11 +243,8 @@ class StaffController extends Controller
             'bank_name'         => 'nullable|string|max:255',
             'bank_account_no'   => 'nullable|string|max:50',
             'epf_no'            => 'nullable|string|max:50',
-            
-           
             'epf_rate_employee' => 'required|numeric|between:0,100',
             'epf_rate_employer' => 'required|numeric|between:0,100',
-            
             'socso_no'          => 'nullable|string|max:50',
             'socso_type'        => 'required|string', 
             'tax_no'            => 'nullable|string|max:50',

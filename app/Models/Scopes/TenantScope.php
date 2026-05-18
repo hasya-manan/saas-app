@@ -10,7 +10,6 @@ class TenantScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         //GOD MODE
-
         // If the user is NOT a SuperAdmin (Role 1), then filter by tenant
         if (!auth()->check() || auth()->user()->role_id !== 1) {
         

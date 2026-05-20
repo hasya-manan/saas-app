@@ -20,9 +20,12 @@ Route::get('/', function () {
     ]);
 });
 
+// =========================================
+// ============ STAFF ROUTES ==========
+// =========================================
 Route::get('/dashboard', function () {
     if (auth()->user()->role_id !== 3) {
-        return redirect()->intended(); 
+        return redirect('/login'); 
     }
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -74,7 +77,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     Route::get('/staff/list', [StaffController::class, 'index'])->name('admin_company.users.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('admin_company.users.create');
     Route::post('/staff/create', [StaffController::class, 'store'])->name('admin_company.users.store');
-    Route::post('/staff', [StaffController::class, 'store'])->name('admin_company.users.store');
+    //Route::post('/staff', [StaffController::class, 'store'])->name('admin_company.users.store');
     // "View Details" button!
     Route::get('/staff/view/{user}', [StaffController::class, 'show'])->name('admin_company.users.show');
     //  "Update profile" button in the edit panel:

@@ -64,6 +64,10 @@ class StaffController extends Controller
      */
     public function create()
     {
+        //double check security 
+        if (auth()->user()->role_id !== 2) {
+        abort(403, 'Unauthorized action.');
+        }
         $tenantId = auth()->user()->tenant_id; 
 
         return Inertia::render('CompanyAdmin/Staff/Create', [

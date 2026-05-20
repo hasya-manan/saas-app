@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('leave_tiers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreignId('leave_type_id')->constrained()->onDelete('cascade');
             $table->decimal('min_years', 5, 2); // e.g., 0.00
             $table->decimal('max_years', 5, 2); // e.g., 1.00 or 99.00

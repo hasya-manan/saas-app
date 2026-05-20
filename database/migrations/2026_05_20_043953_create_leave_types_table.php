@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('leave_types', function (Blueprint $table) {
         $table->id();
-        // Assuming your company/tenant table is called 'tenants'
-        $table->foreignId('tenant_id')->constrained()->onDelete('cascade'); 
+        $table->string('tenant_id');
+        $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         $table->string('name'); // e.g., "Annual Leave"
         $table->string('code'); // e.g., "AL"
         $table->boolean('is_calculated_by_experience')->default(false);

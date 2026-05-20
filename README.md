@@ -142,10 +142,13 @@ Users (The Actual Data):
 - [x] Staff List: View users within tenant
 - [x] Staff Creation: Onboarding new staff 
 - [x] Staff Profile: View and edit staff details 
-- [ ] Attendance & Leave
+- [/] Leave Application (in progress)
+- [ ] Claim OT/Mileage and so on
 - [ ] Payroll
+- [ ] Attendance
 
-
+### 🏢 Staff
+- [x] Login 
 ---
 
 ## 🚀 Getting Started

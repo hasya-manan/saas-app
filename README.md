@@ -102,7 +102,7 @@ classDiagram
                        └──────────────┘
 ```
 
-> 📎 Full diagram: [View on dbdiagram.io](https://dbdiagram.io/d/saas-app-69a79c60a3f0aa31e1ba7347)
+<!-- > 📎 Full diagram: [View on dbdiagram.io](https://dbdiagram.io/d/saas-app-69a79c60a3f0aa31e1ba7347) -->
 
 **Roles:**
 Roles (Global Lookup Table):

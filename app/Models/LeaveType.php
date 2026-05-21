@@ -15,4 +15,12 @@ class LeaveType extends Model
         'default_days',
         'allows_carry_forward',
     ];
+
+    /**
+     *  Hides it from log outputs, array dumps, and JSON strings
+     * 
+     */
+    protected $hidden = [
+        'tenant_id',
+    ];
 }

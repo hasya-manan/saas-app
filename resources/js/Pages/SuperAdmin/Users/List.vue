@@ -178,7 +178,8 @@ const submitUpdate = () => {
                         </div>
 
                         <div class="mt-8">
-                            <Pagination :links="users.links" />
+                            <Pagination :links="users.links"   
+                            :meta="{ from: users.from, to: users.to, total: users.total }" />
                         </div>
                     </div>
                 </div>

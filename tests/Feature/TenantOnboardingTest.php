@@ -12,7 +12,7 @@ class TenantOnboardingTest extends TestCase
 {
     use RefreshDatabase;
 
-    // ⚡ This automatically runs your DatabaseSeeder (Roles + Super Admin)
+    //  This automatically runs your DatabaseSeeder (Roles + Super Admin)
     protected bool $seed = true;
 
     public function test_super_admin_can_successfully_onboard_new_tenant_with_default_settings(): void
@@ -46,7 +46,7 @@ class TenantOnboardingTest extends TestCase
             'name'      => 'John Doe',
             'email'     => 'john.doe@acme.com',
             'tenant_id' => $tenant->id,
-            'role_id'   => 2, // 'admin_company'
+            'role_id'   => 2,
         ]);
 
         $this->assertDatabaseHas('leave_types', [

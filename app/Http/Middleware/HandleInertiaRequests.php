@@ -31,11 +31,24 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
-            ],
+            'user' => $user ? [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                //  Explicitly add these so Vue can see them even if hidden in the model
+                'role_id'       => $user->role_id,
+                'tenant_id'     => $user->tenant_id,
+                //  Load the role relationship explicitly
+                'role'          => $user->role ? [
+                    'name' => $user->role->name
+                ] : null,
+            ] : null,
+        ],
+
             'flash' => [
             'success' => fn () => $request->session()->get('success'),
             'error'   => fn () => $request->session()->get('error'),

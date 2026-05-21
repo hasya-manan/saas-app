@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomPagination;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
+    use HasCustomPagination;
     //
     protected $fillable = [
         'tenant_id', 

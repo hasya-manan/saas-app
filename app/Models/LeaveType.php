@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomPagination;
 use Illuminate\Database\Eloquent\Model;
 
 class LeaveType extends Model
 {
-    //
+    use HasCustomPagination;
+    
     protected $fillable = [
         'tenant_id',
         'name',

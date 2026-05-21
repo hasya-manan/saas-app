@@ -122,7 +122,9 @@ class TenantController extends Controller
         $filters = $request->only(['search', 'status']);
 
         return Inertia::render('SuperAdmin/Tenants/List', [
-            'tenants' => Tenant::filter($filters)->latest()->paginate(10)->withQueryString(),
+            'tenants' => Tenant::filter($filters)->latest()
+            ->paginateDefault(),
+            
             
             'deletedTenants' => Tenant::onlyTrashed()->filter($filters)->latest()->paginate(10)->withQueryString(),
             
@@ -202,14 +204,15 @@ public function userList(Request $request)
         ->whereNotNull('tenant_id')
         // 1. Apply existing User filters (Name, Email, Role)
         ->filter($filters) 
-        ->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
-            $query->orWhereHas('tenant', function ($q) use ($filters) {
-                $q->withTrashed()->filter($filters);
+        ->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($q) { // <--- Added this wrapper
+                $q->orWhereHas('tenant', function ($sub) {
+                    $sub->withTrashed()->filter(['search' => request('search')]);
+                });
             });
         })
         ->latest()
-        ->paginate(10)
-        ->withQueryString();
+        ->paginateDefault();
 
     return Inertia::render('SuperAdmin/Users/List', [
         'users'   => $users,
@@ -231,8 +234,7 @@ public function userList(Request $request)
         'name'    => 'required|string|max:255',
         'email'   => 'required|email|unique:users,email,' . $user->id,
         'role_id' => 'required|integer|exists:roles,id',
-        // Notice: we don't even bother validating tenant_id here 
-        // because we aren't going to let them change it anyway.
+        
     ]);
 
     $user->fill($validated);

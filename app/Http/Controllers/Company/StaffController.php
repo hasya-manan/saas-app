@@ -37,9 +37,7 @@ class StaffController extends Controller
         // 2. Apply the filters to the query
         ->filter($filters) 
         ->latest()
-        ->paginate(10)
-        // 3. Keep the filters in the pagination links (important!)
-        ->withQueryString();
+        ->paginateDefault();
 
         return Inertia::render('CompanyAdmin/Staff/List', [
             'employees' => $employees,

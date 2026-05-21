@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
 use App\Models\StaffFinance;
+use App\Traits\HasCustomPagination;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -16,7 +17,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     // 1. REMOVE::The HasUuids trait is designed to turn the id into a UUID. 
     // If you use it, it will break your auto-incrementing id.
-    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes;
+    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes, HasCustomPagination;
 
     /**
      * The attributes that are mass assignable.

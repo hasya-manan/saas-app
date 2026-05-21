@@ -23,10 +23,10 @@ class DepartmentController extends Controller
     return Inertia::render('CompanyAdmin/Department/Index', [
         'departments' => Department::forCurrentTenant()
             ->with('hod:id,name') 
-            ->filter($filters) // Pass the array here
+            ->filter($filters) 
             ->latest()
-            ->paginate(10) 
-            ->withQueryString(),
+            ->paginateDefault(),// use the HasCustomPagination trait
+            
 
         'allDepartments' => Department::forCurrentTenant()
             ->select('id', 'name')

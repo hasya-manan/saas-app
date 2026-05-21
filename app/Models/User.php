@@ -27,21 +27,23 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        // 'tenant_id',
+        'tenant_id',
+        'role_id',
         'department_id',
         'supervisor_id',
-        // 'role_id',
         'deleted_at',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
-     *
+     * This completely hides them from browser console logs, dd(), logger(),
      * @var list<string>
      */
     protected $hidden = [
         'password',
         'remember_token',
+        'tenant_id', 
+        'role_id',
     ];
 
     /**

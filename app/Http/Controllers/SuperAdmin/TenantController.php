@@ -3,13 +3,14 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GlobalLookup;
+use App\Models\LeaveType;
 use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; 
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB; 
 
 class TenantController extends Controller
 {
@@ -23,75 +24,117 @@ class TenantController extends Controller
     }
 
    public function store(Request $request)
-{
-    $validated = $request->validate([
-        'company_name' => 'required|string|max:255',
-        'admin_name'   => 'required|string|max:255',
-        'admin_email'  => 'required|email|unique:users,email',
-        'company_email'  => 'required|email|unique:users,email',
-    ]);
-
-    // 1. Start the Transaction
-    return DB::transaction(function () use ($validated) {
-        
-        // 2. Logic: Generate Unique ID
-        do {
-            $numbers = rand(100, 999);
-            $letters = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
-            $customId = "t-{$numbers}{$letters}";
-        } while (Tenant::where('id', $customId)->exists());
-
-        // 3. Create Tenant
-        $tenant = Tenant::create([
-            'id'           => $customId,
-            'company_name' => $validated['company_name'],
-            'email'        => $validated['company_email'],
-            'status'       => 'active', 
+    {
+        $validated = $request->validate([
+            'company_name' => 'required|string|max:255',
+            'admin_name'   => 'required|string|max:255',
+            'admin_email'  => 'required|email|unique:users,email',
+            'company_email' => 'required|email|unique:tenants,email', 
         ]);
 
-        // 4. Create User
-        User::create([
-            'name'      => $validated['admin_name'],
-            'email'     => $validated['admin_email'],
-            'password'  => bcrypt('password123'),
-            'tenant_id' => $tenant->id,
-            'role_id'   => Role::where('name', 'admin_company')->value('id'),
-
-            //Todo:: better use this instead?
-            // 'role_id' => Role::where('name', 'admin_company')->firstOrFail()->id,
-        ]);
-
-        // 5. If everything above finishes without an error, the DB "commits"
-        return redirect()->back()
-            ->with('success', "Company $customId has been fully set up!");
+        // 1. Start the Transaction
+        return DB::transaction(function () use ($validated) {
             
-    }); // 6. If ANY line fails, the DB "rolls back" automatically
-}
+        
+            do {
+                $numbers = rand(100, 999);
+                $letters = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
+                $customId = "t-{$numbers}{$letters}";
+            } while (Tenant::where('id', $customId)->exists());
 
+            // 2. Create Tenant
+            $tenant = Tenant::create([
+                'id'           => $customId,
+                'company_name' => $validated['company_name'],
+                'email'        => $validated['company_email'],
+                'status'       => 'active', 
+            ]);
+
+        // 3. Create Default Leave Types (Triggers clean private method below)
+            $this->provisionDefaultLeaveTypes($tenant->id);
+
+            // 4. Create User Admin Account
+            User::create([
+                'name'      => $validated['admin_name'],
+                'email'     => $validated['admin_email'],
+                'password'  => bcrypt('password123'),
+                'tenant_id' => $tenant->id,
+                'role_id'   => Role::where('name', 'admin_company')->firstOrFail()->id, 
+
+            
+            ]);
+
+            // 5. If everything above finishes without an error, the DB "commits"
+            return redirect()->back()
+                ->with('success', "Company $customId has been fully set up!");
+                
+        }); // 6. If ANY line fails, the DB "rolls back" automatically
+    }
+
+    /**
+ * Keeps the store method readable by handling leave creation down here.
+ */
+    private function provisionDefaultLeaveTypes(string $tenantId): void
+    {
+        $defaults = [
+            [
+                'name' => 'Annual Leave',
+                'code' => 'AL',
+                'default_days' => 13,
+                'is_calculated_by_experience' => true,
+                'allows_carry_forward' => true,
+            ],
+            [
+                'name' => 'Emergency Leave',
+                'code' => 'EL',
+                'is_calculated_by_experience' => false,
+                'default_days' => 3,
+                'allows_carry_forward' => false,
+            ],
+            [
+                'name' => 'Medical Leave',
+                'code' => 'MC',
+                'is_calculated_by_experience' => false,
+                'default_days' => 14,
+                'allows_carry_forward' => false,
+            ],
+        ];
+
+        foreach ($defaults as $type) {
+            LeaveType::create([
+                'tenant_id'                   => $tenantId,
+                'name'                        => $type['name'],
+                'code'                        => $type['code'],
+                'is_calculated_by_experience' => $type['is_calculated_by_experience'],
+                'default_days'                => $type['default_days'] ?? null,
+                'allows_carry_forward'        => $type['allows_carry_forward'],
+            ]);
+        }
+    }
     // =========================================
     // this is for the page company list all tenant
     // ========================================= 
     
 
 //Update :: change controller for single resposibility principle
-public function list(Request $request)
-{
-    $filters = $request->only(['search', 'status']);
+    public function list(Request $request)
+    {
+        $filters = $request->only(['search', 'status']);
 
-    return Inertia::render('SuperAdmin/Tenants/List', [
-        'tenants' => Tenant::filter($filters)->latest()->paginate(10)->withQueryString(),
-        
-        'deletedTenants' => Tenant::onlyTrashed()->filter($filters)->latest()->paginate(10)->withQueryString(),
-        
-        'statusOptions' => GlobalLookup::where('category', 'tenant_status')
-            ->where('is_active', 1)
-            ->orderBy('sort_order')
-            ->get(['key', 'label']),
+        return Inertia::render('SuperAdmin/Tenants/List', [
+            'tenants' => Tenant::filter($filters)->latest()->paginate(10)->withQueryString(),
             
+            'deletedTenants' => Tenant::onlyTrashed()->filter($filters)->latest()->paginate(10)->withQueryString(),
             
-        'filters' => $filters 
-    ]);
-}
+            'statusOptions' => GlobalLookup::where('category', 'tenant_status')
+                ->where('is_active', 1)
+                ->orderBy('sort_order')
+                ->get(['key', 'label']),
+                
+                
+            'filters' => $filters 
+        ]);
+    }
 
     // 2. The Archive (Soft Delete): Moves company from "Active" to "Trash"
     public function destroy(Tenant $tenant)

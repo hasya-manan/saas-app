@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
         // Use string instead of foreignId if your tenants.id is a string/UUID
-       $table->string('tenant_id')->after('password'); 
+       $table->string('tenant_id')->nullable()->after('password'); 
 
         // 2. Then define the relationship rule
         $table->foreign('tenant_id')

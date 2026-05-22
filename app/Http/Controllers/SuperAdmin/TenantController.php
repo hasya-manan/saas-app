@@ -92,8 +92,8 @@ class TenantController extends Controller
                 'is_calculated_by_experience' => false,
                 'default_days' => 3,
                 'allows_carry_forward' => false,
-                'probation_period_months' => 3,
-                'is_pro_rata' => true,
+                'probation_period_months' => 0,
+                'is_pro_rata' => false,
             ],
             [
                 'name' => 'Medical Leave',

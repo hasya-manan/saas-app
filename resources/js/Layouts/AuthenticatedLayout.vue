@@ -77,16 +77,21 @@ watch(
                             : route('dashboard'))" class="block px-3 py-2 text-gray-600 font-medium hover:bg-gray-50 rounded-lg">
                         Dashboard
                     </Link>
+                    <!--Super Admin-->
                     <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('tenants.create')"
                         class="block px-3 py-2 text-gray-600 font-medium">Onboard Company</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('tenants.list')"
                         class="block px-3 py-2 text-gray-600 font-medium">List Company</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('users.list')"
                         class="block px-3 py-2 text-gray-600 font-medium">All List Users</Link>
+
+                        <!--Admin Company -->
                     <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.users.index')"
                         class="block px-3 py-2 text-gray-600 font-medium">Staff Directory</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.users.create')"
                         class="block px-3 py-2 text-gray-600 font-medium">Add New Staff</Link>
+                    <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.leavetypes.index')"
+                        class="block px-3 py-2 text-gray-600 font-medium">List Leave Types</Link>
 
                 </nav>
             </aside>
@@ -187,6 +192,12 @@ watch(
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <Component  :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Manage Department</span>
+                    </Link>
+                    <Link :href="route('admin_company.leavetypes.index')"
+                        :class="[route().current('admin_company.leavetypes.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <Component  :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave Types</span>
                     </Link>
 
                 </div>

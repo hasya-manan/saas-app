@@ -4,10 +4,11 @@ namespace App\Models;
 
 use App\Traits\HasCustomPagination;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LeaveType extends Model
 {
-    use HasCustomPagination;
+    use HasCustomPagination, SoftDeletes;
     
     protected $fillable = [
         'tenant_id',

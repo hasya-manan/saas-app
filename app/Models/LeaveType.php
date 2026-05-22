@@ -17,6 +17,8 @@ class LeaveType extends Model
         'is_calculated_by_experience',
         'default_days',
         'allows_carry_forward',
+        'probation_period_months',
+        'is_pro_rate',
     ];
 
     /**

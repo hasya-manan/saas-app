@@ -83,6 +83,8 @@ class TenantController extends Controller
                 'default_days' => 13,
                 'is_calculated_by_experience' => true,
                 'allows_carry_forward' => true,
+                'probation_period_months' => 3,
+                'is_pro_rata' => true,
             ],
             [
                 'name' => 'Emergency Leave',
@@ -90,6 +92,8 @@ class TenantController extends Controller
                 'is_calculated_by_experience' => false,
                 'default_days' => 3,
                 'allows_carry_forward' => false,
+                'probation_period_months' => 3,
+                'is_pro_rata' => true,
             ],
             [
                 'name' => 'Medical Leave',
@@ -97,6 +101,8 @@ class TenantController extends Controller
                 'is_calculated_by_experience' => false,
                 'default_days' => 14,
                 'allows_carry_forward' => false,
+                'probation_period_months' => 0,
+                'is_pro_rata' => false,
             ],
         ];
 

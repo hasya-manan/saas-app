@@ -5,7 +5,7 @@ import { useNotifications } from '@/Composables/useNotifications';
 // Example using Lucide icons (install via npm install lucide-vue-next)
 import {
     LayoutDashboard,
-    Users,
+    CalendarDays,
     Component,
     LogOut,
     ChevronLeft,
@@ -74,7 +74,7 @@ watch(
                         ? route('superadmin.dashboard')
                         : ($page.props.auth.user?.role_id === 2
                             ? route('admin_company.dashboard')
-                            : route('dashboard'))" class="block px-3 py-2 text-gray-600 font-medium hover:bg-gray-50 rounded-lg">
+                            : route('dashboard'))" class="block px-3 py-2 text-gray-600 font-medium hover:bg-primary-light hover:text-primary-dark rounded-lg">
                         Dashboard
                     </Link>
                     <!--Super Admin-->
@@ -100,7 +100,7 @@ watch(
         <aside :class="isCollapsed ? 'w-20' : 'w-64'"
             class="relative hidden md:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
             <button @click="toggleSidebar"
-                class="absolute -right-3 top-10 z-50 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:bg-gray-50">
+                class="absolute -right-3 top-10 z-50 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:bg-primary-light hover:text-primary-dark">
                 <ChevronLeft v-if="!isCollapsed" :size="16" />
                 <ChevronRight v-else :size="16" />
             </button>
@@ -127,21 +127,21 @@ watch(
                     Main</p>
 
                 <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('superadmin.dashboard')"
-                    :class="[route().current('superadmin.dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                    :class="[route().current('superadmin.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">Platform Dashboard</span>
                 </Link>
 
                 <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.dashboard')"
-                    :class="[route().current('superadmin.dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                    :class="[route().current('admin_company.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">Admin Dashboard</span>
                 </Link>
 
                 <Link v-if="$page.props.auth.user?.role_id === 3" :href="route('dashboard')"
-                    :class="[route().current('dashboard') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                    :class="[route().current('dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">My Dashboard</span>
@@ -152,19 +152,19 @@ watch(
                         class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">Super
                         Admin</p>
                     <Link :href="route('tenants.create')"
-                        :class="[route().current('tenants.create') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('tenants.create') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <PlusCircle :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Onboard Company</span>
                     </Link>
                     <Link :href="route('tenants.list')"
-                        :class="[route().current('tenants.list') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('tenants.list') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <List :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Company</span>
                     </Link>
                     <Link :href="route('users.list')"
-                        :class="[route().current('users.list') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('users.list') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <Contact :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Users</span>
@@ -176,27 +176,27 @@ watch(
                         class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">System
                         Admin</p>
                     <Link :href="route('admin_company.users.create')"
-                        :class="[route().current('admin_company.users.create') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('admin_company.users.create') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <PlusCircle :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Create Staff</span>
                     </Link>
                     <Link :href="route('admin_company.users.index')"
-                        :class="[route().current('admin_company.users.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('admin_company.users.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <ListPlus :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Staff</span>
                     </Link>
                      <Link :href="route('admin_company.departments.index')"
-                        :class="[route().current('admin_company.departments.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('admin_company.departments.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <Component  :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Manage Department</span>
                     </Link>
                     <Link :href="route('admin_company.leavetypes.index')"
-                        :class="[route().current('admin_company.leavetypes.index') ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50']"
+                        :class="[route().current('admin_company.leavetypes.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
-                        <Component  :size="20" />
+                        <CalendarDays   :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave Types</span>
                     </Link>
 

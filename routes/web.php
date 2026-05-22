@@ -75,10 +75,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
 Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(function () {
     Route::get('/dashboard', [CompanyDashboardController::class, 'index'])->name('admin_company.dashboard');
 
-    // TODO :: leaves type management no found page
-    Route::get('/leavetype/index', [LeaveTypeController::class, 'index'])->name('admin_company.leavetypes.index');
-    Route::post('/leavetype/index', [LeaveTypeController::class, 'store'])->name('admin_company.leavetypes.store');
-    Route::put('/leavetype/{leavetype}', [LeaveTypeController::class, 'update'])->name('admin_company.leavetypes.update');
+    
     // Staff Management
     Route::get('/staff/list', [StaffController::class, 'index'])->name('admin_company.users.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('admin_company.users.create');
@@ -93,6 +90,11 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     Route::get('/department/index', [DepartmentController::class, 'index'])->name('admin_company.departments.index');
     Route::post('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');
     Route::put('/department/{department}', [DepartmentController::class, 'update'])->name('admin_company.departments.update');
+
+    // TODO :: leaves type management no found page
+    Route::get('/leavetype/index', [LeaveTypeController::class, 'index'])->name('admin_company.leavetypes.index');
+    Route::post('/leavetype/index', [LeaveTypeController::class, 'store'])->name('admin_company.leavetypes.store');
+    Route::put('/leavetype/{leavetype}', [LeaveTypeController::class, 'update'])->name('admin_company.leavetypes.update');
     });
 
     

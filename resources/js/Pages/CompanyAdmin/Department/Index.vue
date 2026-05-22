@@ -134,6 +134,14 @@ const submitForm = () => {
                                             </button>
                                         </td>
                                     </tr>
+                                    <tr v-if="(departments.data || departments).length === 0">
+                                        <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic">
+                                            <div class="flex flex-col items-center justify-center gap-2">
+                                                <Inbox :size="40" class="text-gray-200" />
+                                                <p>No departments found.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

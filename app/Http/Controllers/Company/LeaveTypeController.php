@@ -19,5 +19,7 @@ class LeaveTypeController extends Controller
         return Inertia::render('CompanyAdmin/LeaveType/Index', [
             'leaveTypes' => $leaveTypes
         ]);
+        // This will print everything your controller is sending to the page
+        //console.log(usePage().props);
     }
 }

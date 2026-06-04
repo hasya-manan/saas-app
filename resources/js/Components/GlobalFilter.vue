@@ -11,12 +11,15 @@ const props = defineProps({
     roles: { type: Array, default: () => [] },
     statusOptions: { type: Array, default: () => [] },
     departments: { type: Array, default: () => [] }, 
+    leaveTypes: { type: Array, default: () => [] },
     placeholder: String,
     showRole: Boolean,
     showTenant: Boolean,
     showDepartment: { type: Boolean, default: false },
     showStatus: { type: Boolean, default: false },
+    showRoleaveTypes: { type: Boolean, default: false },
     dataKey: { type: String, default: 'data' }
+    
 });
 
 const search = ref(props.filters.search || '');
@@ -24,6 +27,7 @@ const role = ref(props.filters.role || null);
 const tenant_id = ref(props.filters.tenant_id || null);
 const status = ref(props.filters.status || null);
 const department_id = ref(props.filters.department_id || null);
+const leaveType_id = ref(props.filters.leaveType_id || null);
 const isRoleOpen = ref(false);
 let timeout = null;
 
@@ -36,7 +40,8 @@ const performFilter = () => {
         if (props.showTenant) query.tenant_id = tenant_id.value;
         if (props.showStatus) query.status = status.value;
         if (props.showDepartment) query.department_id = department_id.value;
-
+        if (props.showRoleaveTypes) query.leaveType_id = leaveType_id.value;
+        
         router.get(route(props.routeName), query, {
             preserveState: true,
             replace: true,
@@ -99,6 +104,16 @@ const formatRoleName = (name) => {
             v-model="department_id"
             :options="departments"
             label="All Departments"
+            :icon="Building2" 
+            option-label="name"
+            option-value="id"
+        />
+
+        <RoundedSelect 
+            v-if="showRoleaveTypes"
+            v-model="leaveType_id"
+            :options="leaveTypes"
+            label="All Leave Types"
             :icon="Building2" 
             option-label="name"
             option-value="id"

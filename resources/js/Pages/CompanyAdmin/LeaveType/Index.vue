@@ -8,6 +8,7 @@ import { Edit2, X } from 'lucide-vue-next';
 
 defineProps({
     leaveTypes: Object,
+    filters: Object
 });
 </script>
 
@@ -23,13 +24,13 @@ defineProps({
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
-             <!-- <GlobalFilter routeName="admin_company.users.index" :filters="filters" dataKey="employees" :roles="roles" :departments="departments"
-                :showRole="true" :showDepartment="true" placeholder="Search staff by name or email..." /> -->
+             <GlobalFilter routeName="admin_company.leavetypes.index" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes"
+                :showRoleaveTypes="true" placeholder="Search staff by name or email..." />
 
              <div class="flex flex-col lg:flex-row items-start gap-6">
 
                 <!--TODO:: if have a transition for open slide effect side by side table-->
-                 <div :class="[isEditPanelOpen ? 'lg:w-[60%] w-full' : 'w-full']" class="transition-all duration-500">
+                <div class="w-full lg:w-[60%] transition-all duration-500">
                  <div class="bg-white overflow-hidden shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
                      <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2">

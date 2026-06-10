@@ -6,11 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Role; 
 use App\Models\User;
-use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\DB;
-// use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 use App\Services\StaffService;
+use Illuminate\Http\Request;
+
+use Inertia\Inertia;
 /**
  * StaffController
  * 
@@ -105,6 +104,8 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
+        
+
         $validated = $request->validate([
             // users table
             'name'           => 'required|string|max:255',
@@ -155,6 +156,7 @@ class StaffController extends Controller
        
         // ── This one line replaces ALL the DB logic ──
         $this->staffService->createStaff($validated, auth()->user()->tenant_id);
+
 
         return back()->with('success', "{$validated['name']} has been created successfully.");
     }

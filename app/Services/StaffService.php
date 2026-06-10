@@ -11,6 +11,7 @@ class StaffService
 {
     public function createStaff(array $validated, string $tenantId): void
     {
+         try {
        
         DB::transaction(function () use ($validated, $tenantId) {
 
@@ -47,7 +48,7 @@ class StaffService
             // ── 4. RESOLVE RELATIONSHIP LOGIC ─────────────────
             // If 'other' is selected, use the custom text. Otherwise use dropdown value.
             $finalRelationship = ($validated['waris_relationship'] === 'other') 
-                ? ($validated['waris_relationship_other'] ?: 'Other') 
+                ? ($validated['waris_relationship_other'] ?? 'Other') 
                 : $validated['waris_relationship'];
             // Force everything to lowercase and replace spaces with underscores
             // This makes "Step Father" become "step_father"
@@ -69,7 +70,7 @@ class StaffService
                 'state'              => $validated['state'] ?? null,
                 'waris_name'         => $validated['waris_name'] ?? null,
                 'waris_gender'       => $validated['waris_gender'] ?? null,
-                'waris_relationship' => $validated['finalRelationship'] ?? null,
+                 'waris_relationship' => $finalRelationship,
                 'waris_ic'           => $validated['waris_ic'] ?? null,
                 'waris_phone'        => $validated['waris_phone'] ?? null,
             ]);
@@ -88,6 +89,25 @@ class StaffService
                 'eis_enabled'       => $validated['eis_enabled'] ?? true,
             ]);
         });
+        Log::info('Staff created successfully', [
+            'email' => $validated['email'],
+            'ic_number' => $validated['ic_number'],
+            'tenant_id' => $tenantId,
+        ]);
+
+    } catch (\Exception $e) {
+
+        Log::error('Staff creation failed', [
+            'email' => $validated['email'] ?? null,
+            'tenant_id' => $tenantId,
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ]);
+
+        throw $e;
+    }
+
     }
 
     // ── PRIVATE HELPER ────────────────────────────────────────

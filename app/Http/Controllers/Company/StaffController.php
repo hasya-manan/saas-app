@@ -198,6 +198,8 @@ class StaffController extends Controller
      */ 
    public function update(Request $request, User $user)
     {
+        // Add this line! If the policy returns false, this throws a 403.
+    // $this->authorize('update', $user);
     // 1. Safety check for the profile ID if user do not have the others table
         $profileId = $user->profile?->id ?? 'NULL';
         //dd($request->only('waris_ic'));
@@ -260,5 +262,18 @@ class StaffController extends Controller
 
         // 3. Return back to refresh the data in the UI
         return back()->with('success', "{$user->name} has been updated successfully.");
+    }
+    public function quickUpdate(Request $request, User $user)
+    {
+      //dd($user);
+      // Laravel automatically fetches the correct User based on the UUID in the URL
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'role_id' => 'sometimes|required|exists:roles,id',
+           
+        ]);
+       
+        $user->update($validated);
+        return back()->with('success', 'User updated successfully.');
     }
 }

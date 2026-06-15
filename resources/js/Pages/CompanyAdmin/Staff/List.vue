@@ -29,7 +29,8 @@ const openEditPanel = (user) => {
     if (!user) return;
     selectedUser.value = user;
     isEditPanelOpen.value = true;
-    form.id = user.id;
+    // Use the uuid here!
+    form.id = user.uuid; 
     form.name = user.name;
     form.email = user.email;
     form.role_id = user.role_id || '';
@@ -41,8 +42,11 @@ const closeEditPanel = () => {
     form.reset();
 };
 
+
 const submitUpdate = () => {
-    form.put(route('admin_company.users.update', form.id), {
+    
+    console.log(route('admin_company.users.quick-update', form.id))
+    form.post(route('admin_company.users.quick-update', form.id), {
         preserveState: true,
         preserveScroll: true,
         onSuccess: () => closeEditPanel(),
@@ -158,7 +162,7 @@ const submitUpdate = () => {
                                 </select>
                             </div>
 
-                            <button @click="submitUpdate" :disabled="form.processing"
+                            <button type="button" @click.prevent="submitUpdate" :disabled="form.processing"
                                 class="w-full bg-primary text-white py-4 rounded-[1.5rem] font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all">
                                 {{ form.processing ? 'Saving...' : 'Save Changes' }}
                             </button>

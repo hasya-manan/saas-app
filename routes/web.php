@@ -83,9 +83,9 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     //Route::post('/staff', [StaffController::class, 'store'])->name('admin_company.users.store');
     // "View Details" button!
     Route::get('/staff/view/{user}', [StaffController::class, 'show'])->name('admin_company.users.show');
-    //  "Update profile" button in the edit panel:
+    //  "Update profile" button in the view page:
     Route::put('/staff/view/{user}', [StaffController::class, 'update'])->name('admin_company.users.update');
-
+    Route::post('/staff/update-quick/{user}', [StaffController::class, 'quickUpdate'])->name('admin_company.users.quick-update');
    // department management
     Route::get('/department/index', [DepartmentController::class, 'index'])->name('admin_company.departments.index');
     Route::post('/department/index', [DepartmentController::class, 'store'])->name('admin_company.departments.store');

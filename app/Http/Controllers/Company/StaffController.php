@@ -8,7 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Services\StaffService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 /**
  * StaffController
@@ -265,15 +265,26 @@ class StaffController extends Controller
     }
     public function quickUpdate(Request $request, User $user)
     {
-      //dd($user);
-      // Laravel automatically fetches the correct User based on the UUID in the URL
+      
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'role_id' => 'sometimes|required|exists:roles,id',
            
         ]);
-       
+       try {
         $user->update($validated);
+        
         return back()->with('success', 'User updated successfully.');
+
+    } catch (\Exception $e) {
+        // Log the technical error for the developer
+        Log::error('Staff quick update failed', [
+            'uuid' => $user->uuid,
+            'message' => $e->getMessage()
+        ]);
+
+        // Return a clean error to the user
+        return back()->withErrors(['error' => 'An unexpected error occurred. Please try again.']);
+    }
     }
 }

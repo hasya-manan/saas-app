@@ -277,13 +277,13 @@ class StaffController extends Controller
         return back()->with('success', 'User updated successfully.');
 
     } catch (\Exception $e) {
-        // Log the technical error for the developer
+        
         Log::error('Staff quick update failed', [
             'uuid' => $user->uuid,
             'message' => $e->getMessage()
         ]);
 
-        // Return a clean error to the user
+       
         return back()->withErrors(['error' => 'An unexpected error occurred. Please try again.']);
     }
     }

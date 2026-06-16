@@ -120,17 +120,21 @@ class TenantController extends Controller
             'is_pro_rata'                 => $type['is_pro_rata'] ?? false,
         ]);
 
-        // 2. Create the Tier using the ID from the instance above
+        // 2. Only create a Tier if it is actually calculated by experience
+        
+        if ($leaveType->is_calculated_by_experience) {
         LeaveTier::create([
-            'tenant_id'              => $tenantId,
-            'leave_type_id'          => $leaveType->id, 
-            'min_years'              => 0.00,
-            'max_years'              => 99.00,
-            'allowed_days'           => $type['default_days'] ?? 0,
+            'tenant_id'            => $tenantId,
+            'leave_type_id'        => $leaveType->id, 
+            'min_years'            => 0.00,
+            'max_years'            => 99.00,
+            'allowed_days'         => $type['default_days'] ?? 0,
             'max_carry_forward_days' => $type['allows_carry_forward'] ? 5 : 0,
         ]);
     }
     }
+    }
+    
     // =========================================
     // this is for the page company list all tenant
     // ========================================= 

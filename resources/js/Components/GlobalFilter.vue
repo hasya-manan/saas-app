@@ -11,7 +11,7 @@ const props = defineProps({
     roles: { type: Array, default: () => [] },
     statusOptions: { type: Array, default: () => [] },
     departments: { type: Array, default: () => [] }, 
-    leaveTypes: { type: Array, default: () => [] },
+    leaveTypes: { type: Object, default: () => [] },
     placeholder: String,
     showRole: Boolean,
     showTenant: Boolean,

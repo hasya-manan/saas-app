@@ -25,7 +25,11 @@ class LeaveType extends Model
      *  Hides it from log outputs, array dumps, and JSON strings
      * 
      */
-    protected $hidden = [
-        'tenant_id',
-    ];
+    // protected $hidden = [
+    //     'tenant_id',
+    // ];
+    public function tiers()
+    {
+        return $this->hasMany(LeaveTier::class);
+    }
 }

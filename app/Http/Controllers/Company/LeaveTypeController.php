@@ -14,6 +14,7 @@ class LeaveTypeController extends Controller
      public function index(Request $request): Response
     {
         $leaveTypes = LeaveType::where('tenant_id', auth()->user()->tenant_id)
+                                ->with('tiers')
                                 ->paginateDefault();
 
         return Inertia::render('CompanyAdmin/LeaveType/Index', [

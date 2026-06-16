@@ -24,13 +24,13 @@ defineProps({
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
-             <GlobalFilter routeName="admin_company.leavetypes.index" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes"
+             <GlobalFilter routeName="admin_company.leavetypes.index" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes.data"
                 :showRoleaveTypes="true" placeholder="Search staff by name or email..." />
 
              <div class="flex flex-col lg:flex-row items-start gap-6">
 
                 <!--TODO:: if have a transition for open slide effect side by side table-->
-                <div class="w-full lg:w-[60%] transition-all duration-500">
+                <div class="w-full lg:w-[100%] transition-all duration-500">
                  <div class="bg-white overflow-hidden shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
                      <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2">
@@ -56,10 +56,10 @@ defineProps({
                                             <div class="font-bold text-gray-900">{{ leave.probation_period_months }}
                                                 Months</div>
                                         </td>
-                                        <td class="w-[15%] px-6 py-4 border-y border-transparent group-hover:border-primary-border"">
-                                            <span v-if="leave.max_carry_forward_days > 0"
+                                        <td class="w-[15%] px-6 py-4 border-y border-transparent group-hover:border-primary-border">
+                                            <span v-if="leave.tiers && leave.tiers.length > 0 && leave.tiers[0].max_carry_forward_days > 0"
                                                 class="font-medium text-primary">
-                                                {{ leave.max_carry_forward_days }} Days
+                                                {{ leave.tiers[0].max_carry_forward_days }} Days
                                             </span>
                                             <span v-else class="text-gray-400 italic">None</span>
                                         </td>

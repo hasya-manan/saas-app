@@ -3,6 +3,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GlobalLookup;
+use App\Models\LeaveTier;
 use App\Models\LeaveType;
 use App\Models\Role;
 use App\Models\Tenant;
@@ -107,15 +108,28 @@ class TenantController extends Controller
         ];
 
         foreach ($defaults as $type) {
-            LeaveType::create([
-                'tenant_id'                   => $tenantId,
-                'name'                        => $type['name'],
-                'code'                        => $type['code'],
-                'is_calculated_by_experience' => $type['is_calculated_by_experience'],
-                'default_days'                => $type['default_days'] ?? null,
-                'allows_carry_forward'        => $type['allows_carry_forward'],
-            ]);
-        }
+        // 1. Create the LeaveType and capture the instance
+        $leaveType = LeaveType::create([
+            'tenant_id'                   => $tenantId,
+            'name'                        => $type['name'],
+            'code'                        => $type['code'],
+            'is_calculated_by_experience' => $type['is_calculated_by_experience'],
+            'default_days'                => $type['default_days'] ?? null,
+            'allows_carry_forward'        => $type['allows_carry_forward'],
+            'probation_period_months'     => $type['probation_period_months'] ?? 0,
+            'is_pro_rata'                 => $type['is_pro_rata'] ?? false,
+        ]);
+
+        // 2. Create the Tier using the ID from the instance above
+        LeaveTier::create([
+            'tenant_id'              => $tenantId,
+            'leave_type_id'          => $leaveType->id, 
+            'min_years'              => 0.00,
+            'max_years'              => 99.00,
+            'allowed_days'           => $type['default_days'] ?? 0,
+            'max_carry_forward_days' => $type['allows_carry_forward'] ? 5 : 0,
+        ]);
+    }
     }
     // =========================================
     // this is for the page company list all tenant

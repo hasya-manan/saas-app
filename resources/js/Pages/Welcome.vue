@@ -22,7 +22,7 @@ defineProps({
             </div>
             
             <div class="flex items-center gap-6">
-                <Link :href="route('login')" class="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary transition-colors">
+                <Link :href="route('login')" class="text-xs font-black uppercase tracking-widest text-gray-700 hover:text-primary transition-colors">
                     Login
                 </Link>
                 <!-- <Link :href="route('register')" class="bg-gray-900 text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-gray-900/10">

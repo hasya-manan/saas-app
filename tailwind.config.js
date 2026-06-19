@@ -34,8 +34,8 @@ export default {
             colors: {
                primary: {
                     light: '#FFF5F5',  
-                    DEFAULT: '#E99695', 
-                    dark: '#D68281',    
+                    DEFAULT: '#D17574', 
+                    dark: '#B86564',    
                     border: '#F2D5D5',  
                 },
                 surface: {

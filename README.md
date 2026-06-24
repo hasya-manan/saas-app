@@ -144,7 +144,6 @@ Users (The Actual Data):
 - [x] Staff Profile: View and edit staff details 
 - [/] Leave Application (in progress)
 - [ ] Claim OT/Mileage and so on
-- [ ] Payroll
 - [ ] Attendance
 
 ### 🏢 Staff

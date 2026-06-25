@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leave_applications', function (Blueprint $table) {
-            //full/ half
+            //full, half_am, or half_pm
             $table->string('leave_duration')->default('full')->after('end_date');
         });
     }

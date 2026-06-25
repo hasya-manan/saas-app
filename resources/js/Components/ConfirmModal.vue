@@ -1,5 +1,5 @@
 <script setup>
-import { X, AlertTriangle, Loader2} from 'lucide-vue-next'; // Using the icons you already have
+import { X, AlertTriangle, Loader2, Info} from 'lucide-vue-next'; // Using the icons you already have
 
 defineProps({
     show: Boolean,

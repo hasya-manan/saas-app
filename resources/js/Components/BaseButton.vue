@@ -44,7 +44,7 @@ const classes = computed(() => {
 </script>
 
 <template>
-   <button :class="classes" :disabled="disabled || loading"">
+   <button :class="classes" :disabled="disabled || loading">
     <Loader2 v-if="loading" :size="16" class="animate-spin" />
         <slot />
     </button>

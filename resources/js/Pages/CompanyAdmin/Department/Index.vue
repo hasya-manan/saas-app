@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
-import { Edit2, X, Plus  } from 'lucide-vue-next';
+import { Edit2, X, Plus, Inbox } from 'lucide-vue-next';
 
 import Pagination from '@/Components/Pagination.vue';
 

@@ -3,13 +3,39 @@ import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue'; 
+import LeavePolicyModal from '@/Components/Leaves/LeavePolicyModal.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
-import { Edit2, X } from 'lucide-vue-next';
+import { Edit2, X, ChevronRight, ChevronDown, Plus }from 'lucide-vue-next';
+import { ref } from 'vue';
 
 defineProps({
     leaveTypes: Object,
     filters: Object
 });
+
+const expandedRows = ref([]);
+
+const toggleRow = (id) => {
+    if (expandedRows.value.includes(id)) {
+        expandedRows.value = expandedRows.value.filter(rowId => rowId !== id);
+    } else {
+        expandedRows.value.push(id);
+    }
+};
+
+const isModalOpen = ref(false);
+const editingLeave = ref(null); 
+const activeTab = ref('general'); 
+
+const openEditModal = (data, tab = 'general') => {
+  console.log("Button clicked, data received:", data); // Add this line
+  
+  editingLeave.value = JSON.parse(JSON.stringify(data));
+  activeTab.value = tab;
+  isModalOpen.value = true;
+  
+  console.log("Modal status:", isModalOpen.value); // Add this line
+};
 </script>
 
 <template>
@@ -29,14 +55,14 @@ defineProps({
 
              <div class="flex flex-col lg:flex-row items-start gap-6">
 
-                <!--TODO:: if have a transition for open slide effect side by side table-->
+              
                 <div class="w-full lg:w-[100%] transition-all duration-500">
                  <div class="bg-white overflow-hidden shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
                      <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2">
                             <thead>
                                 <tr class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">
-                                    <th class="px-4 py-2 text-left">Leave Policy</th>
+                                    <th class="px-4 py-2 text-left">Leave Type Name</th>
                                     <th class="px-4 py-2 text-center">Probation</th>
                                     <th class="px-4 py-2 text-center">Max Carryover</th>
                                     <th class="px-4 py-2 text-center">Pro-Rata</th>
@@ -44,38 +70,90 @@ defineProps({
                                 </tr>
                                </thead>
                                 <tbody>
-                                    <tr v-for="leave in leaveTypes.data" :key="leave.id"
-                                        class="group bg-white hover:bg-primary-light/5 transition-all duration-300">
-
-                                        <td
-                                            class="w-[40%] px-6 py-4 rounded-l-2xl border-y border-l border-transparent group-hover:border-primary-border">
-                                            <div class="font-bold text-gray-900">{{ leave.name }}</div>
+                                <template v-for="leave in leaveTypes.data" :key="leave.id">
+                                    <!-- Summary Row -->
+                                       <tr class="group bg-white hover:bg-primary-light/5 transition-all duration-300">
+                                            <td class="px-6 py-4 rounded-l-2xl border-y border-transparent">
+                                                <BaseButton variant="ghost" size="sm" @click="toggleRow(leave.id)"
+                                                    class="flex items-center gap-2 ">
+                                                    <span class="text-[10px] text-gray-400 font-mono">[{{ leave.code
+                                                        }}]</span>
+                                                    {{ leave.name }}
+                                                </BaseButton>
+                                            </td>
+  
+                                        <td class="text-center">{{ leave.probation_period_months }} Months</td>
+                                        <td class="text-center text-primary font-medium">
+                                            {{ leave.tiers?.length > 0 ? (leave.tiers[0].max_carry_forward_days + ' Days') : 'None' }}
                                         </td>
-                                        <td
-                                            class="w-[15%] px-6 py-4 border-y border-transparent group-hover:border-primary-border"">
-                                            <div class="font-bold text-gray-900">{{ leave.probation_period_months }}
-                                                Months</div>
-                                        </td>
-                                        <td class="w-[15%] px-6 py-4 border-y border-transparent group-hover:border-primary-border">
-                                            <span v-if="leave.tiers && leave.tiers.length > 0 && leave.tiers[0].max_carry_forward_days > 0"
-                                                class="font-medium text-primary">
-                                                {{ leave.tiers[0].max_carry_forward_days }} Days
-                                            </span>
-                                            <span v-else class="text-gray-400 italic">None</span>
-                                        </td>
-                                       <td class="w-[15%] px-6 py-4 border-y border-transparent group-hover:border-primary-border"">
-                                           <span :class="leave.is_pro_rata
-                                            ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-600 border-gray-100'"
-                                            class=" px-3 py-1 text-[10px] font-black rounded-full uppercase border">
+                                        <td class="text-center">
+                                            <span :class="leave.is_pro_rata ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'" 
+                                                class="px-3 py-1 text-[10px] font-black rounded-full border uppercase">
                                                 {{ leave.is_pro_rata ? 'Yes' : 'No' }}
-                                             </span>
+                                            </span>
                                         </td>
-                                        <td class="w-[15%] px-6 py-4 rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border text-right space-x-2">
-                                            <BaseButton @click="openEditPanel(leave)">Edit</BaseButton>
+                                        <td class="text-right px-6">
+                                        <BaseButton variant="ghost" size="sm" @click="toggleRow(leave.id)">
+                                                <ChevronDown v-if="expandedRows.includes(leave.id)" class="w-5 h-5" />
+                                                <ChevronRight v-else class="w-5 h-5" />
+                                            </BaseButton>
                                         </td>
                                     </tr>
-                                </tbody>
 
+                                    <!-- Expanded Tier List -->
+                                    <tr v-if="expandedRows.includes(leave.id)">
+                                        <td colspan="5" class="bg-gray-50 px-12 pb-6 border-b border-gray-200">
+                                            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 mt-2">└─ Entitlement Tiers</div>
+                                            
+                                            <table class="w-full text-sm">
+                                                <thead>
+                                                    <tr class="text-[10px] uppercase text-gray-400">
+                                                        <th class="py-2 text-left">Min Years</th>
+                                                        <th class="py-2 text-left">Max Years</th>
+                                                        <th class="py-2 text-left">Allowed Days</th>
+                                                        <th class="py-2 text-left">Max Carryover</th>
+                                                        <th class="py-2 text-right">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                               <tbody class="border-t border-gray-200">
+                                              <template v-if="Array.isArray(leave.tiers) && leave.tiers.length > 0">
+                                                    <tr v-for="tier in leave.tiers" :key="tier.id" class="text-gray-600">
+                                                        <td class="py-3">{{ tier.min_years }}</td>
+                                                        <td class="py-3">{{ tier.max_years >= 99 ? '∞' : tier.max_years }}</td>
+                                                        <td class="py-3 font-bold text-gray-900">{{ tier.allowed_days }} Days</td>
+                                                        <td class="py-3">{{ tier.max_carry_forward_days }} Days</td>
+                                                        <td class="py-3 text-right">
+                                                        <button @click="openEditModal(leave, tier)"
+                                                            class="text-primary font-bold text-xs hover:underline">
+                                                            <Edit2 class="w-4 h-4" />
+                                                        </button>
+      
+                                                        </td>
+                                                    </tr>
+                                                </template>
+
+                                                <template v-else>
+                                                    <tr>
+                                                        <td colspan="5" class="py-6 text-center text-gray-400 italic text-sm">
+                                                            No entitlement tiers defined.
+                                                        </td>
+                                                    </tr>
+                                                </template>
+
+                                                <tr class="border-t border-gray-200">
+                                                    <td colspan="5" class="py-3 text-right">
+                                                        <button @click="addNewTier(leave.id)" class="flex items-center gap-1 justify-end text-primary font-bold text-xs hover:underline">
+                                                            <Plus class="w-4 h-4" /> Add New Tier
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                                
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
                             </table>
                         </div>
                         <div class="mt-8">
@@ -84,6 +162,16 @@ defineProps({
                     </div>
                 </div>
             </div>
+
+            <!-- modal edit -->
+            
+            <LeavePolicyModal 
+                :show="isModalOpen" 
+                :leave="editingLeave" 
+                :initialTab="activeTab"
+                @close="isModalOpen = false"
+            />
+          
         </div>
     </AuthenticatedLayout>
 </template>

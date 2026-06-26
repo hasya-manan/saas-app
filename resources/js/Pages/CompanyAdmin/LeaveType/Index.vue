@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue'; 
-import LeavePolicyModal from '@/Components/Leaves/LeavePolicyModal.vue';
+import LeaveModal from '@/Components/Leaves/LeaveModal.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
 import { Edit2, X, ChevronRight, ChevronDown, Plus }from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -165,7 +165,7 @@ const openEditModal = (data, tab = 'general') => {
 
             <!-- modal edit -->
             
-            <LeavePolicyModal 
+            <LeaveModal 
                 :show="isModalOpen" 
                 :leave="editingLeave" 
                 :initialTab="activeTab"

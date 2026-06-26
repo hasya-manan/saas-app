@@ -94,6 +94,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     // TODO :: leaves type management no found page
     Route::get('/leavetype/index', [LeaveTypeController::class, 'index'])->name('admin_company.leavetypes.index');
     Route::post('/leavetype/index', [LeaveTypeController::class, 'store'])->name('admin_company.leavetypes.store');
+    
     Route::put('/leavetype/{leavetype}', [LeaveTypeController::class, 'update'])->name('admin_company.leavetypes.update');
     });
 

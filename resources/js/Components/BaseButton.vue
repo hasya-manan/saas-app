@@ -27,8 +27,7 @@ const classes = computed(() => {
     // SECONDARY: Edit / Manage (The "Pinkish" vibe)
     outline: "bg-white border-2 border-primary text-primary-dark font-black px-4 py-2 rounded-xl hover:bg-primary hover:text-white transition-all duration-300",
     // NEUTRAL: Cancel / Go Back / View
-    ghost: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 border border-transparent transition-colors duration-200",
-
+    ghost: "text-gray-500 hover:bg-gray-200 hover:text-gray-900 border border-transparent transition-colors duration-200",
     // CAUTION / ARCHIVE: Soft Muted Yellow
     warning: "bg-white border-2 border-orange-400 text-orange-700 font-black px-4 py-2 rounded-xl hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all duration-300 shadow-sm shadow-orange-500/10 active:scale-95",
     danger: "bg-red-600 text-white hover:bg-red-700 hover:shadow-md border border-transparent transition-all duration-200",

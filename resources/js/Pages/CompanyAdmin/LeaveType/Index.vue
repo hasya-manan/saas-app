@@ -101,9 +101,28 @@ const openEditModal = (data, tab = 'general') => {
                                     </tr>
 
                                     <!-- Expanded Tier List -->
-                                    <tr v-if="expandedRows.includes(leave.id)">
-                                        <td colspan="5" class="bg-gray-50 px-12 pb-6 border-b border-gray-200">
-                                            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 mt-2">└─ Entitlement Tiers</div>
+                                       <tr v-if="expandedRows.includes(leave.id)">
+                                            <td colspan="5" class="bg-gray-50 px-12 pb-6 border-b border-gray-200">
+                                                <div class="flex justify-between items-center mb-4 mt-2 px-1">
+                                                    <div
+                                                        class="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                        <span class="text-gray-300">└─</span> Entitlement Tiers
+                                                    </div>
+
+                                                  <div class="flex items-center gap-2">
+                                                        <BaseButton variant="ghost" size="sm"
+                                                            @click="openEditModal(leave)">
+                                                            <Edit2 class="w-3.5 h-3.5" />
+                                                            Edit Leave Details
+                                                        </BaseButton>
+
+                                                        <BaseButton variant="primary" size="sm"
+                                                            @click="addNewTier(leave.id)">
+                                                            <Plus class="w-3.5 h-3.5" />
+                                                            Add New Tier
+                                                        </BaseButton>
+                                                    </div>
+                                                </div>
                                             
                                             <table class="w-full text-sm">
                                                 <thead>
@@ -112,7 +131,7 @@ const openEditModal = (data, tab = 'general') => {
                                                         <th class="py-2 text-left">Max Years</th>
                                                         <th class="py-2 text-left">Allowed Days</th>
                                                         <th class="py-2 text-left">Max Carryover</th>
-                                                        <th class="py-2 text-right">Actions</th>
+                                                       
                                                     </tr>
                                                 </thead>
                                                <tbody class="border-t border-gray-200">
@@ -122,13 +141,7 @@ const openEditModal = (data, tab = 'general') => {
                                                         <td class="py-3">{{ tier.max_years >= 99 ? '∞' : tier.max_years }}</td>
                                                         <td class="py-3 font-bold text-gray-900">{{ tier.allowed_days }} Days</td>
                                                         <td class="py-3">{{ tier.max_carry_forward_days }} Days</td>
-                                                        <td class="py-3 text-right">
-                                                        <button @click="openEditModal(leave, tier)"
-                                                            class="text-primary font-bold text-xs hover:underline">
-                                                            <Edit2 class="w-4 h-4" />
-                                                        </button>
-      
-                                                        </td>
+                                                        
                                                     </tr>
                                                 </template>
 
@@ -140,13 +153,7 @@ const openEditModal = (data, tab = 'general') => {
                                                     </tr>
                                                 </template>
 
-                                                <tr class="border-t border-gray-200">
-                                                    <td colspan="5" class="py-3 text-right">
-                                                        <button @click="addNewTier(leave.id)" class="flex items-center gap-1 justify-end text-primary font-bold text-xs hover:underline">
-                                                            <Plus class="w-4 h-4" /> Add New Tier
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                                               
                                             </tbody>
                                                 
                                             </table>

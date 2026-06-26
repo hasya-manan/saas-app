@@ -19,8 +19,12 @@ const form = useForm({
     allows_carry_forward: false,
     is_active: true,
     is_pro_rata: false,
-    allowed_days: 0,
-    max_carry_forward_days: 0
+ 
+    max_carry_forward_days: 0,
+
+    //tier table
+    tiers: [],
+  
 });
 
 
@@ -36,8 +40,13 @@ watch(() => props.leave, (newVal) => {
         form.is_pro_rata = !!newVal.is_pro_rata;
         
         // Handle the nested tier data
-        form.allowed_days = newVal.tiers?.[0]?.allowed_days || 0;
-        form.max_carry_forward_days = newVal.tiers?.[0]?.max_carry_forward_days || 0;
+        form.tiers = newVal.tiers ? newVal.tiers.map(tier => ({
+            id: tier.id,
+            min_years: tier.min_years,
+            max_years: tier.max_years,
+            allowed_days: tier.allowed_days,
+            max_carry_forward_days: tier.max_carry_forward_days
+        })) : [];
     }
 }, { immediate: true, deep: true });
 
@@ -119,10 +128,31 @@ const submitUpdate = () => {
 
           <!-- TAB 2: ENTITLEMENT TIERS -->
           <div v-else class="space-y-4">
-            <h3 class="text-sm font-bold text-gray-900 uppercase">Entitlement Tiers</h3>
-            <p class="text-xs text-gray-500 italic">Configure service-based rules below.</p>
-            <!-- Your Table component goes here -->
-          </div>
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="text-xs text-gray-500 uppercase">
+        <th class="p-2">Tier</th>
+        <th class="p-2">Min Years</th>
+        <th class="p-2">Max Years</th>
+        <th class="p-2">Allowed Days</th>
+        <th class="p-2">Max Carryover</th>
+        <th class="p-2">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(tier, index) in form.tiers" :key="index" class="border-b">
+        <td class="p-2 font-bold text-sm">Tier {{ index + 1 }}</td>
+        <td><input v-model="tier.min_years" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
+        <td><input v-model="tier.max_years" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
+        <td><input v-model="tier.allowed_days" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
+        <td><input v-model="tier.max_carry_forward_days" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
+        <td class="p-2">
+            <button @click="form.tiers.splice(index, 1)" class="text-red-500 text-xs">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
         </div>
 
         <!-- FOOTER: Fixed to bottom of right side -->

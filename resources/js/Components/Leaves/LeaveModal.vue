@@ -2,10 +2,12 @@
 import { ref, watch, computed } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { useForm } from '@inertiajs/vue3';
-
+import ConfirmModal from '@/Components/ConfirmModal.vue';
 
 const emit = defineEmits(['close', 'saved']);
 const activeTab = ref('general');
+const showModal = ref(false);
+const isProcessing = ref(false);
 const props = defineProps({
     show: Boolean,
     leave: Object,
@@ -29,7 +31,8 @@ const form = useForm({
 
 
 watch(() => props.leave, (newVal) => {
-    if (newVal) {
+    // Only update if the form is empty OR if we are loading a DIFFERENT leave type
+    if (newVal && (form.id !== newVal.id)) {
         // Just assign the values directly to the form object
         form.id = newVal.id;
         form.name = newVal.name;
@@ -50,14 +53,6 @@ watch(() => props.leave, (newVal) => {
     }
 }, { immediate: true, deep: true });
 
-const isInactive = computed(() => !form.is_active);
-
-// Determine the warning/status message
-const statusMessage = computed(() => {
-    return form.is_dirty 
-        ? 'Warning: You are about to deactivate this leave type. This will disable all associated entitlement tiers.'
-        : 'Status: This leave type is currently inactive. All associated entitlement tiers are disabled.';
-});
 
 const submitUpdate = () => {
     form.put(route('admin_company.leavetypes.update', form.id), {
@@ -65,6 +60,39 @@ const submitUpdate = () => {
         preserveScroll: true,
         onSuccess: () => emit('close'),
     });
+};
+
+const handleStatusToggle = () => {
+  // Use form.is_active, NOT form.value.is_active , because this is inside another Modal page
+  //In useForm, the object is already "unwrapped."
+  if (!form.is_active) {
+    showModal.value = true;
+  } else {
+    // Proceed with activation
+    console.log("Activating...");
+  }
+};
+
+
+const handleModalAction = async (isConfirmed) => {
+  //console.log("Modal Action Triggered. Confirmed:", isConfirmed); 
+  console.log("Current form object:", form); 
+  if (!isConfirmed) {
+    form.is_active = true; 
+    showModal.value = false;
+    return;
+  }
+
+  // Confirm Logic
+  isProcessing.value = true;
+  try {
+    
+    showModal.value = false;
+  } catch (err) {
+    console.error("Update failed", err);
+  } finally {
+    isProcessing.value = false;
+  }
 };
 </script>
 
@@ -114,57 +142,63 @@ const submitUpdate = () => {
               <input v-model="form.default_days" type="number" class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary" />
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
-                <label class="text-xs font-bold text-gray-700">Allow Carry Forward</label>
-                <input v-model="form.allows_carry_forward" type="checkbox" class="rounded text-primary focus:ring-primary" />
-              </div>
-              <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
-                <label class="text-xs font-bold text-gray-700">Status (Active)</label>
-                <input v-model="form.is_active" type="checkbox" class="rounded text-primary focus:ring-primary" />
-              </div>
+           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+              <label class="text-xs font-bold text-gray-700">Allow Carry Forward</label>
+              <input v-model="form.allows_carry_forward" type="checkbox" class="rounded text-primary focus:ring-primary" />
             </div>
+             <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+                <label class="text-xs font-bold text-gray-700">Status (Active)</label>
+                <input v-model="form.is_active" type="checkbox" @change="handleStatusToggle"
+                  class="rounded text-primary focus:ring-primary" />
+              </div>
+
+            <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+              <label class="text-xs font-bold text-gray-700">Pro-Rata</label>
+              <input v-model="form.is_prorata" type="checkbox" class="rounded text-primary focus:ring-primary" />
+            </div>
+          </div>
           </div>
 
           <!-- TAB 2: ENTITLEMENT TIERS -->
         <div v-else class="space-y-4">
-  <div class="flex justify-between items-center">
-    <h3 class="text-sm font-bold text-gray-900 uppercase">Tier Configuration</h3>
-    <button @click="form.tiers.push({})" class="text-xs bg-primary text-white px-3 py-1 rounded-lg">
-      + Add Tier
-    </button>
-  </div>
-
-  <div class="overflow-hidden border rounded-xl">
-    <table class="w-full text-left">
-      <thead class="bg-gray-50 border-b">
-        <tr class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-          <th class="p-3">Tier Level</th>
-          <th class="p-3">Years (Min - Max)</th>
-          <th class="p-3">Allowed Days</th>
-          <th class="p-3">Max Carryover</th>
-          <th class="p-3 text-center">Action</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <tr v-for="(tier, index) in form.tiers" :key="index" class="hover:bg-gray-50/50">
-          <td class="p-3 font-semibold text-sm">#{{ index + 1 }}</td>
-          <td class="p-3 flex gap-2">
-             <input v-model="tier.min_years" placeholder="Min" class="w-16 p-2 text-sm rounded-lg border-gray-200" />
-             <input v-model="tier.max_years" placeholder="Max" class="w-16 p-2 text-sm rounded-lg border-gray-200" />
-          </td>
-          <td class="p-3"><input v-model="tier.allowed_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
-          <td class="p-3"><input v-model="tier.max_carry_forward_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
-          <td class="p-3 text-center">
-            <button @click="form.tiers.splice(index, 1)" class="text-red-500 hover:text-red-700">
-              <span class="text-xs font-bold">Remove</span>
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-gray-900 uppercase">Tier Configuration</h3>
+            <button @click="form.tiers.push({})" class="text-xs bg-primary text-white px-3 py-1 rounded-lg">
+              + Add Tier
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          </div>
+
+          <div class="overflow-hidden border rounded-xl">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 border-b">
+                <tr class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                  <th class="p-3">Tier Level</th>
+                  <th class="p-3">Years (Min - Max)</th>
+                  <th class="p-3">Allowed Days</th>
+                  <th class="p-3">Max Carryover</th>
+                  <th class="p-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr v-for="(tier, index) in form.tiers" :key="index" class="hover:bg-gray-50/50">
+                  <td class="p-3 font-semibold text-sm">#{{ index + 1 }}</td>
+                  <td class="p-3 flex gap-2">
+                    <input v-model="tier.min_years" placeholder="Min" class="w-16 p-2 text-sm rounded-lg border-gray-200" />
+                    <input v-model="tier.max_years" placeholder="Max" class="w-16 p-2 text-sm rounded-lg border-gray-200" />
+                  </td>
+                  <td class="p-3"><input v-model="tier.allowed_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
+                  <td class="p-3"><input v-model="tier.max_carry_forward_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
+                  <td class="p-3 text-center">
+                    <button @click="form.tiers.splice(index, 1)" class="text-red-500 hover:text-red-700">
+                      <span class="text-xs font-bold">Remove</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         </div>
 
         <!-- FOOTER: Fixed to bottom of right side -->
@@ -176,6 +210,19 @@ const submitUpdate = () => {
         </div>
       </div>
     </div>
+
+    <!--Modal confirm-->
+    <ConfirmModal
+      :show="showModal"
+      title="Inactive Leave Type?"
+      message="Are you sure you want to inactive this leave type?"
+      note="All associated entitlement tiers will be suspended and unavailable for selection."
+      confirm-text="Inactive"
+      variant="danger"
+      :loading="isProcessing"
+      @close="() => handleModalAction(false)" 
+      @confirm="() => handleModalAction(true)"
+    />
   </Modal>
 </template>
 

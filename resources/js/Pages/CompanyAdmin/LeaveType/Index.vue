@@ -61,7 +61,7 @@ const openEditModal = (data, tab = 'general') => {
                      <div class="overflow-x-auto">
                         <table class="w-full text-left border-separate border-spacing-y-2">
                             <thead>
-                                <tr class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">
+                                <tr class="text-xs font-bold text-gray-600 uppercase tracking-[0.2em]">
                                     <th class="px-4 py-2 text-left">Leave Type Name</th>
                                     <th class="px-4 py-2 text-center">Probation</th>
                                     <th class="px-4 py-2 text-center">Max Carryover</th>
@@ -83,7 +83,7 @@ const openEditModal = (data, tab = 'general') => {
                                             </td>
   
                                         <td class="text-center">{{ leave.probation_period_months }} Months</td>
-                                        <td class="text-center text-primary font-medium">
+                                        <td class="text-center text-gray-900 font-medium">
                                             {{ leave.tiers?.length > 0 ? (leave.tiers[0].max_carry_forward_days + ' Days') : 'None' }}
                                         </td>
                                         <td class="text-center">
@@ -105,7 +105,7 @@ const openEditModal = (data, tab = 'general') => {
                                             <td colspan="5" class="bg-gray-50 px-12 pb-6 border-b border-gray-200">
                                                 <div class="flex justify-between items-center mb-4 mt-2 px-1">
                                                     <div
-                                                        class="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                        class="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex items-center gap-2">
                                                         <span class="text-gray-300">└─</span> Entitlement Tiers
                                                     </div>
 
@@ -128,7 +128,7 @@ const openEditModal = (data, tab = 'general') => {
                                             
                                             <table class="w-full text-sm">
                                                 <thead>
-                                                    <tr class="text-[10px] uppercase text-gray-400">
+                                                    <tr class="text-[10px] uppercase text-gray-800">
                                                         <th class="py-2 text-left">Min Years</th>
                                                         <th class="py-2 text-left">Max Years</th>
                                                         <th class="py-2 text-left">Allowed Days</th>

@@ -3,9 +3,11 @@ import { ref, computed } from 'vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RegistrationWizard from '@/Components/RegistrationWizard.vue';
+import Modal from '@/Components/Modal.vue';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import { useIcParser } from '@/Composables/useIcParser'; 
 import { useEmailValidation } from '@/Composables/useEmailValidation';
+
 import {
     Eye, EyeOff , Plus 
      
@@ -23,6 +25,7 @@ const hasDepartments = computed(() => props.departments && props.departments.len
 const isOthers = computed(() => form.department_id === 'others')
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+const showEisWarning = ref(false);
 
 const steps = [
     { id: 1, title: 'Account Setup', desc: 'Login & System Access' },
@@ -196,6 +199,24 @@ const passwordMismatch = computed(() => {
     }
     return false;
 });
+
+
+
+
+const handleEisToggle = () => {
+   
+    if (form.eis_enabled) {
+        showEisWarning.value = true;
+    } else {
+        // Just turn it ON
+        form.eis_enabled = true;
+    }
+};
+
+const confirmDisable = () => {
+    form.eis_enabled = false;
+    showEisWarning.value = false;
+};
 </script>
 
 <template>
@@ -639,8 +660,13 @@ const passwordMismatch = computed(() => {
                                                     System</p>
                                             </div>
                                         </div>
-                                        <input v-model="form.eis_enabled" type="checkbox"
-                                            class="w-6 h-6 text-primary rounded-md border-slate-600 focus:ring-primary cursor-pointer transition-all">
+                                       <input 
+                                       :key="form.eis_enabled"
+                                        type="checkbox" 
+                                        :checked="!!form.eis_enabled"
+                                        @click.prevent="handleEisToggle"
+                                        class="w-6 h-6 text-primary rounded-md border-slate-600 focus:ring-primary cursor-pointer transition-all"
+                                    >
                                     </label>
                                 </div>
                             </div>
@@ -732,6 +758,21 @@ const passwordMismatch = computed(() => {
                         </button>
                     </div>
                 </div>
+                <!-- Modal-->
+                 <Modal :show="showEisWarning" @close="showEisWarning = false">
+                        <div class="p-6">
+                            <h2 class="text-lg font-bold text-red-600">Disable EIS Contribution?</h2>
+                            <p class="mt-2 text-sm text-gray-600">
+                                Warning: EIS is a mandatory statutory contribution for eligible employees. 
+                                Disabling this may lead to non-compliance with PERKESO regulations. 
+                                Only disable for legally exempt staff (e.g., foreigners).
+                            </p>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button @click="showEisWarning = false" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
+                                <button @click="confirmDisable" class="px-4 py-2 bg-red-600 text-white rounded-lg">Confirm Disable</button>
+                            </div>
+                        </div>
+                </Modal>
             </main>
         </div>
     </AuthenticatedLayout>

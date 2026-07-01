@@ -93,15 +93,15 @@ const openEditModal = (data, tab = 'general') => {
                                             </span>
                                         </td>
                                         <td class="text-right px-6">
-                                        <BaseButton variant="ghost" size="sm" @click="toggleRow(leave.id)">
-                                                <ChevronDown v-if="expandedRows.includes(leave.id)" class="w-5 h-5" />
-                                                <ChevronRight v-else class="w-5 h-5" />
+                                        <BaseButton variant="ghost" size="sm" @click="toggleRow(leave.id) " :aria-label="expandedRows.includes(leave.id) ? 'Collapse details' : 'Expand details'">
+                                                <ChevronDown v-if="!expandedRows.includes(leave.id)" class="w-5 h-5" aria-hidden="true" />
+                                                <ChevronRight v-else class="w-5 h-5" aria-hidden="true" />
                                             </BaseButton>
                                         </td>
                                     </tr>
 
                                     <!-- Expanded Tier List -->
-                                       <tr v-if="expandedRows.includes(leave.id)">
+                                       <tr v-if="!expandedRows.includes(leave.id)">
                                             <td colspan="5" class="bg-gray-50 px-12 pb-6 border-b border-gray-200">
                                                 <div class="flex justify-between items-center mb-4 mt-2 px-1">
                                                     <div
@@ -111,14 +111,16 @@ const openEditModal = (data, tab = 'general') => {
 
                                                   <div class="flex items-center gap-2">
                                                         <BaseButton variant="ghost" size="sm"
-                                                            @click="openEditModal(leave)">
-                                                            <Edit2 class="w-3.5 h-3.5" />
+                                                            @click="openEditModal(leave)"
+                                                            aria-label="Edit leave details for this tier">
+                                                            <Edit2 class="w-3.5 h-3.5" aria-hidden="true" />
                                                             Edit Leave Details
                                                         </BaseButton>
 
                                                         <BaseButton variant="primary" size="sm"
-                                                            @click="addNewTier(leave.id)">
-                                                            <Plus class="w-3.5 h-3.5" />
+                                                            @click="addNewTier(leave.id)"
+                                                            aria-label="Add a new entitlement tier">
+                                                            <Plus class="w-3.5 h-3.5" aria-hidden="true" />
                                                             Add New Tier
                                                         </BaseButton>
                                                     </div>

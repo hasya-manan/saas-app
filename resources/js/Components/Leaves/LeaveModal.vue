@@ -19,7 +19,7 @@ const form = useForm({
     allows_carry_forward: false,
     is_active: true,
     is_pro_rata: false,
- 
+
     max_carry_forward_days: 0,
 
     //tier table

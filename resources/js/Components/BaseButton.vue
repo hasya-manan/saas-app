@@ -15,7 +15,8 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    loading: { type: Boolean, default: false }
+    loading: { type: Boolean, default: false },
+    ariaLabel: { type: String, default: null }
 });
 
 const classes = computed(() => {
@@ -43,7 +44,10 @@ const classes = computed(() => {
 </script>
 
 <template>
-   <button :class="classes" :disabled="disabled || loading">
+   <button :class="classes" 
+   :disabled="disabled || loading"
+   :aria-label="ariaLabel"
+   >
     <Loader2 v-if="loading" :size="16" class="animate-spin" />
         <slot />
     </button>

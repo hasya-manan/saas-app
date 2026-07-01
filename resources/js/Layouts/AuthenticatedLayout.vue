@@ -74,24 +74,24 @@ watch(
                         ? route('superadmin.dashboard')
                         : ($page.props.auth.user?.role_id === 2
                             ? route('admin_company.dashboard')
-                            : route('dashboard'))" class="block px-3 py-2 text-gray-600 font-medium hover:bg-primary-light hover:text-primary-dark rounded-lg">
+                            : route('dashboard'))" class="block px-3 py-2 text-gray-500 font-medium hover:bg-primary-light hover:text-primary-dark rounded-lg">
                         Dashboard
                     </Link>
                     <!--Super Admin-->
                     <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('tenants.create')"
-                        class="block px-3 py-2 text-gray-600 font-medium">Onboard Company</Link>
+                        class="block px-3 py-2 text-gray-500 font-medium">Onboard Company</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('tenants.list')"
-                        class="block px-3 py-2 text-gray-600 font-medium">List Company</Link>
+                        class="block px-3 py-2 text-gray-500 font-medium">List Company</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('users.list')"
-                        class="block px-3 py-2 text-gray-600 font-medium">All List Users</Link>
+                        class="block px-3 py-2 text-gray-500 font-medium">All List Users</Link>
 
                         <!--Admin Company -->
                     <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.users.index')"
-                        class="block px-3 py-2 text-gray-600 font-medium">Staff Directory</Link>
+                        class="block px-3 py-2 text-gray-500 font-medium">Staff Directory</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.users.create')"
-                        class="block px-3 py-2 text-gray-600 font-medium">Add New Staff</Link>
+                        class="block px-3 py-2 text-gray-500 font-medium">Add New Staff</Link>
                     <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.leavetypes.index')"
-                        class="block px-3 py-2 text-gray-600 font-medium">List Leave Types</Link>
+                        class="block px-3 py-2 text-gray-500 font-medium">List Leave Types</Link>
 
                 </nav>
             </aside>
@@ -100,6 +100,7 @@ watch(
         <aside :class="isCollapsed ? 'w-20' : 'w-64'"
             class="relative hidden md:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
             <button @click="toggleSidebar"
+                :aria-label="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
                 class="absolute -right-3 top-10 z-50 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:bg-primary-light hover:text-primary-dark">
                 <ChevronLeft v-if="!isCollapsed" :size="16" />
                 <ChevronRight v-else :size="16" />
@@ -112,7 +113,7 @@ watch(
                 </div>
 
                 <div v-if="!isCollapsed" class="overflow-hidden transition-opacity duration-300">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
                         {{ $page.props.auth.user?.role?.name || 'User' }}
                     </p>
 
@@ -123,25 +124,25 @@ watch(
             </div>
 
             <nav class="flex-1 px-3 py-4 space-y-1">
-                <p v-if="!isCollapsed" class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <p v-if="!isCollapsed" class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-2">
                     Main</p>
 
                 <Link v-if="$page.props.auth.user?.role_id === 1" :href="route('superadmin.dashboard')"
-                    :class="[route().current('superadmin.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                    :class="[route().current('superadmin.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">Platform Dashboard</span>
                 </Link>
 
                 <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.dashboard')"
-                    :class="[route().current('admin_company.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                    :class="[route().current('admin_company.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">Admin Dashboard</span>
                 </Link>
 
                 <Link v-if="$page.props.auth.user?.role_id === 3" :href="route('dashboard')"
-                    :class="[route().current('dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                    :class="[route().current('dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">My Dashboard</span>
@@ -149,22 +150,22 @@ watch(
                 <!--Super Admin Menu-->
                 <div v-if="$page.props.auth.user?.role_id === 1">
                     <p v-if="!isCollapsed"
-                        class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">Super
+                        class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-6 mb-2">Super
                         Admin</p>
                     <Link :href="route('tenants.create')"
-                        :class="[route().current('tenants.create') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('tenants.create') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <PlusCircle :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Onboard Company</span>
                     </Link>
                     <Link :href="route('tenants.list')"
-                        :class="[route().current('tenants.list') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('tenants.list') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <List :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Company</span>
                     </Link>
                     <Link :href="route('users.list')"
-                        :class="[route().current('users.list') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('users.list') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <Contact :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Users</span>
@@ -173,28 +174,28 @@ watch(
                 <!-- Admin Company Menu -->
                 <div v-if="$page.props.auth.user?.role_id === 2">
                     <p v-if="!isCollapsed"
-                        class="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 mb-2">System
+                        class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-6 mb-2">System
                         Admin</p>
                     <Link :href="route('admin_company.users.create')"
-                        :class="[route().current('admin_company.users.create') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('admin_company.users.create') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <PlusCircle :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Create Staff</span>
                     </Link>
                     <Link :href="route('admin_company.users.index')"
-                        :class="[route().current('admin_company.users.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('admin_company.users.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <ListPlus :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">List Staff</span>
                     </Link>
                      <Link :href="route('admin_company.departments.index')"
-                        :class="[route().current('admin_company.departments.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('admin_company.departments.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <Component  :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Manage Department</span>
                     </Link>
                     <Link :href="route('admin_company.leavetypes.index')"
-                        :class="[route().current('admin_company.leavetypes.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-600 hover:bg-primary-light hover:text-primary-dark']"
+                        :class="[route().current('admin_company.leavetypes.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <CalendarDays   :size="20" />
                         <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave Types</span>
@@ -215,7 +216,7 @@ watch(
 
         <div class="flex flex-1 flex-col overflow-hidden">
             <header class="flex h-16 items-center justify-between border-b bg-white px-4 md:hidden">
-                <button @click="showingMobileMenu = true" class="text-gray-600">
+                <button @click="showingMobileMenu = true" class="text-gray-500">
                     <Menu :size="24" />
                 </button>
                 <span class="font-bold text-gray-800">HR System</span>

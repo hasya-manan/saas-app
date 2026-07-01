@@ -69,9 +69,9 @@ const submitUpdate = () => {
 </script>
 
 <template>
-  <Modal :show="show" maxWidth="2xl" @close="$emit('close')">
+  <Modal :show="show" maxWidth="4xl" @close="$emit('close')">
     <!-- Main Flex Container for Vertical Layout -->
-    <div class="flex h-[450px]">
+    <div class="flex min-h-[500px]">
       
       <!-- LEFT SIDEBAR: Navigation -->
       <div class="w-1/4 border-r border-gray-100 p-6 space-y-2 bg-gray-50/50">
@@ -127,32 +127,44 @@ const submitUpdate = () => {
           </div>
 
           <!-- TAB 2: ENTITLEMENT TIERS -->
-          <div v-else class="space-y-4">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="text-xs text-gray-500 uppercase">
-                <th class="p-2">Tier</th>
-                <th class="p-2">Min Years</th>
-                <th class="p-2">Max Years</th>
-                <th class="p-2">Allowed Days</th>
-                <th class="p-2">Max Carryover</th>
-                <th class="p-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(tier, index) in form.tiers" :key="index" class="border-b">
-                <td class="p-2 font-bold text-sm">Tier {{ index + 1 }}</td>
-                <td><input v-model="tier.min_years" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
-                <td><input v-model="tier.max_years" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
-                <td><input v-model="tier.allowed_days" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
-                <td><input v-model="tier.max_carry_forward_days" type="number" class="w-16 p-1 text-sm rounded border-gray-200" /></td>
-                <td class="p-2">
-                    <button @click="form.tiers.splice(index, 1)" class="text-red-500 text-xs">Remove</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <div v-else class="space-y-4">
+  <div class="flex justify-between items-center">
+    <h3 class="text-sm font-bold text-gray-900 uppercase">Tier Configuration</h3>
+    <button @click="form.tiers.push({})" class="text-xs bg-primary text-white px-3 py-1 rounded-lg">
+      + Add Tier
+    </button>
+  </div>
+
+  <div class="overflow-hidden border rounded-xl">
+    <table class="w-full text-left">
+      <thead class="bg-gray-50 border-b">
+        <tr class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+          <th class="p-3">Tier Level</th>
+          <th class="p-3">Years (Min - Max)</th>
+          <th class="p-3">Allowed Days</th>
+          <th class="p-3">Max Carryover</th>
+          <th class="p-3 text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr v-for="(tier, index) in form.tiers" :key="index" class="hover:bg-gray-50/50">
+          <td class="p-3 font-semibold text-sm">#{{ index + 1 }}</td>
+          <td class="p-3 flex gap-2">
+             <input v-model="tier.min_years" placeholder="Min" class="w-16 p-2 text-sm rounded-lg border-gray-200" />
+             <input v-model="tier.max_years" placeholder="Max" class="w-16 p-2 text-sm rounded-lg border-gray-200" />
+          </td>
+          <td class="p-3"><input v-model="tier.allowed_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
+          <td class="p-3"><input v-model="tier.max_carry_forward_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
+          <td class="p-3 text-center">
+            <button @click="form.tiers.splice(index, 1)" class="text-red-500 hover:text-red-700">
+              <span class="text-xs font-bold">Remove</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
         </div>
 
         <!-- FOOTER: Fixed to bottom of right side -->

@@ -74,7 +74,9 @@ const openEditModal = (data, tab = 'general') => {
                                     <!-- Summary Row -->
                                        <tr class="group bg-white hover:bg-primary-light/5 transition-all duration-300">
                                             <td class="px-6 py-4 rounded-l-2xl border-y border-transparent">
-                                                <BaseButton variant="ghost" size="sm" @click="toggleRow(leave.id)"
+                                                <BaseButton variant="expandable" size="sm" @click="toggleRow(leave.id)"
+                                                :aria-expanded="expandedRows.includes(leave.id)"
+                                                aria-label="Toggle leave details"
                                                     class="flex items-center gap-2 ">
                                                     <span class="text-[10px] text-gray-400 font-mono">[{{ leave.code
                                                         }}]</span>

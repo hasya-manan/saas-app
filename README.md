@@ -1,5 +1,5 @@
 # 🏢 Multi-Tenant HR System
-> A shared-database multi-tenancy HR platform built with Laravel, Inertia.js & Vue 3 — designed for payroll & HR management.
+> A shared-database multi-tenancy HR platform built with Laravel, Inertia.js & Vue 3 — designed for  & HR management.
 
 ![Status](https://img.shields.io/badge/status-in%20development-orange)
 ![Laravel](https://img.shields.io/badge/Laravel-11.x-red?logo=laravel)
@@ -12,7 +12,7 @@
 <!-- ![Visual Demo](./screenshots/demo.gif)
 ## 📌 Overview -->
 
-This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for  HR & payroll use cases and intentionally does **not** use domain-based tenant resolution.
+This project implements a **shared-database multi-tenancy** system — meaning all companies (tenants) share a single database, isolated at the application layer using `tenant_id` scoping. It is designed for  HR  use cases and intentionally does **not** use domain-based tenant resolution.
 
 
 ### 📸 System Walkthrough

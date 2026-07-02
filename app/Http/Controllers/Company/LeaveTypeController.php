@@ -37,41 +37,40 @@ class LeaveTypeController extends Controller
         'name' => 'required|string|max:255',
         'code' => 'required|string|max:50',
         'is_calculated_by_experience' => 'boolean',
-        'default_days' => 'required|integer|min:0',
+        'default_days' => 'sometimes|integer|min:0',
         'allows_carry_forward' => 'boolean',
-        'probation_period_months' => 'required|integer|min:0', 
+        'probation_period_months' => 'sometimes|integer|min:0', 
         'is_active' => 'boolean',
          'is_pro_rata' => 'boolean',
         // tier table validated
         'min_years' => 'decimal|min:0',
         'max_years' => 'decimal|min:0',
-        'allowed_days' => 'required|integer|min:0',
-        'max_carry_forward_days' => 'required|integer|min:0',
+        'allowed_days' => 'sometimes|integer|min:0',
+        'max_carry_forward_days' => 'sometimes|integer|min:0',
         
     ]);
 
    
-    DB::transaction(function () use ($request, $id, $validated) {
+ DB::transaction(function () use ($request, $id, $validated) {
         $leaveType = LeaveType::findOrFail($id);
 
+        // Update the main model using the already-validated data
        
-        $leaveType->update([
-            'name' => $validated['name'],
-            'code' => $validated['code'],
-            'default_days' => $validated['default_days'],
-            'allows_carry_forward' => $request->boolean('allows_carry_forward'),
-            'is_active' => $request->boolean('is_active'),
-            'is_pro_rata' => $request->boolean('is_pro_rata'),
-        ]);
+        $leaveType->update(array_intersect_key($validated, array_flip([
+            'name', 'code', 'default_days', 'is_calculated_by_experience', 
+            'probation_period_months', 'is_active', 'is_pro_rata'
+        ])));
 
-       
-        $leaveType->tiers()->updateOrCreate(
-            ['leave_type_id' => $leaveType->id], 
-            [
-                'allowed_days' => $validated['allowed_days'],
-                'max_carry_forward_days' => $validated['max_carry_forward_days'],
-            ]
-        );
+        // Update the child table
+        if ($request->hasAny(['allowed_days', 'max_carry_forward_days'])) {
+            $leaveType->tiers()->updateOrCreate(
+                ['leave_type_id' => $leaveType->id], 
+                [
+                    'allowed_days' => $validated['allowed_days'] ?? null,
+                    'max_carry_forward_days' => $validated['max_carry_forward_days'] ?? null,
+                ]
+            );
+        }
     });
 
     return redirect()->back()->with('success', 'Leave type updated successfully.');

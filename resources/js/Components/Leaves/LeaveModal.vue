@@ -1,8 +1,20 @@
 <script setup>
+
+/**
+ * DOCUMENTATION: LeaveModal.vue
+ * ----------------------------
+ * This component uses a 'watch' to synchronize props.leave into the Inertia useForm object.
+ * Logic: 
+ * 1. Tracks leave_type configurations (Global).
+ * 2. Handles tenure-based logic via 'is_calculated_by_experience'.
+ * Refer to /docs/leave-module/leave-modal-logic.md for full details.
+ */
+
 import { ref, watch, computed } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
+import {Info}from 'lucide-vue-next';
 
 const emit = defineEmits(['close', 'saved']);
 const activeTab = ref('general');
@@ -17,12 +29,13 @@ const form = useForm({
     id: null,
     name: '',
     code: '',
+    is_calculated_by_experience: false,
     default_days: 0,
     allows_carry_forward: false,
+    probation_period_months:'',
     is_active: true,
     is_pro_rata: false,
-
-    max_carry_forward_days: 0,
+   
 
     //tier table
     tiers: [],
@@ -41,6 +54,8 @@ watch(() => props.leave, (newVal) => {
         form.allows_carry_forward = !!newVal.allows_carry_forward;
         form.is_active = !!newVal.is_active;
         form.is_pro_rata = !!newVal.is_pro_rata;
+        form.is_calculated_by_experience = !!newVal.is_calculated_by_experience;
+        form.probation_period_months = newVal.probation_period_months;
         
         // Handle the nested tier data
         form.tiers = newVal.tiers ? newVal.tiers.map(tier => ({
@@ -126,6 +141,7 @@ const handleModalAction = async (isConfirmed) => {
           <!-- TAB 1: GENERAL -->
           <div v-if="activeTab === 'general'" class="space-y-6">
             <h3 class="text-sm font-bold text-gray-900 uppercase">General Information</h3>
+            
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-bold text-gray-700">Leave Name</label>
@@ -136,28 +152,59 @@ const handleModalAction = async (isConfirmed) => {
                 <input v-model="form.code" type="text" class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary" />
               </div>
             </div>
-            
-            <div>
-              <label class="block text-xs font-bold text-gray-700">Default Days</label>
-              <input v-model="form.default_days" type="number" class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary" />
-            </div>
 
-           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
-              <label class="text-xs font-bold text-gray-700">Allow Carry Forward</label>
-              <input v-model="form.allows_carry_forward" type="checkbox" class="rounded text-primary focus:ring-primary" />
-            </div>
-             <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
-                <label class="text-xs font-bold text-gray-700">Status (Active)</label>
-                <input v-model="form.is_active" type="checkbox" @change="handleStatusToggle"
-                  class="rounded text-primary focus:ring-primary" />
+            <!-- Conditional Logic for Default Days -->
+           <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <label class="block text-xs font-bold text-gray-700">
+                  Default Days
+                </label>
+
+                <div class="cursor-help text-gray-400 hover:text-primary transition-colors" :title="form.is_calculated_by_experience
+                  ? 'When calculated by experience, this value is used only if an employee does not fit into any defined tenure tiers.'
+                  : 'This is the fixed number of leave days allocated to all employees.'">
+                  <Info :size="14" />
+                </div>
               </div>
 
-            <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
-              <label class="text-xs font-bold text-gray-700">Pro-Rata</label>
-              <input v-model="form.is_prorata" type="checkbox" class="rounded text-primary focus:ring-primary" />
+              <input v-model="form.default_days" type="number"
+                class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary"
+                :placeholder="form.is_calculated_by_experience ? 'e.g. 7 (Fallback value)' : 'e.g. 14'" />
+
+                <p v-if="form.is_calculated_by_experience" class="text-[10px] text-amber-600 font-medium mt-1 italic">
+                    * Tier-based calculation active. This value acts as a fallback.
+                </p>
+            
+            
+              </div>
+
+            <!-- New Fields Section -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700">Probation Period (Months)</label>
+                <input v-model="form.probation_period_months" type="number" min="0" class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary" />
+              </div>
             </div>
-          </div>
+
+            <!-- Toggles Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+                <label class="text-xs font-bold text-gray-700">Calc. by Experience</label>
+                <input v-model="form.is_calculated_by_experience" type="checkbox" class="rounded text-primary focus:ring-primary" />
+              </div>
+              <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+                <label class="text-xs font-bold text-gray-700">Allow Carry Forward</label>
+                <input v-model="form.allows_carry_forward" type="checkbox" class="rounded text-primary focus:ring-primary" />
+              </div>
+              <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+                <label class="text-xs font-bold text-gray-700">Pro-Rata</label>
+                <input v-model="form.is_prorata" type="checkbox" class="rounded text-primary focus:ring-primary" />
+              </div>
+              <div class="flex items-center justify-between p-3 border rounded-xl bg-gray-50">
+                <label class="text-xs font-bold text-gray-700">Active</label>
+                <input v-model="form.is_active" type="checkbox" @change="handleStatusToggle" class="rounded text-primary focus:ring-primary" />
+              </div>
+            </div>
           </div>
 
           <!-- TAB 2: ENTITLEMENT TIERS -->

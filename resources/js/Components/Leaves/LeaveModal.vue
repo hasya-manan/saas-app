@@ -15,6 +15,7 @@ import Modal from '@/Components/Modal.vue';
 import { useForm } from '@inertiajs/vue3';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
 import {Info}from 'lucide-vue-next';
+import InputError from '@/Components/InputError.vue';
 
 const emit = defineEmits(['close', 'saved']);
 const activeTab = ref('general');
@@ -157,32 +158,30 @@ const handleModalAction = async (isConfirmed) => {
            <div class="space-y-1">
               <div class="flex items-center space-x-2">
                 <label class="block text-xs font-bold text-gray-700">
-                  Default Days
+                  Default Days <span class="text-red-500">*</span>
                 </label>
 
-                <div class="cursor-help text-gray-400 hover:text-primary transition-colors" :title="form.is_calculated_by_experience
-                  ? 'When calculated by experience, this value is used only if an employee does not fit into any defined tenure tiers.'
-                  : 'This is the fixed number of leave days allocated to all employees.'">
+                <div class="cursor-help text-gray-400 hover:text-primary transition-colors" title="...">
                   <Info :size="14" />
                 </div>
               </div>
 
               <input v-model="form.default_days" type="number"
                 class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary"
-                :placeholder="form.is_calculated_by_experience ? 'e.g. 7 (Fallback value)' : 'e.g. 14'" />
+                :placeholder="form.is_calculated_by_experience ? 'e.g. 7 (Fallback)' : 'e.g. 14'" />
 
-                <p v-if="form.is_calculated_by_experience" class="text-[10px] text-amber-600 font-medium mt-1 italic">
-                    * Tier-based calculation active. This value acts as a fallback.
-                </p>
-            
-            
-              </div>
+              <InputError :message="form.errors.default_days" class="mt-1" />
+
+              <p v-if="form.is_calculated_by_experience" class="text-[10px] text-amber-600 font-medium mt-1 italic">
+                * Tier-based calculation active. This value acts as a fallback.
+              </p>
+            </div>
 
             <!-- New Fields Section -->
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-bold text-gray-700">Probation Period (Months)</label>
-                <input v-model="form.probation_period_months" type="number" min="0" class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary" />
+                <input v-model="form.probation_period_months" placeholder="e.g. 2" type="number" min="0" class="mt-1 w-full rounded-xl border-gray-200 shadow-sm focus:border-primary focus:ring-primary" />
               </div>
             </div>
 

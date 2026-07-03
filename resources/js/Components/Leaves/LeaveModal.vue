@@ -17,17 +17,21 @@ import ConfirmModal from '@/Components/ConfirmModal.vue';
 import {Info, Plus}from 'lucide-vue-next';
 import InputError from '@/Components/InputError.vue';
 
+const props = defineProps({
+    show: Boolean,
+    leave: Object,
+    initialTab: {
+        type: String,
+        default: 'general'
+    }
+});
 const emit = defineEmits(['close', 'saved']);
-const activeTab = ref('general');
+const activeTab = ref(props.initialTab);
 const showModal = ref(false);
 const isProcessing = ref(false);
 const showDeleteModal = ref(false);
 const tierToDeleteIndex = ref(null);
-const props = defineProps({
-    show: Boolean,
-    leave: Object,
-    initialTab: String
-});
+
 
 const form = useForm({
     id: null,
@@ -47,10 +51,17 @@ const form = useForm({
 });
 
 
+watch(() => props.show, (newVal) => {
+    if (newVal) {
+        activeTab.value = props.initialTab;
+    }
+});
+
+// Sync internal tab state with parent prop whenever the modal is opened
 watch(() => props.leave, (newVal) => {
     // Only update if the form is empty OR if we are loading a DIFFERENT leave type
     if (newVal && (form.id !== newVal.id)) {
-        // Just assign the values directly to the form object
+       
         form.id = newVal.id;
         form.name = newVal.name;
         form.code = newVal.code;
@@ -61,7 +72,7 @@ watch(() => props.leave, (newVal) => {
         form.is_calculated_by_experience = !!newVal.is_calculated_by_experience;
         form.probation_period_months = newVal.probation_period_months;
         
-        // Handle the nested tier data
+        //nested tier
         form.tiers = newVal.tiers ? newVal.tiers.map(tier => ({
             id: tier.id,
             min_years: tier.min_years,
@@ -74,6 +85,7 @@ watch(() => props.leave, (newVal) => {
 
 
 const submitUpdate = () => {
+  //console.log('Payload being sent to server:', form.data());
     form.put(route('admin_company.leavetypes.update', form.id), {
         preserveState: true,
         preserveScroll: true,
@@ -88,7 +100,7 @@ const handleStatusToggle = () => {
     showModal.value = true;
   } else {
    
-    console.log("Activating...");
+    //console.log("Activating...");
   }
 };
 

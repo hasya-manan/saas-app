@@ -36,6 +36,8 @@ const openEditModal = (data, tab = 'general') => {
   
   //console.log("Modal status:", isModalOpen.value); // Add this line
 };
+
+
 </script>
 
 <template>
@@ -120,11 +122,13 @@ const openEditModal = (data, tab = 'general') => {
                                                         </BaseButton>
 
                                                         <BaseButton variant="primary" size="sm"
-                                                            @click="addNewTier(leave.id)"
+                                                            @click="openEditModal(leave, 'tiers')" 
                                                             aria-label="Add a new entitlement tier">
                                                             <Plus class="w-3.5 h-3.5" aria-hidden="true" />
                                                             Add New Tier
                                                         </BaseButton>
+
+                               
                                                     </div>
                                                 </div>
                                             
@@ -175,6 +179,7 @@ const openEditModal = (data, tab = 'general') => {
             </div>
 
             <!-- modal edit -->
+             <!-- Leave modal code is inside resources /js/Components/Leaves/LeaveModal.vue-->
             
             <LeaveModal 
                 :show="isModalOpen" 

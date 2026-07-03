@@ -49,6 +49,7 @@ class LeaveTypeController extends Controller
         'tiers.*.max_years' => 'required|numeric|min:0',
         'tiers.*.allowed_days' => 'required|integer|min:0',
         'tiers.*.max_carry_forward_days' => 'required|integer|min:0',
+        'tiers.*.id' => 'sometimes|integer|exists:leave_type_tiers,id',
         
     ]);
 
@@ -62,7 +63,9 @@ class LeaveTypeController extends Controller
         // 2. Get the IDs of the tiers currently in the request
         $incomingTiers = collect($request->tiers);
         
-        // 3. Keep track of IDs that we want to keep
+        // 3. This acts as a "whitelist.", savedIds
+        // By collecting the IDs of everything you just processed, you are telling Laravel: 
+        // "These are the rows that should exist
         $savedIds = [];
 
         foreach ($incomingTiers as $tierData) {

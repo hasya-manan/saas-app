@@ -12,20 +12,23 @@
 
 import { ref, watch, computed } from 'vue';
 import Modal from '@/Components/Modal.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, router } from '@inertiajs/vue3';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
-import {Info}from 'lucide-vue-next';
+import {Info, Plus}from 'lucide-vue-next';
 import InputError from '@/Components/InputError.vue';
 
 const emit = defineEmits(['close', 'saved']);
 const activeTab = ref('general');
 const showModal = ref(false);
 const isProcessing = ref(false);
+const showDeleteModal = ref(false);
+const tierToDeleteIndex = ref(null);
 const props = defineProps({
     show: Boolean,
     leave: Object,
     initialTab: String
 });
+
 const form = useForm({
     id: null,
     name: '',
@@ -84,7 +87,7 @@ const handleStatusToggle = () => {
   if (!form.is_active) {
     showModal.value = true;
   } else {
-    // Proceed with activation
+   
     console.log("Activating...");
   }
 };
@@ -99,7 +102,7 @@ const handleModalAction = async (isConfirmed) => {
     return;
   }
 
-  // Confirm Logic
+ 
   isProcessing.value = true;
   try {
     
@@ -109,6 +112,48 @@ const handleModalAction = async (isConfirmed) => {
   } finally {
     isProcessing.value = false;
   }
+};
+
+
+const createDefaultTier = () => ({
+  min_years: 0,
+  max_years: 0,
+  allowed_days: 0,
+  max_carry_forward_days: 0
+ 
+});
+
+
+const addTier = () => {
+  form.tiers.push(createDefaultTier());
+};
+
+
+
+// open modal
+const confirmRemoveTier = (index) => {
+    tierToDeleteIndex.value = index;
+    showDeleteModal.value = true;
+};
+
+// deleted
+const executeDelete = () => {
+    const tier = form.tiers[tierToDeleteIndex.value];
+
+    // If the tier has an ID, it exists in the DB, so DELETE via API
+    if (tier.id) {
+        router.delete(route('admin_company.leave-tiers.destroy', tier.id), {
+            onSuccess: () => {
+                form.tiers.splice(tierToDeleteIndex.value, 1);
+                showDeleteModal.value = false;
+                tierToDeleteIndex.value = null;
+            }
+        });
+    } else {
+        // If it's a new row (no ID), just remove it from the UI (no API call needed)
+        form.tiers.splice(tierToDeleteIndex.value, 1);
+        showDeleteModal.value = false;
+    }
 };
 </script>
 
@@ -161,7 +206,8 @@ const handleModalAction = async (isConfirmed) => {
                   Default Days <span class="text-red-500">*</span>
                 </label>
 
-                <div class="cursor-help text-gray-400 hover:text-primary transition-colors" title="...">
+                <div class="cursor-help text-gray-400 hover:text-primary transition-colors"
+                  title="Default Days: When 'Calc. by Experience' is OFF, this is the fixed entitlement. When ON, this value serves as a fallback for employees not covered by any tenure tiers.">
                   <Info :size="14" />
                 </div>
               </div>
@@ -210,9 +256,10 @@ const handleModalAction = async (isConfirmed) => {
         <div v-else class="space-y-4">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-bold text-gray-900 uppercase">Tier Configuration</h3>
-            <button @click="form.tiers.push({})" class="text-xs bg-primary text-white px-3 py-1 rounded-lg">
-              + Add Tier
-            </button>
+             <BaseButton variant="primary" size="sm" @click="addTier">
+                <Plus :size="14" /> Add Tier
+              </BaseButton>
+
           </div>
 
           <div class="overflow-hidden border rounded-xl">
@@ -236,9 +283,14 @@ const handleModalAction = async (isConfirmed) => {
                   <td class="p-3"><input v-model="tier.allowed_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
                   <td class="p-3"><input v-model="tier.max_carry_forward_days" type="number" class="w-20 p-2 text-sm rounded-lg border-gray-200" /></td>
                   <td class="p-3 text-center">
-                    <button @click="form.tiers.splice(index, 1)" class="text-red-500 hover:text-red-700">
+                    <!-- <button @click="form.tiers.splice(index, 1)" class="text-red-500 hover:text-red-700">
                       <span class="text-xs font-bold">Remove</span>
+                    </button> -->
+                    <button @click="form.tiers[index].id ? confirmRemoveTier(index) : form.tiers.splice(index, 1)" 
+                            class="text-red-500 hover:text-red-700">
+                        <span class="text-xs font-bold">Remove</span>
                     </button>
+                   
                   </td>
                 </tr>
               </tbody>
@@ -269,6 +321,18 @@ const handleModalAction = async (isConfirmed) => {
       @close="() => handleModalAction(false)" 
       @confirm="() => handleModalAction(true)"
     />
+
+    <!--Delete Modal-->
+    <ConfirmModal 
+    :show="showDeleteModal"
+    title="Remove Tier"
+    message="Are you sure you want to remove this tier? This action will permanently remove this configuration once you save changes."
+    note="Any employees currently linked to this specific tier may need to be reassigned."
+    confirmText="Yes, Remove"
+    variant="danger"
+    @close="showDeleteModal = false"
+    @confirm="executeDelete"
+/>
   </Modal>
 </template>
 

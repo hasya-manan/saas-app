@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
+use App\Models\LeaveTier;
 use App\Models\LeaveType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,36 +44,59 @@ class LeaveTypeController extends Controller
         'is_active' => 'boolean',
          'is_pro_rata' => 'boolean',
         // tier table validated
-        'min_years' => 'decimal|min:0',
-        'max_years' => 'decimal|min:0',
-        'allowed_days' => 'sometimes|integer|min:0',
-        'max_carry_forward_days' => 'sometimes|integer|min:0',
+        'tiers' => 'required|array', // Validate that tiers is an array
+        'tiers.*.min_years' => 'required|numeric|min:0',
+        'tiers.*.max_years' => 'required|numeric|min:0',
+        'tiers.*.allowed_days' => 'required|integer|min:0',
+        'tiers.*.max_carry_forward_days' => 'required|integer|min:0',
         
     ]);
 
-   
- DB::transaction(function () use ($request, $id, $validated) {
-        $leaveType = LeaveType::findOrFail($id);
+   $leaveType = LeaveType::findOrFail($id); // Define this here
+    DB::transaction(function () use ($request, $leaveType) {
+        // 1. Update main model as usual
+        $leaveType->update($request->only([ 'name', 'code', 'default_days', 'is_calculated_by_experience', 
 
-        // Update the main model using the already-validated data
-       
-        $leaveType->update(array_intersect_key($validated, array_flip([
-            'name', 'code', 'default_days', 'is_calculated_by_experience', 
-            'probation_period_months', 'is_active', 'is_pro_rata'
-        ])));
+                'probation_period_months', 'is_active', 'is_pro_rata']));
 
-        // Update the child table
-        if ($request->hasAny(['allowed_days', 'max_carry_forward_days'])) {
-            $leaveType->tiers()->updateOrCreate(
-                ['leave_type_id' => $leaveType->id], 
+        // 2. Get the IDs of the tiers currently in the request
+        $incomingTiers = collect($request->tiers);
+        
+        // 3. Keep track of IDs that we want to keep
+        $savedIds = [];
+
+        foreach ($incomingTiers as $tierData) {
+            // Update if it has an ID, otherwise create a new one
+            $tier = $leaveType->tiers()->updateOrCreate(
+                ['id' => $tierData['id'] ?? null], // Match by ID if it exists
                 [
-                    'allowed_days' => $validated['allowed_days'] ?? null,
-                    'max_carry_forward_days' => $validated['max_carry_forward_days'] ?? null,
+                    'min_years' => $tierData['min_years'],
+                    'max_years' => $tierData['max_years'],
+                    'allowed_days' => $tierData['allowed_days'],
+                    'max_carry_forward_days' => $tierData['max_carry_forward_days'],
+                    'tenant_id' => $leaveType->tenant_id,
                 ]
             );
+            $savedIds[] = $tier->id;
         }
+
+        // 4. IMPORTANT: Only delete the ones the user removed from the UI
+     
+        $leaveType->tiers()->whereNotIn('id', $savedIds)->delete();
     });
 
     return redirect()->back()->with('success', 'Leave type updated successfully.');
+}
+
+public function destroy(LeaveTier $tier)
+{
+    
+    if ($tier->tenant_id !== auth()->user()->tenant_id) {
+        abort(403);
+    }
+
+    $tier->delete();
+
+    return back()->with('success', 'Tier removed successfully.');
 }
 }

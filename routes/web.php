@@ -96,6 +96,7 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     Route::post('/leavetype/index', [LeaveTypeController::class, 'store'])->name('admin_company.leavetypes.store');
     
     Route::put('/leavetype/{leavetype}', [LeaveTypeController::class, 'update'])->name('admin_company.leavetypes.update');
+    Route::delete('/leave-tiers/{tier}', [LeaveTypeController::class, 'destroy'])->name('admin_company.leave-tiers.destroy');
     });
 
     

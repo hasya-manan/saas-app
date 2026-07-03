@@ -1,0 +1,208 @@
+Table tenants {
+  id varchar [primary key] // Format: t-123abc
+  email varchar
+  company_name varchar
+  status varchar [default: 'active'] // active, inactive, suspended
+  plan varchar [default: 'free'] // free, pro, enterprise
+  data json [null] // Stancl Tenancy internal storage
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null] // Soft delete
+  
+}
+
+Table users {
+  id bigint [primary key]
+  uuid uuid [unique] // for url security emuneration
+  status varchar
+  name varchar
+  email varchar [unique]
+  email_verified_at timestamp [null]
+  password varchar
+  role_id bigint
+  tenant_id varchar [null] // Null for SuperAdmin, String ID for Company users
+  department_id bigint [ref: > departments.id, null] // The link to Dept
+  remember_token varchar
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp [null] // Soft delete
+
+
+}
+
+Table user_profiles{
+  id bigint [primary key]
+  user_id bigint [unique]
+  ic_number varchar [unique]
+  position varchar [note: 'Job Title, e.g. Senior Software Engineer'] 
+  user_gender varchar
+  dob date
+  marital_status varchar
+  phone varchar
+  join_date date
+  probation_end_date_override date
+  address_line_1 varchar
+  address_line_2 varchar
+  city varchar
+  postcode varchar
+  state varchar
+
+  //emergency contact
+  waris_name varchar
+  waris_gender varchar
+  waris_ic varchar [unique]
+  waris_relationship varchar
+  waris_phone varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table roles {
+  id bigint [primary key]
+  role_name varchar // 1: SuperAdmin, 2: CompanyAdmin, 3: Staff
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table departments {
+  id bigint [primary key]
+  tenant_id varchar [ref: > tenants.id] // Belongs to a company
+  name varchar
+  manager_id bigint [ref: > users.id, null] // Head of Dept (optional)
+  description text [null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table staff_finances {
+  id bigint [primary key]
+  user_id bigint [unique, ref: > users.id] // Strict 1:1 link to User
+  // Salary Details
+  basic_salary decimal(12,2) [note: 'Base monthly pay']
+  // Banking
+  bank_name varchar [note: 'e.g. Maybank, CIMB, RHB']
+  bank_account_no varchar
+  // Statutory (Malaysia Compliance)
+  epf_no varchar [note: 'KWSP Account Number']
+  epf_rate_employee decimal(5,2) [default: 11.00]
+  epf_rate_employer decimal(5,2) [default: 13.00]
+  socso_no varchar [note: 'PERKESO Number (Usually IC)']
+  socso_type varchar [note: 'Category 1 or 2']
+  tax_no varchar [note: 'LHDN Reference']
+  eis_enabled boolean [default: true]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table global_lookups {
+  id bigint [primary key]
+  category varchar
+  key varchar
+  label varchar
+  sort_order integer
+  is_active tinyint
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (category, key) [name: 'category_key_index']
+    // You can also index just the category if you search by it often
+    category 
+  }
+}
+// still in development
+Table leave_types {
+  id bigint [primary key, increment]
+  tenant_id string
+  name varchar
+  code varchar
+  is_calculated_by_experience boolean [default: false]
+  default_days integer [note: "Used if flat-rate rule"]
+  allows_carry_forward boolean [default: false]
+  probation_period_months integer
+  is_pro_rate tinyint
+  created_at timestamp
+  updated_at timestamp
+  Indexes {
+    // MATCHES: $table->unique(['tenant_id', 'code']);
+    (tenant_id, code) [unique, name: 'leave_types_tenant_code_unique']
+  }
+}
+
+//diff exp staff diff AL
+Table leave_tiers {
+  id bigint [primary key, increment]
+  tenant_id string
+  leave_type_id bigint
+  min_years decimal
+  max_years decimal
+  allowed_days integer
+  max_carry_forward_days integer [default: 0]
+  created_at timestamp
+  updated_at timestamp
+  Indexes {
+    // MATCHES: $table->unique(['leave_type_id', 'min_years']);
+    (leave_type_id, min_years) [unique, name: 'leave_tiers_type_min_years_unique']
+  }
+}
+
+Table leave_applications {
+  id bigint [primary key, increment]
+  tenant_id string
+  user_id bigint
+  leave_type_id bigint
+  start_date date
+  end_date date
+  //half_am , half_pm , full
+  leave_duration varchar
+  total_days decimal
+  reason text
+  status varchar [default: "pending", note: "pending, approved, rejected"]
+  approved_by bigint
+  remarks text
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    
+   (user_id, leave_type_id, status) [name: 'leave_applications_user_type_status_idx']
+  }
+}
+
+Table leave_balances {
+  id bigint [pk, increment]
+  tenant_id string [not null]
+  user_id bigint [not null]
+  leave_type_id bigint [not null]
+  year integer [note: 'e.g., 2026, 2027 (Crucial for annual resets!)']
+  allotted_days decimal(4,1) [note: 'Dynamic tier days (e.g., 14.0)']
+  carried_forward decimal(4,1) [default: 0.0, note: 'Days rolled over from last year (e.g., 3.5)']
+  taken_days decimal(4,1) [default: 0.0, note: 'Sum of approved leave applications (e.g., 2.0)']
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (user_id, leave_type_id, year) [unique, name: 'leave_balances_user_leave_type_year_unique']
+  }
+}
+
+// Relationships
+Ref: leave_types.id < leave_tiers.leave_type_id [delete: cascade]
+Ref: leave_types.id < leave_applications.leave_type_id
+Ref: leave_balances.tenant_id > tenants.id [delete: cascade]
+Ref: leave_balances.user_id > users.id [delete: cascade]
+Ref: leave_balances.leave_type_id > leave_types.id [delete: cascade]
+
+// Structural links for clarity on your canvas
+Ref: leave_applications.tenant_id > tenants.id [delete: cascade]
+Ref: leave_applications.user_id > users.id [delete: cascade]
+Ref: leave_applications.approved_by > users.id [delete: set null]
+Ref: leave_tiers.tenant_id > tenants.id [delete: cascade]
+Ref: leave_types.tenant_id > tenants.id [delete: cascade]
+
+Ref: users.tenant_id > tenants.id [delete: cascade]
+Ref: users.role_id > roles.id
+// One-to-One relationship for User Profiles
+Ref: user_profiles.user_id - users.id [delete: cascade]
+
+

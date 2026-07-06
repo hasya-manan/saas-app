@@ -44,21 +44,28 @@ class LeaveTypeController extends Controller
         'is_active' => 'boolean',
          'is_pro_rata' => 'boolean',
         // tier table validated
-        'tiers' => 'required|array', // Validate that tiers is an array
-        'tiers.*.min_years' => 'required|numeric|min:0',
-        'tiers.*.max_years' => 'required|numeric|min:0',
-        'tiers.*.allowed_days' => 'required|integer|min:0',
-        'tiers.*.max_carry_forward_days' => 'required|integer|min:0',
-        'tiers.*.id' => 'sometimes|integer|exists:leave_type_tiers,id',
+        'tiers' => 'nullable|array',
+        'tiers.*.min_years' => 'required_with:tiers|numeric|min:0',
+        'tiers.*.max_years' => 'required_with:tiers|numeric|min:0',
+        'tiers.*.allowed_days' => 'required_with:tiers|integer|min:0',
+        'tiers.*.max_carry_forward_days' => 'required_with:tiers|integer|min:0',
+        'tiers.*.id' => 'sometimes|integer|exists:leave_type_tiers,id'
         
     ]);
 
-   $leaveType = LeaveType::findOrFail($id); // Define this here
+   $leaveType = LeaveType::findOrFail($id); 
     DB::transaction(function () use ($request, $leaveType) {
-        // 1. Update main model as usual
-        $leaveType->update($request->only([ 'name', 'code', 'default_days', 'is_calculated_by_experience', 
-
-                'probation_period_months', 'is_active', 'is_pro_rata']));
+        // 1. Update using validated because if data has ( leaves AND tier ) OR ( leaves only )
+        $leaveType->update([
+            'name' => $validated['name'],
+            'code' => $validated['code'],
+            'default_days' => $validated['default_days'] ?? 0,
+            'is_calculated_by_experience' => $validated['is_calculated_by_experience'] ?? false,
+            'allows_carry_forward' => $validated['allows_carry_forward'] ?? false,
+            'probation_period_months' => $validated['probation_period_months'] ?? 0,
+            'is_active' => $validated['is_active'] ?? true,
+            'is_pro_rata' => $validated['is_pro_rata'] ?? false,
+        ]);
 
         // 2. Get the IDs of the tiers currently in the request
         $incomingTiers = collect($request->tiers);
@@ -71,7 +78,7 @@ class LeaveTypeController extends Controller
         foreach ($incomingTiers as $tierData) {
             // Update if it has an ID, otherwise create a new one
             $tier = $leaveType->tiers()->updateOrCreate(
-                ['id' => $tierData['id'] ?? null], // Match by ID if it exists
+                ['id' => $tierData['id'] ?? null], 
                 [
                     'min_years' => $tierData['min_years'],
                     'max_years' => $tierData['max_years'],
@@ -91,6 +98,8 @@ class LeaveTypeController extends Controller
     return redirect()->back()->with('success', 'Leave type updated successfully.');
 }
 
+
+
 public function destroy(LeaveTier $tier)
 {
     
@@ -101,5 +110,53 @@ public function destroy(LeaveTier $tier)
     $tier->delete();
 
     return back()->with('success', 'Tier removed successfully.');
+}
+
+public function store (Request $request) 
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'code' => 'required|string|max:50',
+        'is_calculated_by_experience' => 'boolean',
+        'default_days' => 'sometimes|integer|min:0',
+        'allows_carry_forward' => 'boolean',
+        'probation_period_months' => 'sometimes|integer|min:0', 
+        'is_active' => 'boolean',
+         'is_pro_rata' => 'boolean',
+        // tier table validated
+        'tiers' => 'nullable|array',
+        'tiers.*.min_years' => 'required_with:tiers|numeric|min:0',
+        'tiers.*.max_years' => 'required_with:tiers|numeric|min:0',
+        'tiers.*.allowed_days' => 'required_with:tiers|integer|min:0',
+        'tiers.*.max_carry_forward_days' => 'required_with:tiers|integer|min:0',
+    ]);
+
+    $leaveType = LeaveType::create([
+        'name'      => $validated['name'],
+        'tenant_id' => $request->user()->tenant_id,
+        'code' => $validated['code'],
+        'is_calculated_by_experience' => $validated['is_calculated_by_experience'],
+        'default_days' => $validated['default_days'],
+        'allows_carry_forward' => $validated['allows_carry_forward'],
+        'probation_period_months' => $validated['probation_period_months'],
+        'is_active' => $validated['is_active'],
+        'is_pro_rata' => $validated['is_pro_rata'],
+      
+    ]);
+    if (!empty($validated['tiers'])) {
+        foreach ($validated['tiers'] as $tier) {
+            $leaveType->tiers()->create([
+                'tenant_id' => $request->user()->tenant_id,
+                'min_years' => $tier['min_years'],
+                'max_years' => $tier['max_years'],
+                'allowed_days' => $tier['allowed_days'],
+                'max_carry_forward_days' => $tier['max_carry_forward_days'],
+               
+            ]);
+        }
+    }
+
+    return redirect()->back()->with('success', 'Leave Type created successfully.');
+
 }
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue'; 
@@ -12,7 +12,7 @@ defineProps({
     leaveTypes: Object,
     filters: Object
 });
-
+const page = usePage();
 const expandedRows = ref([]);
 
 const toggleRow = (id) => {
@@ -36,7 +36,26 @@ const openEditModal = (data, tab = 'general') => {
   
   //console.log("Modal status:", isModalOpen.value); // Add this line
 };
-
+// send a empty to create a new leaves type
+const openCreateModal = () => {
+   //console.log(page.props);
+  const tenantId = page.props.auth?.user?.tenant_id || 
+                     (props.leaveTypes.data.length > 0 ? props.leaveTypes.data[0].tenant_id : null);
+    editingLeave.value = {
+        name: '',
+        code: '',
+        default_days: 0,
+        is_calculated_by_experience: false,
+        allows_carry_forward: false,
+        probation_period_months: '',
+        is_active: true,
+        is_prorata: false,
+        tenant_id: tenantId,
+        tiers: [] 
+    };
+    activeTab.value = 'general';
+    isModalOpen.value = true;
+};
 
 </script>
 
@@ -45,11 +64,17 @@ const openEditModal = (data, tab = 'general') => {
 
     <AuthenticatedLayout>
         <template #header>
-            <PageHeader 
-                title="Leave Type Management" 
-                subtitle="Define leave policies and entitlement rules for your company"
-            />
+             <PageHeader title="Leave Type Management" subtitle="Define leave policies and entitlement rules for your company">
+                <template #actions>
+                    <button @click="openCreateModal"
+                        class="group flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all duration-300">
+                        <Plus :size="20" class="group-hover:rotate-90 transition-transform duration-300" />
+                        Add New Leaves Type
+                    </button>
+                </template>
+            </PageHeader>
         </template>
+         
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
              <GlobalFilter routeName="admin_company.leavetypes.index" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes.data"

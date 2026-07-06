@@ -86,11 +86,19 @@ watch(() => props.leave, (newVal) => {
 
 const submitUpdate = () => {
   //console.log('Payload being sent to server:', form.data());
-    form.put(route('admin_company.leavetypes.update', form.id), {
-        preserveState: true,
-        preserveScroll: true,
-        onSuccess: () => emit('close'),
-    });
+   if (form.id) {
+        form.put(route('admin_company.leavetypes.update', form.id), {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => emit('close'),
+        });
+    } else {
+        form.post(route('admin_company.leavetypes.store'), {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => emit('close'),
+        });
+    }
 };
 
 const handleStatusToggle = () => {

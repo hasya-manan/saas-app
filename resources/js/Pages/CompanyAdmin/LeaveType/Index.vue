@@ -1,12 +1,13 @@
 <script setup>
-import { Head, usePage} from '@inertiajs/vue3';
+import { Head, usePage, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue'; 
 import LeaveModal from '@/Components/Leaves/LeaveModal.vue';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
-import { Edit2, X, ChevronRight, ChevronDown, Plus }from 'lucide-vue-next';
+import { Edit2, TrashIcon, ChevronRight, ChevronDown, Plus }from 'lucide-vue-next';
 import { ref } from 'vue';
+import ConfirmModal from '@/Components/ConfirmModal.vue';
 
 defineProps({
     leaveTypes: Object,
@@ -14,6 +15,11 @@ defineProps({
 });
 const page = usePage();
 const expandedRows = ref([]);
+const isModalOpen = ref(false);
+const editingLeave = ref(null); 
+const activeTab = ref('general'); 
+const showDeleteModal = ref(false);
+const itemToDeleteId = ref(null);
 
 const toggleRow = (id) => {
     if (expandedRows.value.includes(id)) {
@@ -23,9 +29,6 @@ const toggleRow = (id) => {
     }
 };
 
-const isModalOpen = ref(false);
-const editingLeave = ref(null); 
-const activeTab = ref('general'); 
 
 const openEditModal = (data, tab = 'general') => {
   //console.log("Button clicked, data received:", data); // Add this line
@@ -57,6 +60,25 @@ const openCreateModal = () => {
     isModalOpen.value = true;
 };
 
+
+
+
+const confirmDelete = (id) => {
+    itemToDeleteId.value = id;
+    showDeleteModal.value = true;
+};
+
+// This function actually sends the request
+const executeDelete = () => {
+    console.log("Sending delete for ID:", itemToDeleteId.value); 
+    router.delete(route('admin_company.leavetypes.destroy', itemToDeleteId.value), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteModal.value = false;
+            itemToDeleteId.value = null;
+        },
+    });
+};
 </script>
 
 <template>
@@ -81,7 +103,6 @@ const openCreateModal = () => {
                 :showRoleaveTypes="true" placeholder="Search staff by name or email..." />
 
              <div class="flex flex-col lg:flex-row items-start gap-6">
-
               
                 <div class="w-full lg:w-[100%] transition-all duration-500">
                  <div class="bg-white overflow-hidden shadow-xl shadow-primary/5 border border-primary-border rounded-[2.5rem] p-8">
@@ -98,18 +119,37 @@ const openCreateModal = () => {
                                </thead>
                                 <tbody>
                                 <template v-for="leave in leaveTypes.data" :key="leave.id">
+                                 
                                     <!-- Summary Row -->
                                        <tr class="group bg-white hover:bg-primary-light/5 transition-all duration-300">
                                             <td class="px-6 py-4 rounded-l-2xl border-y border-transparent">
-                                                <BaseButton variant="expandable" size="sm" @click="toggleRow(leave.id)"
-                                                :aria-expanded="expandedRows.includes(leave.id)"
-                                                aria-label="Toggle leave details"
-                                                    class="flex items-center gap-2 ">
-                                                    <span class="text-[10px] text-gray-400 font-mono">[{{ leave.code
-                                                        }}]</span>
-                                                    {{ leave.name }}
-                                                </BaseButton>
+                                                <!-- Wrap the whole thing in a 'group' so the trash icon reacts to the row hover -->
+                                                <div class="group flex items-center gap-2">
+
+                                                    <!-- Delete Button: Appears only on hover -->
+                                                  
+                                                    <button 
+                                                        @click="confirmDelete(leave.id)" 
+                                                        class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition p-1"
+                                                        title="Delete Leave Type"
+                                                    >
+                                                        <TrashIcon class="w-3 h-3" />
+                                                    </button>
+
+                                                    <!-- Your Existing Expandable Button -->
+                                                    <BaseButton variant="expandable" size="sm"
+                                                        @click="toggleRow(leave.id)"
+                                                        :aria-expanded="expandedRows.includes(leave.id)"
+                                                        aria-label="Toggle leave details"
+                                                        class="flex items-center gap-2">
+
+                                                        <span class="text-[10px] text-gray-400 font-mono">[{{ leave.code
+                                                            }}]</span>
+                                                        {{ leave.name }}
+                                                    </BaseButton>
+                                                </div>
                                             </td>
+                                            
   
                                         <td class="text-center">{{ leave.probation_period_months }} Months</td>
                                         <td class="text-center text-gray-900 font-medium">
@@ -186,7 +226,6 @@ const openCreateModal = () => {
                                                     </tr>
                                                 </template>
 
-                                               
                                             </tbody>
                                                 
                                             </table>
@@ -204,13 +243,25 @@ const openCreateModal = () => {
             </div>
 
             <!-- modal edit -->
-             <!-- Leave modal code is inside resources /js/Components/Leaves/LeaveModal.vue-->
+            <!-- Leave modal code is inside resources /js/Components/Leaves/LeaveModal.vue-->
             
             <LeaveModal 
                 :show="isModalOpen" 
                 :leave="editingLeave" 
                 :initialTab="activeTab"
                 @close="isModalOpen = false"
+            />
+
+             <!--Delete Modal-->
+                <ConfirmModal 
+                :show="showDeleteModal"
+                title="Remove Type Leave"
+                message="Are you sure you want to remove this leaves type? This action will permanently remove this configuration once you confirm."
+                note="Any employees currently linked to this specific types of leave may need to be reassigned."
+                confirmText="Yes, Remove"
+                variant="danger"
+                @close="showDeleteModal = false"
+                @confirm="executeDelete"
             />
           
         </div>

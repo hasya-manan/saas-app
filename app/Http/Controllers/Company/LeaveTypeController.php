@@ -49,12 +49,12 @@ class LeaveTypeController extends Controller
         'tiers.*.max_years' => 'required_with:tiers|numeric|min:0',
         'tiers.*.allowed_days' => 'required_with:tiers|integer|min:0',
         'tiers.*.max_carry_forward_days' => 'required_with:tiers|integer|min:0',
-        'tiers.*.id' => 'sometimes|integer|exists:leave_type_tiers,id'
+        'tiers.*.id' => 'sometimes|integer|exists:leave_tiers,id'
         
     ]);
 
    $leaveType = LeaveType::findOrFail($id); 
-    DB::transaction(function () use ($request, $leaveType) {
+    DB::transaction(function () use ($request, $leaveType, $validated) {
         // 1. Update using validated because if data has ( leaves AND tier ) OR ( leaves only )
         $leaveType->update([
             'name' => $validated['name'],
@@ -112,6 +112,30 @@ public function destroy(LeaveTier $tier)
     return back()->with('success', 'Tier removed successfully.');
 }
 
+
+
+public function destroyLeaveType(LeaveType $leavetype)
+{
+    // Log the deletion attempt
+    \Log::info('LeaveType Deletion Attempt', [
+        'user_id' => auth()->id(),
+        'tenant_id' => auth()->user()->tenant_id,
+        'leave_type_id' => $leavetype->id,
+        'leave_type_name' => $leavetype->name
+    ]);
+
+    // Security check
+    if ($leavetype->tenant_id !== auth()->user()->tenant_id) {
+        \Log::warning('Unauthorized Delete Attempt', [
+            'user_id' => auth()->id(),
+            'attempted_leave_type_id' => $leavetype->id
+        ]);
+        abort(403, 'Unauthorized access.');
+    }
+
+    $leavetype->delete();
+    return back()->with('success', 'Leave type removed successfully.');
+}
 public function store (Request $request) 
 {
     $validated = $request->validate([

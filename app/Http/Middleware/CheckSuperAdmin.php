@@ -17,6 +17,8 @@ class CheckSuperAdmin
     {
         // If user is logged in AND is a superadmin (role:1), let them through
     if (auth()->check() && auth()->user()->role_id === 1) {
+        // Set a marker in the container for the duration of this request
+        app()->instance('is_superadmin', true);
         return $next($request);
     }
 

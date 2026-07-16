@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 //use Illuminate\Auth\Access\Response;
-
+// handles authorizing actions (like viewing, deleting, or updating) at the application level.
 class UserPolicy
 {
     // The 'before' method runs automatically before any other method.
@@ -26,7 +26,8 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return false;
+        //return false;
+        return $user->tenant_id === $model->tenant_id;
     }
 
     /**
@@ -41,11 +42,11 @@ class UserPolicy
     /**
      * Determine whether the user can update the model.
      */
-    // public function update(User $user, User $model): bool
-    // {
-    //     // A user can ONLY update another user if they belong to the same tenant
-    //     return $user->tenant_id === $model->tenant_id;
-    // }
+    public function update(User $user, User $model): bool
+    {
+        // A user can ONLY update another user if they belong to the same tenant
+        return $user->tenant_id === $model->tenant_id;
+    }
 
     /**
      * Determine whether the user can delete the model.

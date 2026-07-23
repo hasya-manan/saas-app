@@ -93,6 +93,8 @@ watch(
                     <Link v-if="$page.props.auth.user?.role_id === 2" :href="route('admin_company.leavetypes.index')"
                         class="block px-3 py-2 text-gray-500 font-medium">List Leave Types</Link>
 
+                        <!--Admin Company & User-->
+
                 </nav>
             </aside>
         </div>
@@ -202,6 +204,19 @@ watch(
                     </Link>
 
                 </div>
+
+                <!--Admin Company && User -->
+              
+                <!-- <div v-if="[2, 3].includes($page.props.auth.user?.role_id)">
+                    <p v-if="!isCollapsed"
+                        class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-6 mb-2">Management</p>
+                    <Link :href="route('shared.menu.route')"
+                        :class="[route().current('shared.menu.route') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                        <Share2 :size="20" />
+                        <span v-if="!isCollapsed" class="text-sm font-medium">Shared Menu</span>
+                    </Link>
+                </div> -->
             </nav>
 
 

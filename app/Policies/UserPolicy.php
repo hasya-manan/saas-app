@@ -53,6 +53,10 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
+        // SuperAdmins can always delete
+        if ($user->role_id === 1) {
+            return true;
+        }
        // Prevent accidental self-deletion or cross-tenant deletion
         return $user->tenant_id === $model->tenant_id && $user->id !== $model->id;
     }

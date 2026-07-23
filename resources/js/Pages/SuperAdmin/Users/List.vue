@@ -81,7 +81,7 @@ const submitUpdate = () => {
         <template #header>
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800">Global User Directory 1</h2>
+                    <h2 class="text-xl font-bold text-gray-800">Global User Directory</h2>
                     <p class="text-sm text-gray-500">Overview of all active accounts across tenants</p>
                 </div>
                 <button @click="isCreateModalOpen = true" type="button"

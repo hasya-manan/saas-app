@@ -229,7 +229,7 @@ public function userList(Request $request)
         // 1. Apply existing User filters (Name, Email, Role)
         ->filter($filters) 
         ->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($q) { // <--- Added this wrapper
+            $query->where(function ($q) { 
                 $q->orWhereHas('tenant', function ($sub) {
                     $sub->withTrashed()->filter(['search' => request('search')]);
                 });

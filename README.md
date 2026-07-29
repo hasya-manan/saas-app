@@ -19,6 +19,8 @@ This project implements a **shared-database multi-tenancy** architecture where a
  *Watch the project presentation video to see the platform in action:*
 <video src="./demo/hard-delete-SAAS-1785310764689.mp4" controls width="100%"></video>
 
+*Shows: SuperAdmin company management with soft delete, restore & hard delete*
+
 
 ## ✨ Features
 

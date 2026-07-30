@@ -16,10 +16,10 @@ This project implements a **shared-database multi-tenancy** architecture where a
 
 
 ### 📸 System Walkthrough
- *Watch the project presentation video to see the platform in action:*
-[![Watch the Walkthrough Video](./screenshots/super-admin/onboard.png)](./demo/hard-delete-SAAS-1785310764689.mp4)
+> *Watch a quick walkthrough demonstrating the tenant recovery and hard-delete safety system:*  
 
-> 👉 **[Click here to play/download the video presentation](./demo/hard-delete-SAAS-1785310764689.mp4)**
+[![Hard Delete Walkthrough](https://img.youtube.com/vi/LGWL96UL2Dk/0.jpg)](https://youtu.be/LGWL96UL2Dk)
+
 
 
 ## ✨ Features

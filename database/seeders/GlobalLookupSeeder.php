@@ -18,8 +18,7 @@ class GlobalLookupSeeder extends Seeder
             // Tenant Status
             ['category' => 'tenant_status', 'key' => 'active', 'label' => 'Active', 'description' => 'Tenant is active', 'sort_order' => 10],
             ['category' => 'tenant_status', 'key' => 'inactive', 'label' => 'Inactive', 'description' => 'Tenant is inactive', 'sort_order' => 20],   
-            ['category' => 'tenant_status', 'key' => 'deactivated', 'label' => 'Deactivated','description' => 'Tenant is deactivated ', 'sort_order' => 30],
-            ['category' => 'tenant_status', 'key' => 'suspended', 'label' => 'Suspended', 'description' => 'Tenant is suspended', 'sort_order' => 40],
+            ['category' => 'tenant_status', 'key' => 'suspended', 'label' => 'Suspended', 'description' => 'Tenant is suspended', 'sort_order' => 30],
             // Gender
             ['category' => 'gender', 'key' => 'm', 'label' => 'Male', 'description' => 'Gender is Male', 'sort_order' => 10],
             ['category' => 'gender', 'key' => 'f', 'label' => 'Female', 'description' => 'Gender is Female', 'sort_order' => 20],

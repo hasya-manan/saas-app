@@ -143,8 +143,8 @@ watch(
                     <span v-if="!isCollapsed" class="text-sm font-medium">Admin Dashboard</span>
                 </Link>
 
-                <Link v-if="$page.props.auth.user?.role_id === 3" :href="route('dashboard')"
-                    :class="[route().current('dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                <Link v-if="$page.props.auth.user?.role_id === 3" :href="route('staff.dashboard')"
+                    :class="[route().current('staff.dashboard') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                     <LayoutDashboard :size="20" />
                     <span v-if="!isCollapsed" class="text-sm font-medium">My Dashboard</span>

@@ -50,9 +50,8 @@ class AuthenticatedSessionController extends Controller
         return redirect()->route('admin_company.dashboard');        
         }
 
-        //else, send me to the Tenant Dashboard
         if ($user->role_id === 3) {
-            return redirect()->route('dashboard');
+            return redirect()->route('staff.dashboard');
         }
        
     }

@@ -24,12 +24,22 @@ Route::get('/', function () {
 // =========================================
 // ============ STAFF ROUTES ==========
 // =========================================
-Route::get('/dashboard', function () {
-    if (auth()->user()->role_id !== 3) {
-        return redirect('/login'); 
-    }
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+//TODO :: middleware(['auth', 'verified'])->name('dashboard'); for verify email if later 
+Route::middleware(['auth'])->prefix('staff')->group(function () {
+    
+    Route::get('/dashboard', function () {
+        if (auth()->user()->role_id !== 3) {
+            return redirect('/login'); 
+        }
+        
+        // Update this line to point to the Staff folder
+        return Inertia::render('Staff/Dashboard'); 
+        
+    })->name('staff.dashboard');
+
+});
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,6 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/validate-email', [ValidationController::class, 'checkEmail'])->name('validation.email');
 
 });
+
 
 // =========================================
 // ============ SUPERADMIN ROUTES ==========
@@ -68,6 +79,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function 
     
 
 });
+
 
 // =============================================
 // ============ ADMMIN COMPANY ROUTES ==========

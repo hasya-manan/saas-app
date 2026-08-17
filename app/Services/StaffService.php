@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use App\Models\Department;
+use App\Models\LeaveBalance;
+use App\Models\LeaveTier;
+use App\Models\LeaveType;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -88,6 +92,9 @@ class StaffService
                 'tax_no'            => $validated['tax_no'] ?? null,
                 'eis_enabled'       => $validated['eis_enabled'] ?? true,
             ]);
+
+            // ── 6. INITIALIZE LEAVE BALANCES ───────────────────
+            $this->initializeLeaveBalances($user, $tenantId, $validated['join_date'] ?? null);
         });
         Log::info('Staff created successfully', [
             'email' => $validated['email'],
@@ -111,8 +118,8 @@ class StaffService
     }
 
     // ── PRIVATE HELPER ────────────────────────────────────────
-    // Separated department logic into its own method
-    // because it's complex enough to deserve its own space
+    // Separated department logic 
+    
     private function resolveDepartment(array $validated, string $tenantId, User $user): array
     {
         $departmentId = null;
@@ -134,7 +141,7 @@ class StaffService
             }
 
         } else {
-        // --- 2. EXISTING DEPARTMENT LOGIC ---
+      
         $requestedId = $validated['department_id'] ?? null;
 
         if ($requestedId) {
@@ -166,6 +173,44 @@ class StaffService
     }
 
         return [$departmentId, $supervisorId];
+    }
+
+    private function initializeLeaveBalances(User $user, string $tenantId, ?string $joinDate): void
+    {
+        $yearsOfService = $joinDate ? Carbon::parse($joinDate)->diffInYears(now()) : 0;
+        $currentYear = date('Y');
+
+        $leaveTypes = LeaveType::where('tenant_id', $tenantId)
+                            ->where('is_active', 1)
+                            ->get();
+
+        foreach ($leaveTypes as $leaveType) {
+            $allottedDays = $leaveType->default_days;
+
+            if ($leaveType->is_calculated_by_experience) {
+                $tier = LeaveTier::where('tenant_id', $tenantId)
+                                ->where('leave_type_id', $leaveType->id)
+                                ->where('min_years', '<=', $yearsOfService)
+                                ->where('max_years', '>=', $yearsOfService)
+                                ->first();
+
+                if ($tier) {
+                    $allottedDays = $tier->allowed_days;
+                }
+            }
+
+            LeaveBalance::create([
+                'tenant_id'       => $tenantId,
+                'user_id'         => $user->id,
+                'leave_type_id'   => $leaveType->id,
+                'year'            => $currentYear,
+                'allotted_days'   => $allottedDays,
+                'carried_forward' => 0.00,
+                'taken_days'      => 0.00,
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+        }
     }
 
     /**

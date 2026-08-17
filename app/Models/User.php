@@ -132,4 +132,9 @@ class User extends Authenticatable
     {
         return 'uuid';
     }
+
+    public function leaveBalances()
+    {
+        return $this->hasMany(LeaveBalance::class, 'user_id');
+    }
 }

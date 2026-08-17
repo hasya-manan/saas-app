@@ -459,12 +459,17 @@ const confirmDisable = () => {
                                 </div>
                                <div class="grid grid-cols-1 gap-6 py-2">
                                     <div>
-                                        <label
-                                            class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
-                                        <RoundedSelect v-model="form.department_id" variant="form"
-                                            label="Select a department..." :options="departments"
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
+                                        
+                                        <RoundedSelect 
+                                            v-model="form.department_id" 
+                                            variant="form"
+                                            :label="departments.length > 0 ? 'Select a department...' : 'No departments found. Create a new one:'"
+                                            :options="departments"
                                             :extra-options="[{ id: 'others', name: 'Others (Create new)' }]"
-                                            option-label="name" option-value="id" />
+                                            option-label="name" 
+                                            option-value="id" 
+                                        />
                                     </div>
                                 </div>
 

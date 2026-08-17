@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\GlobalLookup;
 use App\Models\LeaveTier;
 use App\Models\LeaveType;
@@ -51,10 +52,13 @@ class TenantController extends Controller
                 'status'       => 'active', 
             ]);
 
-        // 3. Create Default Leave Types (Triggers clean private method below)
-            $this->provisionDefaultLeaveTypes($tenant->id);
+            // 3. Create Default Leave Types
+                $this->provisionDefaultLeaveTypes($tenant->id);
 
-            // 4. Create User Admin Account
+            // 4. Create Default Departments 
+                $this->provisionDefaultDepartments($tenant->id);
+
+            // 5. Create User Admin Account
             User::create([
                 'name'      => $validated['admin_name'],
                 'email'     => $validated['admin_email'],
@@ -69,12 +73,42 @@ class TenantController extends Controller
             return redirect()->back()
                 ->with('success', "Company $customId has been fully set up!");
                 
-        }); // 6. If ANY line fails, the DB "rolls back" automatically
+        });
+    }
+
+        /**
+     * Provision default departments for the new tenant.
+     */
+    private function provisionDefaultDepartments(string $tenantId): void
+    {
+        $defaultDepartments = [
+            [
+                'name'        => 'Administration & HR',
+                'description' => 'Default department for administration and human resources',
+            ],
+            [
+                'name'        => 'Development & Management',
+                'description' => 'Default department for software development and management',
+            ],
+            [
+                'name'        => 'Network & Security',
+                'description' => 'Default department for IT infrastructure and security',
+            ],
+        ];
+
+        foreach ($defaultDepartments as $dept) {
+            Department::create([
+                'tenant_id'   => $tenantId,
+                'name'        => $dept['name'],
+                'description' => $dept['description'],
+                'hod_id'      => null, // Can be assigned later when employees/managers are added
+            ]);
+        }
     }
 
     /**
- * Keeps the store method readable by handling leave creation down here.
- */
+     * Keeps the store method readable by handling leave creation down here.
+     */
     private function provisionDefaultLeaveTypes(string $tenantId): void
     {
         $defaults = [

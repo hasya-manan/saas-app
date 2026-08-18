@@ -70,6 +70,10 @@ class GlobalLookupSeeder extends Seeder
             ['category' => 'bank', 'key' => 'uob', 'label' => 'UOB', 'description' => '', 'sort_order' => 100],
             ['category' => 'bank', 'key' => 'standard_chartered', 'label' => 'Standard Chartered', 'description' => '', 'sort_order' => 110],
             
+            // Leave Duration (Full Day / Half Day options)
+            ['category' => 'leave_duration', 'key' => 'full', 'label' => 'Full Day', 'description' => '', 'sort_order' => 10],
+            ['category' => 'leave_duration', 'key' => 'am', 'label' => 'Half Day (AM)', 'description' => 'Morning session', 'sort_order' => 20],
+            ['category' => 'leave_duration', 'key' => 'pm', 'label' => 'Half Day (PM)', 'description' => 'Afternoon session', 'sort_order' => 30],
             
         
         ];

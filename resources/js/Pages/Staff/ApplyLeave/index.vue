@@ -25,6 +25,8 @@ const form = useForm({
     leave_type_id: '',
     start_date: '',
     end_date: '',
+    leave_duration: 'full',
+    half_day_session: 'am',
     reason: '',
 });
 
@@ -111,18 +113,59 @@ const selectedBalance = computed(() => {
                         </div>
 
                         <!-- End Date -->
+                       
+                        <!-- End Date & Timing -->
+                       
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-1">
-                                <InputLabel for="end_date" value="End Date" class="font-semibold text-gray-700" />
-                                <p class="text-xs text-gray-400 mt-1 leading-relaxed">Last day of your absence.</p>
+                                <InputLabel for="end_date" value="End Date & Timing" class="font-semibold text-gray-700" />
+                                <p class="text-xs text-gray-400 mt-1 leading-relaxed">Last day of your absence and timing details.</p>
                             </div>
-                            <div class="md:col-span-2">
-                                <TextInput id="end_date" type="date" 
-                                    class="block w-full border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-primary-border focus:border-primary transition-all rounded-xl shadow-sm" 
-                                    v-model="form.end_date" required />
-                                <InputError class="mt-2" :message="form.errors.end_date" />
+                            
+                            <div class="md:col-span-2 space-y-4">
+                                <!-- Date Input -->
+                                <div>
+                                    <TextInput id="end_date" type="date" 
+                                        class="block w-full border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-primary-border focus:border-primary transition-all rounded-xl shadow-sm" 
+                                        v-model="form.end_date" required />
+                                    <InputError class="mt-2" :message="form.errors.end_date" />
+                                </div>
+
+                                <!-- Main Options: Full Day vs Half Day Toggle -->
+                                <div class="flex items-center space-x-8 pt-1">
+                                    <!-- Full Day Option -->
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" value="full" v-model="form.leave_duration" 
+                                            class="h-4 w-4 rounded-full border-gray-300 text-primary focus:ring-primary" />
+                                        <span class="text-sm font-medium text-gray-700">Full Day</span>
+                                    </label>
+
+                                    <!-- Half Day Toggle (Defaults to 'am' when selected) -->
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" value="am" v-model="form.leave_duration" 
+                                            class="h-4 w-4 rounded-full border-gray-300 text-primary focus:ring-primary" />
+                                        <span class="text-sm font-medium text-gray-700">Half Day</span>
+                                    </label>
+                                </div>
+
+                                <!-- Conditional AM/PM Session Options (Rendered dynamically from database lookups) -->
+                                <div v-if="form.leave_duration === 'am' || form.leave_duration === 'pm'" 
+                                    class="flex items-center space-x-6 pl-3 py-2.5 border-l-2 border-primary/30 bg-gray-50/50 rounded-r-xl transition-all">
+                                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Session:</span>
+                                    
+                                    <template v-for="lookup in $page.props.lookups.leave_duration" :key="lookup.key">
+                                        <label v-if="lookup.key === 'am' || lookup.key === 'pm'" class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" :value="lookup.key" v-model="form.leave_duration" 
+                                                class="h-4 w-4 rounded-full border-gray-300 text-primary focus:ring-primary" />
+                                            <span class="text-sm text-gray-700">{{ lookup.label }}</span>
+                                        </label>
+                                    </template>
+                                </div>
+
+                                <InputError class="mt-2" :message="form.errors.leave_duration" />
                             </div>
                         </div>
+                        
                     </div>
                 </div>
 

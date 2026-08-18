@@ -64,6 +64,7 @@ class HandleInertiaRequests extends Middleware
         // NOTES :: because here we use Cache::rememberForever, the data will be cached indefinitely.
         //          If you ever update the global_lookups table, you will need to manually
         //         the easist way is to run php artisan cache:clear to clear the cache and force it to be rebuilt on the next request.
+        //         Alternatively, you can use For example Cache::forget('relationship') to clear a specific cache entry.
             'lookups' => [
             'relationships' => Cache::rememberForever('relationship', function () {
                 return GlobalLookup::where('category', 'relationship')

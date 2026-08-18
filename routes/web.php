@@ -5,6 +5,7 @@ use App\Http\Controllers\Company\DepartmentController;
 use App\Http\Controllers\Company\LeaveTypeController;
 use App\Http\Controllers\Company\StaffController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Staff\LeaveApplicationController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\TenantController;
 use App\Http\Controllers\ValidationController;
@@ -36,6 +37,10 @@ Route::middleware(['auth'])->prefix('staff')->group(function () {
         return Inertia::render('Staff/Dashboard'); 
         
     })->name('staff.dashboard');
+   
+    Route::get('/applyLeave/index', [LeaveApplicationController::class, 'index'])->name('staff.applyLeave.index');
+
+
 
 });
 
@@ -112,9 +117,10 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     Route::delete('/leavetype/{leavetype}', [LeaveTypeController::class, 'destroyLeaveType'])->name('admin_company.leavetypes.destroy');
     });
 
-    
-
-    
+    // =============================================
+    // ============ STAFF ROUTES ==============
+    // =============================================
+ 
 
     // =============================================
     // ============ GLOBAL VALIDATION ==============

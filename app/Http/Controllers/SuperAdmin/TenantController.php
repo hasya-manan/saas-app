@@ -28,6 +28,7 @@ class TenantController extends Controller
    public function store(Request $request)
     {
         $validated = $request->validate([
+            'uuid'      => (string) Str::uuid(),
             'company_name' => 'required|string|max:255',
             'admin_name'   => 'required|string|max:255',
             'admin_email'  => 'required|email|unique:users,email',

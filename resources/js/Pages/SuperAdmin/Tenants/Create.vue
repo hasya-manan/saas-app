@@ -32,7 +32,9 @@ watch(syncEmail, (isChecked) => {
 });
 const submit = () => {
     form.post(route('tenants.store'), {
-        onFinish: () => form.reset('admin_email'),
+        onSuccess: () => {
+            form.reset(); 
+        },
     });
 };
 

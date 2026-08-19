@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. Create your SuperAdmin account
         User::create([
+            'uuid' => (string) Str::uuid(),
             'name' => 'Super Admin',
             'email' => 'superadmin@example.com',
             'password' => bcrypt('password123'),

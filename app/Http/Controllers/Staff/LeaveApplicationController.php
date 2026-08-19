@@ -130,9 +130,21 @@ class LeaveApplicationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+   public function show(string $id)
     {
-        //
+        $user = auth()->user();
+
+        // The GlobalScope automatically handles tenant isolation!
+        $leaveApplication = LeaveApplication::where('user_id', $user->id)
+            ->findOrFail($id);
+
+        // return Inertia::render('Staff/ApplyLeave/show', [
+        //     'leaveApplication' => $leaveApplication,
+        // ]);
+        return response()->json([
+        'success' => true,
+        'leaveApplication' => $leaveApplication,
+    ]);
     }
 
     /**

@@ -40,7 +40,7 @@ Route::middleware(['auth'])->prefix('staff')->group(function () {
    
     Route::get('/applyLeave/index', [LeaveApplicationController::class, 'index'])->name('staff.applyLeave.index');
     Route::post('/applyLeave/index', [LeaveApplicationController::class, 'store'])->name('staff.applyLeave.store');
-
+    Route::get('/applyLeave/show', [LeaveApplicationController::class, 'show'])->name('staff.applyLeave.show');
 
 });
 

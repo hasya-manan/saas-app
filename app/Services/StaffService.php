@@ -24,8 +24,8 @@ class StaffService
                 'name'      => $validated['name'],
                 'email'     => $validated['email'],
                 'password'  => bcrypt($validated['password']),
-                //'role_id'   => $validated['role_id'],
-                //'tenant_id' => $tenantId,
+                'role_id'   => $validated['role_id'],
+                'tenant_id' => $tenantId,
             ]);
 
             // Manually assign the protected fields
@@ -160,8 +160,8 @@ class StaffService
                     }
                     $department->update(['hod_id' => $user->id]);
                 } else {
-                    // If not HOD, the existing HOD of this department is my supervisor
-                    $supervisorId = $department->hod_id;
+                   // If not HOD, check if a manual supervisor was selected; otherwise use the department's HOD
+                    $supervisorId = $validated['supervisor_id'] ?? $department->hod_id;
                 }
             } else {
                 // Security Measure: If the department ID is invalid for this tenant, 

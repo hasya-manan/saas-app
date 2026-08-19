@@ -63,7 +63,7 @@ const form = useForm({
     description: '',
     hod_id: '',
     is_hod: false,
-    
+    supervisor_id: null,
     //step 4 : financial & statutory
     basic_salary: '',
     bank_name: '',
@@ -437,7 +437,7 @@ const confirmDisable = () => {
                                         :options="roles" option-label="display_name" option-value="id" />
                                </div>
                             </div>
-                         <div class="pt-6 border-t border-slate-100">
+                            <div class="pt-6 border-t border-slate-100">
                                 <h3 class="text-xs font-bold text-primary uppercase tracking-widest mb-6">
                                     Employment Details
                                 </h3>
@@ -536,6 +536,22 @@ const confirmDisable = () => {
                                         </div>
                                     </div>
                                 </transition>
+                            </div>
+                            <!-- Reports To / Supervisor Field -->
+                            <div class="grid grid-cols-1 gap-6 pt-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Reports To (Supervisor)</label>
+                                    <RoundedSelect 
+                                        v-model="form.supervisor_id" 
+                                        variant="form"
+                                        :label="staffList && staffList.length > 0 ? 'Select a supervisor (Optional)...' : 'No other staff found'"
+                                        :options="staffList"
+                                        option-label="name" 
+                                        option-value="id" 
+                                        class="w-full"
+                                    />
+                                    <p class="text-xs text-slate-400 mt-1">Leave blank if this person is at the top level or a department head.</p>
+                                </div>
                             </div>
 
 

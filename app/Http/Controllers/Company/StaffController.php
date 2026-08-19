@@ -108,11 +108,13 @@ class StaffController extends Controller
 
         $validated = $request->validate([
             // users table
+            
             'name'           => 'required|string|max:255',
             'email'          => 'required|email|max:255|unique:users',
             'password'       => 'required|string|confirmed|min:8',
             'role_id'        => 'required|exists:roles,id',
             'department_id'  => 'nullable',
+            'supervisor_id' => 'nullable|exists:users,id',
 
             // user_profiles table
             'ic_number'      => 'required|string|unique:user_profiles',

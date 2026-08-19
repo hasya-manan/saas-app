@@ -22,5 +22,6 @@ class LeaveApplication extends Model
         'status',
         'approved_by',
         'remarks',
+        'attachment', 
     ];
 }

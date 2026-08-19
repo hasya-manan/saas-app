@@ -47,6 +47,7 @@ This project implements a **shared-database multi-tenancy** architecture where a
 
 ### 🏢 Staff
 - [x] Login 
+- [/] Apply Leave 
 ---
 
 ## 🚀 Getting Started

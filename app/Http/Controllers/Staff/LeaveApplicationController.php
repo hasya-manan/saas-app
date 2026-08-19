@@ -61,6 +61,7 @@ class LeaveApplicationController extends Controller
         'end_date' => 'required|date|after_or_equal:start_date',
         'leave_duration' => 'required|in:full,am,pm',
         'reason' => 'required|string|max:500',
+        'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', 
     ]);
 
     $start = Carbon::parse($request->start_date);

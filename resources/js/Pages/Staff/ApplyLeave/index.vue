@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import FileUploadDropzone from '@/Components/FileUploadDropzone.vue';
 import RoundedSelect from '@/Components/RoundedSelect.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -28,12 +29,26 @@ const form = useForm({
     leave_duration: 'full',
     half_day_session: 'am',
     reason: '',
+    attachment: null,
 });
 
 const selectedBalance = computed(() => {
     if (!form.leave_type_id) return null;
     // Matches the leave_type_id from the dropdown selection to the user's balances
     return props.leaveBalances.find(b => b.leave_type_id === form.leave_type_id);
+});
+
+const isMedicalLeave = computed(() => {
+    if (!form.leave_type_id) return false;
+    
+    // Find the selected leave type object
+    const selectedType = props.leaveTypes.find(t => t.id === form.leave_type_id);
+    
+    if (!selectedType) return false;
+    
+    // Check if the name contains "medical" or "mc" (case-insensitive)
+    const name = selectedType.name.toLowerCase();
+    return name.includes('medical') || name.includes('mc');
 });
 
 const submit = () => {
@@ -173,31 +188,55 @@ const submit = () => {
                     <hr class="border-primary-border/10" />
                 </div>
 
-                <!-- Section 2: Reason & Remarks -->
-                <div class="p-8">
-                    <div class="flex items-center gap-2 mb-6">
-                        <div class="h-8 w-1 bg-primary rounded-full opacity-80"></div>
-                        <h3 class="text-lg font-bold text-gray-800">Additional Information</h3>
-                    </div>
+              <!-- Section 2: Reason & Remarks -->
+            <div class="p-8">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="h-8 w-1 bg-primary rounded-full opacity-80"></div>
+                    <h3 class="text-lg font-bold text-gray-800">Additional Information</h3>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="md:col-span-1">
-                            <InputLabel for="reason" value="Reason for Leave" class="font-semibold text-gray-700" />
-                            <p class="text-xs text-gray-400 mt-1 leading-relaxed">Provide details or context for management approval.</p>
-                        </div>
-                        <div class="md:col-span-2">
-                            <textarea 
-                                id="reason"
-                                v-model="form.reason" 
-                                rows="4"
-                                placeholder="e.g. Family vacation, medical appointment..."
-                                class="block w-full border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-primary-border focus:border-primary transition-all rounded-xl shadow-sm text-sm text-gray-700 p-3"
-                                required
-                            ></textarea>
-                            <InputError class="mt-2" :message="form.errors.reason" />
-                        </div>
+                <!-- Reason Field Row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="md:col-span-1">
+                        <InputLabel for="reason" value="Reason for Leave" class="font-semibold text-gray-700" />
+                        <p class="text-xs text-gray-400 mt-1 leading-relaxed">Provide details or context for management approval.</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <textarea 
+                            id="reason"
+                            v-model="form.reason" 
+                            rows="4"
+                            placeholder="e.g. Family vacation, medical appointment..."
+                            class="block w-full border-gray-200 bg-gray-50/30 focus:bg-white focus:ring-primary-border focus:border-primary transition-all rounded-xl shadow-sm text-sm text-gray-700 p-3"
+                            required
+                        ></textarea>
+                        <InputError class="mt-2" :message="form.errors.reason" />
                     </div>
                 </div>
+
+                <!-- Attachment Field Row -->
+              
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
+                <div class="md:col-span-1">
+                    <InputLabel for="attachment" value="Supporting Document (Optional)" class="font-semibold text-gray-700" />
+                    <p class="text-xs text-gray-400 mt-1 leading-relaxed">Attach medical certificate, receipt, or relevant proof (PDF, JPG, PNG).</p>
+                    
+                    <!-- Optional: Show a hint text if MC is required -->
+                    <p v-if="isMedicalLeave" class="text-xs text-red-500 mt-2 font-medium">
+                        * Supporting document is required for Medical Leave.
+                    </p>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <!-- Clean Custom Dropzone Component -->
+                    <FileUploadDropzone 
+                        v-model="form.attachment" 
+                        accept=".pdf,.jpg,.jpeg,.png"
+                    />
+                    <InputError class="mt-2" :message="form.errors.attachment" />
+                </div>
+            </div>
+            </div>
 
                 <!-- Footer Actions -->
                 <div class="bg-primary-light/20 p-8 border-t border-primary-border/20 flex items-center justify-end gap-6">

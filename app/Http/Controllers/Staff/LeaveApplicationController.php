@@ -53,8 +53,9 @@ class LeaveApplicationController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
-        $request->validate([
+    $user = auth()->user();
+
+    $request->validate([
         'leave_type_id' => 'required|exists:leave_types,id',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
@@ -62,23 +63,35 @@ class LeaveApplicationController extends Controller
         'reason' => 'required|string|max:500',
     ]);
 
-    // 1. Calculate total days
     $start = Carbon::parse($request->start_date);
     $end = Carbon::parse($request->end_date);
     
-    $daysDifference = $start->diffInDays($end) + 1;
+    $totalDays = 0;
 
-    // If it's a single day and they chose half day (AM or PM), total is 0.5
-    // If it's multiple days, you can adjust logic or restrict half-days to single-day requests only
-    $totalDays = $daysDifference;
+    // 1. Loop through each day from start_date to end_date
+    $current = $start->copy();
+    while ($current->lte($end)) {
+        // Check if the current day is NOT Saturday (6) and NOT Sunday (7)
+        if (!$current->isWeekend()) {
+            $totalDays += 1;
+        }
+        $current->addDay();
+    }
+
+    // If no valid working days were counted (e.g. they picked Sat-Sun)
+    if ($totalDays === 0) {
+        return back()->withErrors(['start_date' => 'Selected dates fall entirely on weekends.']);
+    }
+
+    // 2. Adjust for Half Day (AM/PM)
     if ($request->leave_duration !== 'full') {
-        if ($daysDifference > 1) {
-            return back()->withErrors(['leave_duration' => 'Half day duration can only be applied for single-day leaves.']);
+        if ($totalDays > 1) {
+            return back()->withErrors(['leave_duration' => 'Half-day duration can only be applied to a single working day.']);
         }
         $totalDays = 0.5;
     }
 
-    // 2. Check if user has enough balance
+    // 3. Check leave balance
     $balance = LeaveBalance::where('tenant_id', $user->tenant_id)
         ->where('user_id', $user->id)
         ->where('leave_type_id', $request->leave_type_id)
@@ -95,7 +108,7 @@ class LeaveApplicationController extends Controller
         return back()->withErrors(['leave_type_id' => 'Insufficient leave balance for this request.']);
     }
 
-    // 3. Create the leave application using your existing columns
+    // 4. Save application
     LeaveApplication::create([
         'tenant_id' => $user->tenant_id,
         'user_id' => $user->id,
@@ -105,14 +118,14 @@ class LeaveApplicationController extends Controller
         'leave_duration' => $request->leave_duration,
         'total_days' => $totalDays,
         'reason' => $request->reason,
-        'status' => 'pending', 
+        'status' => 'pending',
     ]);
 
-    // 4. Increment taken days in leave balances
+    // 5. Update balance
     $balance->increment('taken_days', $totalDays);
 
     return redirect()->back()->with('success', 'Leave application submitted successfully!');
-    }
+}
 
     /**
      * Display the specified resource.

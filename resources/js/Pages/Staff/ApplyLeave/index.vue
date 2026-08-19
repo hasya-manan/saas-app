@@ -36,12 +36,12 @@ const selectedBalance = computed(() => {
     return props.leaveBalances.find(b => b.leave_type_id === form.leave_type_id);
 });
 
-// const submit = () => {
-//     form.post(route('staff.applyLeave.store'), {
-//         preserveScroll: true,
-//         onSuccess: () => form.reset(),
-//     });
-// };
+const submit = () => {
+    form.post(route('staff.applyLeave.store'), {
+        preserveScroll: true,
+        onSuccess: () => form.reset(),
+    });
+};
 </script>
 
 <template>

@@ -24,4 +24,14 @@ class LeaveApplication extends Model
         'remarks',
         'attachment', 
     ];
+
+    public function leaveType()
+    {
+        return $this->belongsTo(LeaveType::class, 'leave_type_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

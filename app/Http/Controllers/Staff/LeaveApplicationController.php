@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Staff;
 
-use Illuminate\Validation\Rule;
+//use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Models\GlobalLookup;
 use App\Models\LeaveApplication;
@@ -56,12 +56,11 @@ class LeaveApplicationController extends Controller
     {
     $user = auth()->user();
 
-    $isMedical = false;
+    $requiresAttachment = false;
     if ($request->leave_type_id) {
-        $leaveType = \App\Models\LeaveType::find($request->leave_type_id);
+        $leaveType = \App\Model\LeaveType::find($request->leave_type_id);
         if ($leaveType) {
-            // Check if the code is 'MC' (case-insensitive)
-            $isMedical = strtoupper($leaveType->code) === 'MC';
+            $requiresAttachment = (bool) $leaveType->requires_attachment;
         }
     }
     
@@ -71,16 +70,9 @@ class LeaveApplicationController extends Controller
         'end_date' => 'required|date|after_or_equal:start_date',
         'leave_duration' => 'required|in:full,am,pm',
         'reason' => 'required|string|max:500',
-      // Conditional rule: Required if leave type name contains 'medical' or 'mc'
+       
         'attachment' => [
-            Rule::requiredIf(function () use ($request) {
-                $leaveType = \App\Models\LeaveType::find($request->leave_type_id);
-                if (!$leaveType) return false;
-                
-                $name = strtolower($leaveType->name);
-                return str_contains($name, 'Medical Leave') || str_contains($name, 'mc');
-            }),
-            'nullable',
+            $requiresAttachment ? 'required' : 'nullable',
             'file',
             'mimes:pdf,jpg,jpeg,png',
             'max:2048',
@@ -157,11 +149,10 @@ class LeaveApplicationController extends Controller
         ->where('user_id', $user->id)
         ->where('leave_type_id', $request->leave_type_id)
         ->whereYear('start_date', date('Y'))
-        // Optional: you can filter by status too if you only want approved/pending to count
         ->whereIn('status', ['pending', 'approved']) 
         ->sum('total_days');
 
-    // Update the balance table with the true, recalculated sum
+   
     $balance->update([
         'taken_days' => $totalTaken
     ]);
@@ -170,23 +161,28 @@ class LeaveApplicationController extends Controller
 }
 
     /**
-     * Display the specified resource.
+     * Display the listing of the resource.
      */
-   public function show(string $id)
+    public function show(Request $request)
     {
         $user = auth()->user();
 
-        // The GlobalScope automatically handles tenant isolation!
-        $leaveApplication = LeaveApplication::where('user_id', $user->id)
-            ->findOrFail($id);
+        // Fetch all leaves for the current logged-in user
+        $leaves = LeaveApplication::with(['leaveType'])
+            ->where('tenant_id', $user->tenant_id)
+            ->where('user_id', $user->id) 
+            ->latest()
+            ->paginate(10);
 
-        // return Inertia::render('Staff/ApplyLeave/show', [
-        //     'leaveApplication' => $leaveApplication,
-        // ]);
-        return response()->json([
-        'success' => true,
-        'leaveApplication' => $leaveApplication,
-    ]);
+        $leaveTypes = LeaveType::where('tenant_id', $user->tenant_id)
+            ->where('is_active', 1)
+            ->get();
+
+        return Inertia::render('Staff/ApplyLeave/show', [
+            'leaves' => $leaves,
+            'leaveTypes' => $leaveTypes,
+            'filters' => $request->all(),
+        ]);
     }
 
     /**

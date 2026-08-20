@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff;
 
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Models\GlobalLookup;
 use App\Models\LeaveApplication;
@@ -55,13 +56,35 @@ class LeaveApplicationController extends Controller
     {
     $user = auth()->user();
 
+    $isMedical = false;
+    if ($request->leave_type_id) {
+        $leaveType = \App\Models\LeaveType::find($request->leave_type_id);
+        if ($leaveType) {
+            // Check if the code is 'MC' (case-insensitive)
+            $isMedical = strtoupper($leaveType->code) === 'MC';
+        }
+    }
+    
     $request->validate([
         'leave_type_id' => 'required|exists:leave_types,id',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
         'leave_duration' => 'required|in:full,am,pm',
         'reason' => 'required|string|max:500',
-        'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', 
+      // Conditional rule: Required if leave type name contains 'medical' or 'mc'
+        'attachment' => [
+            Rule::requiredIf(function () use ($request) {
+                $leaveType = \App\Models\LeaveType::find($request->leave_type_id);
+                if (!$leaveType) return false;
+                
+                $name = strtolower($leaveType->name);
+                return str_contains($name, 'Medical Leave') || str_contains($name, 'mc');
+            }),
+            'nullable',
+            'file',
+            'mimes:pdf,jpg,jpeg,png',
+            'max:2048',
+        ],
     ]);
 
     $start = Carbon::parse($request->start_date);
@@ -109,6 +132,12 @@ class LeaveApplicationController extends Controller
         return back()->withErrors(['leave_type_id' => 'Insufficient leave balance for this request.']);
     }
 
+    // Handle file upload if present
+    $attachmentPath = null;
+    if ($request->hasFile('attachment')) {
+        $attachmentPath = $request->file('attachment')->store('leave-attachments', 'public');
+    }
+
     // 4. Save application
     LeaveApplication::create([
         'tenant_id' => $user->tenant_id,
@@ -119,11 +148,23 @@ class LeaveApplicationController extends Controller
         'leave_duration' => $request->leave_duration,
         'total_days' => $totalDays,
         'reason' => $request->reason,
+        'attachment' => $attachmentPath,
         'status' => 'pending',
     ]);
 
     // 5. Update balance
-    $balance->increment('taken_days', $totalDays);
+   $totalTaken = LeaveApplication::where('tenant_id', $user->tenant_id)
+        ->where('user_id', $user->id)
+        ->where('leave_type_id', $request->leave_type_id)
+        ->whereYear('start_date', date('Y'))
+        // Optional: you can filter by status too if you only want approved/pending to count
+        ->whereIn('status', ['pending', 'approved']) 
+        ->sum('total_days');
+
+    // Update the balance table with the true, recalculated sum
+    $balance->update([
+        'taken_days' => $totalTaken
+    ]);
 
     return redirect()->back()->with('success', 'Leave application submitted successfully!');
 }

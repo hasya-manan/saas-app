@@ -10,6 +10,7 @@ use App\Models\LeaveBalance;
 use App\Models\LeaveType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class LeaveApplicationController extends Controller
@@ -172,7 +173,7 @@ class LeaveApplicationController extends Controller
             ->where('tenant_id', $user->tenant_id)
             ->where('user_id', $user->id) 
             ->latest()
-            ->paginate(10);
+            ->paginateDefault();
 
         $leaveTypes = LeaveType::where('tenant_id', $user->tenant_id)
             ->where('is_active', 1)
@@ -198,7 +199,39 @@ class LeaveApplicationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+       $user = auth()->user();
+
+        // 1. Find the leave application by UUID and tenant
+        $leave = LeaveApplication::where('id', $id)
+            ->where('tenant_id', $user->tenant_id)
+            ->firstOrFail();
+
+        // 2. Authorize using your LeaveApplicationPolicy
+        $this->authorize('update', $leave);
+
+        // 3. Validate the incoming update request
+        $validated = $request->validate([
+            'leave_type_id' => 'required|exists:leave_types,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'leave_duration' => 'required|in:full,am,pm',
+            'reason' => 'required|string|max:500',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        // 4. Handle optional new file attachment upload
+        if ($request->hasFile('attachment')) {
+            // Delete old attachment if it exists
+            if ($leave->attachment && Storage::disk('public')->exists($leave->attachment)) {
+                Storage::disk('public')->delete($leave->attachment);
+            }
+            $validated['attachment'] = $request->file('attachment')->store('leave-attachments', 'public');
+        }
+
+        // 5. Update the leave application record
+        $leave->update($validated);
+
+        return redirect()->back()->with('success', 'Leave application updated successfully.');
     }
 
     /**
@@ -206,6 +239,36 @@ class LeaveApplicationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
-    }
+        $user = auth()->user();
+
+        // Find the leave application by UUID
+        $leave = LeaveApplication::where('id', $id)
+        ->where('tenant_id', $user->tenant_id)
+        ->firstOrFail();
+
+        // 2. Authorize using your LeaveApplicationPolicy
+        $this->authorize('delete', $leave);
+
+        // 3. Delete physical file attachment if it exists
+        if ($leave->attachment && Storage::disk('public')->exists($leave->attachment)) {
+            Storage::disk('public')->delete($leave->attachment);
+        }
+
+        // 4. Restore the leave balance safely (preventing negative numbers)
+        $balance = LeaveBalance::where('tenant_id', $leave->tenant_id)
+            ->where('user_id', $leave->user_id)
+            ->where('leave_type_id', $leave->leave_type_id)
+            ->where('year', date('Y', strtotime($leave->start_date)))
+            ->first();
+
+        if ($balance) {
+            $balance->taken_days = max(0, $balance->taken_days - $leave->total_days);
+            $balance->save();
+        }
+
+        // 5. Delete the leave application record
+        $leave->delete();
+
+        return redirect()->back()->with('success', 'Leave application withdrawn successfully and balance restored.');
+        }
 }

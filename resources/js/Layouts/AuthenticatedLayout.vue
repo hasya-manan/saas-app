@@ -6,6 +6,7 @@ import { useNotifications } from '@/Composables/useNotifications';
 import {
     LayoutDashboard,
     CalendarDays,
+    ClipboardList,
     Component,
     LogOut,
     ChevronLeft,
@@ -223,12 +224,12 @@ watch(
                     </Link>
 
                     <!-- 2. Leave List (History / Status) -->
-                    <!-- <Link :href="route('staff.leaves.index')"
-                        :class="[route().current('staff.leaves.*') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                    <Link :href="route('staff.applyLeave.show')"
+                        :class="[route().current('staff.applyLeave.show') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                         <ClipboardList :size="20" />
-                        <span v-if="!isCollapsed" class="text-sm font-medium">Leave List</span>
-                    </Link> -->
+                        <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave</span>
+                    </Link>
                 </div>
             </div>
               

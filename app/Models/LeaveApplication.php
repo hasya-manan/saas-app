@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomPagination;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LeaveApplication extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasCustomPagination;
     protected $guarded = [];
     protected $fillable = [
         'user_id',

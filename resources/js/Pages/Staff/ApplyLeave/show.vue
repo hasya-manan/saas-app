@@ -5,6 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { Plus, X, Inbox, Calendar, Paperclip } from 'lucide-vue-next';
+import GlobalFilter from '@/Components/GlobalFilter.vue';
 
 const props = defineProps({
     leaves: Object,
@@ -72,6 +73,9 @@ const getStatusBadge = (status) => {
         </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
+             <GlobalFilter routeName="staff.applyLeave.show" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes" :departments="allDepartments" 
+                :showRole="false" :showRoleaveTypes="true" placeholder="Search staff by name leaves Type..." />
+            
             <div class="flex flex-col lg:flex-row items-start gap-6">
                 
                 <!-- Leave History Table -->

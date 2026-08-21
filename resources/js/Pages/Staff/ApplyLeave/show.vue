@@ -4,8 +4,9 @@ import { Head, useForm, Link} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
-import { Plus, X, Inbox, Calendar, Paperclip } from 'lucide-vue-next';
+import { Plus, X, Inbox, Calendar, Paperclip, Edit2 } from 'lucide-vue-next';
 import GlobalFilter from '@/Components/GlobalFilter.vue';
+
 
 const props = defineProps({
     leaves: Object,
@@ -83,6 +84,7 @@ const getStatusBadge = (status) => {
                                         <th class="px-6 py-3">Dates & Duration</th>
                                         <th class="px-6 py-3">Status</th>
                                         <th class="px-6 py-3 text-right">Attachment</th>
+                                        <th class="px-6 py-3">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -114,12 +116,28 @@ const getStatusBadge = (status) => {
                                             </span>
                                         </td>
 
-                                        <td class="px-6 py-4 rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border text-right">
+                                      <!-- 4. Middle Cell (Attachment) - REMOVED rounded-r-2xl from here! -->
+                                        <td class="px-6 py-4 border-y border-transparent group-hover:border-primary-border text-right">
                                             <a v-if="leave.attachment" :href="`/storage/${leave.attachment}`" target="_blank"
                                                 class="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-primary/5 px-3 py-1.5 rounded-xl hover:bg-primary/10 transition-colors">
                                                 <Paperclip :size="14" /> View File
                                             </a>
                                             <span v-else class="text-xs text-gray-300 italic">None</span>
+                                        </td>
+
+                                        <!-- 5. Last Cell (Action - Right Rounded) -->
+                                        <td class="px-6 py-4 rounded-r-2xl border-y border-r border-transparent group-hover:border-primary-border text-center">
+                                            <div class="flex items-center justify-center gap-2" v-if="leave.status === 'pending'">
+                                                <BaseButton variant="outline" size="sm" @click="openEditPanel(leave)">
+                                                    <Edit2 :size="14" />
+                                                </BaseButton>
+
+                                                <!-- Withdraw BaseButton -->
+                                                <BaseButton variant="danger" size="sm" @click="withdrawLeave(leave.id)">
+                                                    Withdraw
+                                                </BaseButton>
+                                            </div>
+                                            <span v-else class="text-xs text-gray-300 italic">Locked</span>
                                         </td>
                                     </tr>
 

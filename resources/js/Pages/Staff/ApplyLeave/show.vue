@@ -25,10 +25,7 @@ const props = defineProps({
 
 const isEditPanelOpen = ref(false);
 
-const openCreatePanel = () => {
-    form.reset();
-    isEditPanelOpen.value = true;
-};
+
 
 const closeEditPanel = () => {
     isEditPanelOpen.value = false;
@@ -39,12 +36,6 @@ const handleFileChange = (e) => {
     form.attachment = e.target.files[0];
 };
 
-const submitForm = () => {
-    form.post(route('leave.store'), {
-        forceFormData: true,
-        onSuccess: () => closeEditPanel(),
-    });
-};
 
 // Status badge styling helper
 const getStatusBadge = (status) => {
@@ -149,70 +140,8 @@ const getStatusBadge = (status) => {
                     </div>
                 </div>
 
-                <!-- Apply Leave Slide-over Form -->
-                <div v-if="isEditPanelOpen" class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-right duration-500">
-                    <div class="bg-white border border-primary/10 rounded-[2.5rem] shadow-xl p-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <div>
-                                <h2 class="text-xl font-bold text-gray-800">Apply for Leave</h2>
-                                <p class="text-xs text-gray-400 font-medium italic">Submit time-off request</p>
-                            </div>
-                            <button @click="closeEditPanel" class="p-2 bg-gray-50 rounded-xl text-gray-400 hover:text-gray-600">
-                                <X :size="20" />
-                            </button>
-                        </div>
-
-                        <form @submit.prevent="submitForm" class="space-y-6">
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Leave Type</label>
-                                <select v-model="form.leave_type_id" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4" required>
-                                    <option value="">Select Leave Type</option>
-                                    <option v-for="type in leaveTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
-                                </select>
-                                <div v-if="form.errors.leave_type_id" class="text-red-500 text-xs mt-1">{{ form.errors.leave_type_id }}</div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Start Date</label>
-                                <input v-model="form.start_date" type="date" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4" required>
-                                <div v-if="form.errors.start_date" class="text-red-500 text-xs mt-1">{{ form.errors.start_date }}</div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">End Date</label>
-                                <input v-model="form.end_date" type="date" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4" required>
-                                <div v-if="form.errors.end_date" class="text-red-500 text-xs mt-1">{{ form.errors.end_date }}</div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Duration</label>
-                                <select v-model="form.leave_duration" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4" required>
-                                    <option value="full">Full Day</option>
-                                    <option value="am">Half Day (AM)</option>
-                                    <option value="pm">Half Day (PM)</option>
-                                </select>
-                                <div v-if="form.errors.leave_duration" class="text-red-500 text-xs mt-1">{{ form.errors.leave_duration }}</div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Reason</label>
-                                <textarea v-model="form.reason" rows="3" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4" placeholder="State your reason..." required></textarea>
-                                <div v-if="form.errors.reason" class="text-red-500 text-xs mt-1">{{ form.errors.reason }}</div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Attachment (MC if applicable)</label>
-                                <input type="file" @change="handleFileChange" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
-                                <div v-if="form.errors.attachment" class="text-red-500 text-xs mt-1">{{ form.errors.attachment }}</div>
-                            </div>
-
-                            <button type="submit" :disabled="form.processing"
-                                class="w-full bg-primary text-white py-4 rounded-[1.5rem] font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all">
-                                {{ form.processing ? 'Submitting...' : 'Submit Leave Request' }}
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- Update Leave Slide-over Form / withdrawn leave -->
+                
 
             </div>
         </div>

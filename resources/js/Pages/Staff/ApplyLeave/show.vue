@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -60,17 +60,20 @@ const getStatusBadge = (status) => {
     <Head title="My Leave Applications" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <PageHeader title="My Leave Requests" subtitle="Track your submitted time-off and apply for new leave">
-                <template #actions>
-                    <button @click="openCreatePanel"
-                        class="group flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all duration-300">
-                        <Plus :size="20" class="group-hover:rotate-90 transition-transform duration-300" />
-                        Apply Leave hello
-                    </button>
-                </template>
-            </PageHeader>
-        </template>
+       <template #header>
+        <PageHeader title="My Leave Requests" subtitle="Track your submitted time-off and apply for new leave">
+            <template #actions>
+                <!-- Use Inertia's Link component to navigate to the create page -->
+               
+
+                <Link :href="route('staff.applyLeave.store')"
+                    class="group flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm shadow-primary/20">
+                    <Plus :size="20" class="group-hover:rotate-90 transition-transform duration-300" /> 
+                    <span>Apply Leave</span>
+                </Link>
+            </template>
+        </PageHeader>
+    </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
              <GlobalFilter routeName="staff.applyLeave.show" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes" :departments="allDepartments" 

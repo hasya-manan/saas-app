@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff;
 
 //use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\GlobalLookup;
 use App\Models\LeaveApplication;
@@ -51,7 +52,7 @@ class LeaveApplicationController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created to apply leave application.
      */
     public function store(Request $request)
     {
@@ -59,7 +60,7 @@ class LeaveApplicationController extends Controller
 
     $requiresAttachment = false;
     if ($request->leave_type_id) {
-        $leaveType = \App\Model\LeaveType::find($request->leave_type_id);
+        $leaveType = LeaveType::find($request->leave_type_id);
         if ($leaveType) {
             $requiresAttachment = (bool) $leaveType->requires_attachment;
         }
@@ -108,59 +109,69 @@ class LeaveApplicationController extends Controller
         $totalDays = 0.5;
     }
 
-    // 3. Check leave balance
-    $balance = LeaveBalance::where('tenant_id', $user->tenant_id)
-        ->where('user_id', $user->id)
-        ->where('leave_type_id', $request->leave_type_id)
-        ->where('year', date('Y'))
-        ->first();
-
-    if (!$balance) {
-        return back()->withErrors(['leave_type_id' => 'No leave balance found for this type.']);
-    }
-
-    $remainingDays = ($balance->allotted_days + $balance->carried_forward) - $balance->taken_days;
-
-    if ($totalDays > $remainingDays) {
-        return back()->withErrors(['leave_type_id' => 'Insufficient leave balance for this request.']);
-    }
-
-    // Handle file upload if present
+      // Handle file upload if present
     $attachmentPath = null;
     if ($request->hasFile('attachment')) {
         $attachmentPath = $request->file('attachment')->store('leave-attachments', 'public');
     }
 
-    // 4. Save application
-    LeaveApplication::create([
-        'tenant_id' => $user->tenant_id,
-        'user_id' => $user->id,
-        'leave_type_id' => $request->leave_type_id,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date,
-        'leave_duration' => $request->leave_duration,
-        'total_days' => $totalDays,
-        'reason' => $request->reason,
-        'attachment' => $attachmentPath,
-        'status' => 'pending',
-    ]);
+   try {
+        return DB::transaction(function () use ($request, $user, $totalDays, $attachmentPath) {
+            
+            // 1. Lock the balance row to prevent concurrent race conditions
+            $balance = LeaveBalance::where('tenant_id', $user->tenant_id)
+                ->where('user_id', $user->id)
+                ->where('leave_type_id', $request->leave_type_id)
+                ->where('year', date('Y'))
+                ->lockForUpdate() //for race condition
+                ->first();
 
-    // 5. Update balance
-   $totalTaken = LeaveApplication::where('tenant_id', $user->tenant_id)
-        ->where('user_id', $user->id)
-        ->where('leave_type_id', $request->leave_type_id)
-        ->whereYear('start_date', date('Y'))
-        ->whereIn('status', ['pending', 'approved']) 
-        ->sum('total_days');
+            if (!$balance) {
+                return back()->withErrors(['leave_type_id' => 'No leave balance found for this type.']);
+            }
 
-   
-    $balance->update([
-        'taken_days' => $totalTaken
-    ]);
+            $remainingDays = ($balance->allotted_days + $balance->carried_forward) - $balance->taken_days;
 
-    return redirect()->back()->with('success', 'Leave application submitted successfully!');
-}
+            if ($totalDays > $remainingDays) {
+                return back()->withErrors(['leave_type_id' => 'Insufficient leave balance for this request.']);
+            }
 
+            // 2. Save application
+            LeaveApplication::create([
+                'tenant_id' => $user->tenant_id,
+                'user_id' => $user->id,
+                'leave_type_id' => $request->leave_type_id,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'leave_duration' => $request->leave_duration,
+                'total_days' => $totalDays,
+                'reason' => $request->reason,
+                'attachment' => $attachmentPath,
+                'status' => 'pending',
+            ]);
+
+            // 3. Recalculate and update balance safely inside the lock
+            $totalTaken = LeaveApplication::where('tenant_id', $user->tenant_id)
+                ->where('user_id', $user->id)
+                ->where('leave_type_id', $request->leave_type_id)
+                ->whereYear('start_date', date('Y'))
+                ->whereIn('status', ['pending', 'approved']) 
+                ->sum('total_days');
+
+            $balance->update([
+                'taken_days' => $totalTaken
+            ]);
+
+            return redirect()->back()->with('success', 'Leave application submitted successfully!');
+        });
+    } catch (\Exception $e) {
+        // Optional: delete uploaded file if transaction fails
+        if ($attachmentPath && \Storage::disk('public')->exists($attachmentPath)) {
+            \Storage::disk('public')->delete($attachmentPath);
+        }
+        throw $e;
+    }
+    }
     /**
      * Display the listing of the resource.
      */

@@ -14,29 +14,56 @@ const props = defineProps({
     filters: Object,
 });
 
-// Inertia form for submitting a new leave request
-// const form = useForm({
-//     leave_type_id: '',
-//     start_date: '',
-//     end_date: '',
-//     leave_duration: 'full',
-//     reason: '',
-//     attachment: null,
-// });
 
 const isEditPanelOpen = ref(false);
+const selectedleave = ref(null);
+
+const editForm = useForm({
+    id: null,
+    leave_type_id: '',
+    start_date: '',
+    end_date: '',
+    leave_duration: 'full',
+    reason: '',
+    attachment: null,
+});
+const openEditPanel = (leave) => {
+    if (!leave) return;
+    
+    // 1. Assign the selected leave ID (UUID) to the form
+    editForm.id = leave.id;
+    
+    // 2. Populate the form fields with the existing leave data
+    editForm.leave_type_id = leave.leave_type_id;
+    editForm.start_date = leave.start_date;
+    editForm.end_date = leave.end_date;
+    editForm.leave_duration = leave.leave_duration;
+    editForm.reason = leave.reason;
+    editForm.attachment = null; // Reset file input so it doesn't resend old data accidentally
+    
+    // 3. Open the panel
+    isEditPanelOpen.value = true;
+};
 
 
 
 const closeEditPanel = () => {
     isEditPanelOpen.value = false;
-    form.reset();
+    editForm.reset();
+    editForm.clearErrors();
 };
 
-const handleFileChange = (e) => {
-    form.attachment = e.target.files[0];
-};
 
+
+
+const updateLeave = () => {
+    editForm.post(route('staff.applyLeave.update', editForm.id), {
+        forceFormData: true, // Required because we are handling file attachments
+        onSuccess: () => {
+            closeEditPanel();
+        },
+    });
+};
 
 // Status badge styling helper
 const getStatusBadge = (status) => {
@@ -68,7 +95,7 @@ const getStatusBadge = (status) => {
     </template>
 
         <div class="py-12 px-4 sm:px-6 lg:px-8">
-             <GlobalFilter routeName="staff.applyLeave.show" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes" :departments="allDepartments" 
+             <GlobalFilter routeName="staff.applyLeave.show" :filters="filters" dataKey="leaveTypes" :leaveTypes="leaveTypes" " 
                 :showRole="false" :showRoleaveTypes="true" placeholder="Search staff by name leaves Type..." />
             
             <div class="flex flex-col lg:flex-row items-start gap-6">
@@ -159,6 +186,84 @@ const getStatusBadge = (status) => {
                 </div>
 
                 <!-- Update Leave Slide-over Form / withdrawn leave -->
+                 <!-- Side-by-side Edit Panel -->
+<div v-if="isEditPanelOpen" class="w-full lg:w-[40%] sticky top-6 z-10 animate-in slide-in-from-right duration-500">
+    <div class="bg-white border border-primary/10 rounded-[2.5rem] shadow-xl p-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Edit Leave Application</h2>
+                <p class="text-xs text-gray-400 font-medium italic">Modify your pending time-off request</p>
+            </div>
+            <button @click="closeEditPanel" class="p-2 bg-gray-50 rounded-xl text-gray-400 hover:text-gray-600 transition-colors">
+                <X :size="20" />
+            </button>
+        </div>
+
+        <form @submit.prevent="updateLeave" class="space-y-6">
+            <!-- Leave Type Selection -->
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Leave Type</label>
+                <select v-model="editForm.leave_type_id" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
+                    <option v-for="type in leaveTypes" :key="type.id" :value="type.id">
+                        {{ type.name }}
+                    </option>
+                </select>
+                <div v-if="editForm.errors.leave_type_id" class="text-red-500 text-xs mt-1 ml-1">{{ editForm.errors.leave_type_id }}</div>
+            </div>
+
+            <!-- Start Date -->
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Start Date</label>
+                <input v-model="editForm.start_date" type="date" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
+                <div v-if="editForm.errors.start_date" class="text-red-500 text-xs mt-1 ml-1">{{ editForm.errors.start_date }}</div>
+            </div>
+
+            <!-- End Date -->
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">End Date</label>
+                <input v-model="editForm.end_date" type="date" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
+                <div v-if="editForm.errors.end_date" class="text-red-500 text-xs mt-1 ml-1">{{ editForm.errors.end_date }}</div>
+            </div>
+
+            <!-- Leave Duration -->
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Duration Type</label>
+                <select v-model="editForm.leave_duration" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4">
+                    <option value="full">Full Day</option>
+                    <option value="am">Morning (AM)</option>
+                    <option value="pm">Afternoon (PM)</option>
+                </select>
+                <div v-if="editForm.errors.leave_duration" class="text-red-500 text-xs mt-1 ml-1">{{ editForm.errors.leave_duration }}</div>
+            </div>
+
+            <!-- Reason -->
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Reason</label>
+                <textarea v-model="editForm.reason" rows="3" class="w-full rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-primary text-sm p-4"></textarea>
+                <div v-if="editForm.errors.reason" class="text-red-500 text-xs mt-1 ml-1">{{ editForm.errors.reason }}</div>
+            </div>
+
+            <!-- Attachment -->
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Attachment (Optional)</label>
+                <input type="file" @input="editForm.attachment = $event.target.files[0]" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
+                <div v-if="editForm.errors.attachment" class="text-red-500 text-xs mt-1 ml-1">{{ editForm.errors.attachment }}</div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3 pt-2">
+                <button type="button" @click="closeEditPanel"
+                    class="w-1/2 bg-gray-100 text-gray-600 py-4 rounded-[1.5rem] font-bold hover:bg-gray-200 transition-all">
+                    Cancel
+                </button>
+                <button type="submit" :disabled="editForm.processing"
+                    class="w-1/2 bg-primary text-white py-4 rounded-[1.5rem] font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all">
+                    {{ editForm.processing ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
                 
 
             </div>

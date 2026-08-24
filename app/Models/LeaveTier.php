@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\SoftDeletes; 
 use Illuminate\Database\Eloquent\Model;
 
 class LeaveTier extends Model
 {
+    use SoftDeletes;
     //
     protected $fillable = [
     'tenant_id', 'leave_type_id', 'min_years', 'max_years', 

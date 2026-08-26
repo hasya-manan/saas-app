@@ -8,7 +8,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class UserProfile extends Model
 {
-    use BelongsToTenant, UserProfile, SoftDeletes;
+    use BelongsToTenant, SoftDeletes;
     //
     protected $fillable = [
         'user_id',

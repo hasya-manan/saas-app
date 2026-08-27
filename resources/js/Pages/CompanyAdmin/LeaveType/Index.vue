@@ -32,7 +32,6 @@ const toggleRow = (id) => {
 
 const openEditModal = (data, tab = 'general') => {
   //console.log("Button clicked, data received:", data); // Add this line
-  
   editingLeave.value = JSON.parse(JSON.stringify(data));
   activeTab.value = tab;
   isModalOpen.value = true;

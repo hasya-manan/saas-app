@@ -94,4 +94,24 @@ class LeaveApplicationPolicy
     {
         return false;
     }
+
+    /**
+     * Determine whether the user can approve or reject the leave application.
+     */
+    
+    public function approve(User $user, LeaveApplication $leaveApplication): bool
+    {
+        // 1. Must belong to the same tenant
+        if ($user->tenant_id !== $leaveApplication->tenant_id) {
+            return false;
+        }
+
+        // 2. Admins (role_id === 2) can approve any leave within their tenant
+        if ($user->role_id === 2) {
+            return true;
+        }
+
+        // 3. Otherwise, only the direct supervisor of the applicant can approve
+        return $leaveApplication->user->supervisor_id === $user->id;
+    }
 }

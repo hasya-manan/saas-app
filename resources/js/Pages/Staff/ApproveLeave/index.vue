@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import PageHeader from '@/Components/PageHeader.vue'; // Adjust path if needed
+import PageHeader from '@/Components/PageHeader.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
@@ -18,5 +18,6 @@ import { computed } from 'vue';
             <PageHeader title="Approve Leave" subtitle="Review and Approve Leave Applications" />
         </template>
         <!-- Your form content goes here -->
+         
     </AuthenticatedLayout>
 </template>

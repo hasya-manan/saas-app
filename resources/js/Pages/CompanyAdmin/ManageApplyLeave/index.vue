@@ -17,5 +17,6 @@ import { computed } from 'vue';
             <PageHeader title="Apply Leave" subtitle="Manage Leave Applications" />
         </template>
         <!-- Your form content goes here -->
+         
     </AuthenticatedLayout>
 </template>

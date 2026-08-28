@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
                 //  Explicitly add these so Vue can see them even if hidden in the model
                 'role_id'       => $user->role_id,
                 'tenant_id'     => $user->tenant_id,
+                'is_supervisor' => \App\Models\User::where('supervisor_id', $request->user()->id)->exists(),
                 //  Load the role relationship explicitly
                 'role'          => $user->role ? [
                     'name' => $user->role->name

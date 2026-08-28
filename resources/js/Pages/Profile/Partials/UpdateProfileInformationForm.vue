@@ -91,7 +91,9 @@ const form = useForm({
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton class="px-8 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold shadow-lg shadow-primary/20 transition-all transform active:scale-95 border-none" 
+                    :disabled="form.processing">Save</PrimaryButton>
+
 
                 <Transition
                     enter-active-class="transition ease-in-out"

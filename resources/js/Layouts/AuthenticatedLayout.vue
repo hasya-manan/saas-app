@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { useNotifications } from '@/Composables/useNotifications';
-// Example using Lucide icons (install via npm install lucide-vue-next)
+
 import {
     LayoutDashboard,
     CalendarDays,
@@ -21,12 +21,18 @@ import {
 
 const isCollapsed = ref(false);
 const showingMobileMenu = ref(false);
+const showDropdown = ref(false);
 const page = usePage();
 const { notifySuccess, notifyError, notifyWarning } = useNotifications();
+
 const toggleSidebar = () => {
     isCollapsed.value = !isCollapsed.value;
 };
 
+const toggleDropdown = () => {
+    showDropdown.value = !showDropdown.value;
+    console.log('Dropdown is now:', showDropdown.value);
+};
 watch(
     // We watch a function that returns an object containing both flash and errors
     () => ({ flash: page.props.flash, errors: page.props.errors }),
@@ -100,8 +106,8 @@ watch(
             </aside>
         </div>
 
-        <aside :class="isCollapsed ? 'w-20' : 'w-64'"
-            class="relative hidden md:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out">
+       <aside :class="isCollapsed ? 'w-20' : 'w-64'"
+        class="relative hidden md:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out overflow-visible">
             <button @click="toggleSidebar"
                 :aria-label="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
                 class="absolute -right-3 top-10 z-50 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:bg-primary-light hover:text-primary-dark">
@@ -109,23 +115,47 @@ watch(
                 <ChevronRight v-else :size="16" />
             </button>
 
-            <div class="p-6 flex items-center gap-3 border-b border-gray-50">
-                <div class="h-10 w-10 rounded-full bg-gray-200 shrink-0 overflow-hidden">
-                    <img :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}&background=random`"
-                        :alt="$page.props.auth.user.name" />
+                <div class="relative p-6 border-b border-gray-50 overflow-visible">
+                <!-- Clickable Avatar / User Info Row -->
+                <div @click="toggleDropdown" class="flex items-center gap-3 cursor-pointer select-none group">
+                    <div class="h-10 w-10 rounded-full bg-gray-200 shrink-0 overflow-hidden ring-2 ring-transparent group-hover:ring-primary-dark transition-all">
+                        <img :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}&background=random`"
+                            :alt="$page.props.auth.user.name" />
+                    </div>
+
+                    <div v-if="!isCollapsed" class="overflow-hidden transition-opacity duration-300">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
+                            {{ $page.props.auth.user?.role?.name || 'User' }}
+                        </p>
+                        <!-- <p class="text-sm font-semibold text-gray-800 truncate">
+                            {{ $page.props.auth.user?.name }}
+                        </p> -->
+                    </div>
                 </div>
 
-                <div v-if="!isCollapsed" class="overflow-hidden transition-opacity duration-300">
-                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
-                        {{ $page.props.auth.user?.role?.name || 'User' }}
-                    </p>
+                <!-- Backdrop to catch outside clicks and block background content -->
+                <div v-if="showDropdown" @click="showDropdown = false" class="fixed inset-0 z-40 bg-transparent"></div>
 
-                    <p class="text-sm font-semibold text-gray-800 truncate">
+                <!-- Floating Pop-up Card near the Avatar (Solid white, blocks background text) -->
+                <div v-if="showDropdown" 
+                    class="fixed left-6 bottom-24 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 p-5 z-50">
+                    
+                    <!-- Header / Greeting -->
+                    <p class="text-xs font-medium text-gray-400 mb-1">
+                        Hi, welcome!
+                    </p>
+                    <p class="text-sm font-bold text-gray-800 truncate mb-4">
                         {{ $page.props.auth.user?.name }}
                     </p>
+
+                    <!-- Manage Account Button -->
+                    <Link :href="route('profile.edit')"
+                        @click="showDropdown = false"
+                        class="block w-full text-center px-4 py-2.5 text-xs font-semibold text-primary-dark bg-primary-light rounded-xl hover:opacity-90 transition-colors shadow-sm">
+                        Manage Account
+                    </Link>
                 </div>
             </div>
-
             <nav class="flex-1 px-3 py-4 space-y-1">
                 <p v-if="!isCollapsed" class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-2">
                     Main</p>
@@ -206,32 +236,43 @@ watch(
 
                 </div>
 
-                <!--User -->
-                <div v-if="$page.props.auth.user?.role_id === 3">
-                <!-- Category Title -->
-                <p v-if="!isCollapsed"
-                    class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-6 mb-2">
-                    Leave Management
-                </p>
+               
+                <!-- Leave Management Section for Staff & Supervisors -->
+                <div v-if="$page.props.auth.user?.role_id === 3 || $page.props.auth.user?.role_id === 2">
+                    <!-- Category Title -->
+                    <p v-if="!isCollapsed"
+                        class="px-3 text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-6 mb-2">
+                        Leave Management
+                    </p>
 
-                <div class="space-y-1">
-                    <!-- 1. Apply Leave -->
-                    <Link :href="route('staff.applyLeave.index')"
-                        :class="[route().current('staff.applyLeave.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
-                        <CalendarDays :size="20" />
-                        <span v-if="!isCollapsed" class="text-sm font-medium">Apply Leave</span>
-                    </Link>
+                    <div class="space-y-1">
+                        <!-- 1. Apply Leave -->
+                        <Link :href="route('staff.applyLeave.index')"
+                            :class="[route().current('staff.applyLeave.index') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                            <CalendarDays :size="20" />
+                            <span v-if="!isCollapsed" class="text-sm font-medium">Apply Leave</span>
+                        </Link>
 
-                    <!-- 2. Leave List (History / Status) -->
-                    <Link :href="route('staff.applyLeave.show')"
-                        :class="[route().current('staff.applyLeave.show') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
-                        <ClipboardList :size="20" />
-                        <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave</span>
-                    </Link>
+                        <!-- 2. Manage Leave (History / Status) -->
+                        <Link :href="route('staff.applyLeave.show')"
+                            :class="[route().current('staff.applyLeave.show') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                            <ClipboardList :size="20" />
+                            <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave</span>
+                        </Link>
+
+                        <!-- 3. Leave Approvals (Only show if they are an Admin OR a Supervisor) -->
+                        <!-- Note:  pass a boolean like 'is_supervisor' from your Inertia HandleInertiaRequests middleware -->
+                        <!-- <Link v-if="$page.props.auth.user?.role_id === 2 || $page.props.auth.user?.is_supervisor" 
+                            :href="route('leaves.approvals')"
+                            :class="[route().current('leaves.approvals') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                            <CheckSquare :size="20" />
+                            <span v-if="!isCollapsed" class="text-sm font-medium">Leave Approvals</span>
+                        </Link> -->
+                    </div>
                 </div>
-            </div>
               
                 
             </nav>

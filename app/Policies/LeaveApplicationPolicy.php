@@ -101,6 +101,10 @@ class LeaveApplicationPolicy
     
     public function approve(User $user, LeaveApplication $leaveApplication): bool
     {
+        // 1. block self approval/rejection leaves application
+        if ($leaveApplication->user_id === $user->id) {
+            return false;
+        }
         // 1. Must belong to the same tenant
         if ($user->tenant_id !== $leaveApplication->tenant_id) {
             return false;

@@ -127,18 +127,13 @@ watch(
                         <p class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
                             {{ $page.props.auth.user?.role?.name || 'User' }}
                         </p>
-                        <!-- <p class="text-sm font-semibold text-gray-800 truncate">
-                            {{ $page.props.auth.user?.name }}
-                        </p> -->
+                      
                     </div>
                 </div>
 
-                <!-- Backdrop to catch outside clicks and block background content -->
-                <div v-if="showDropdown" @click="showDropdown = false" class="fixed inset-0 z-40 bg-transparent"></div>
-
-                <!-- Floating Pop-up Card near the Avatar (Solid white, blocks background text) -->
+               
                 <div v-if="showDropdown" 
-                    class="fixed left-6 bottom-24 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 p-5 z-50">
+                    class="absolute left-4 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 p-5 z-50">
                     
                     <!-- Header / Greeting -->
                     <p class="text-xs font-medium text-gray-400 mb-1">
@@ -236,7 +231,6 @@ watch(
 
                 </div>
 
-               
                 <!-- Leave Management Section for Staff & Supervisors -->
                 <div v-if="$page.props.auth.user?.role_id === 3 || $page.props.auth.user?.role_id === 2">
                     <!-- Category Title -->

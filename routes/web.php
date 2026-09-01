@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Company\CompanyDashboardController;
 use App\Http\Controllers\Company\DepartmentController;
+use App\Http\Controllers\Company\LeaveApprovalController;
 use App\Http\Controllers\Company\LeaveTypeController;
 use App\Http\Controllers\Company\StaffController;
 use App\Http\Controllers\ProfileController;
@@ -43,7 +44,10 @@ Route::middleware(['auth'])->prefix('staff')->group(function () {
     Route::get('/applyLeave/show', [LeaveApplicationController::class, 'show'])->name('staff.applyLeave.show');
     Route::put('/applyLeave/{leave}', [LeaveApplicationController::class, 'update'])->name('staff.applyLeave.update');
     Route::delete('/applyLeave/{leave}', [LeaveApplicationController::class, 'destroy'])->name('staff.applyLeave.destroy');
-});
+
+  
+   
+    });
 
 
 
@@ -52,6 +56,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/validate-email', [ValidationController::class, 'checkEmail'])->name('validation.email');
+
+    //approval for admin company & supervisor 
+    Route::get('/leave/approvals', [LeaveApprovalController::class, 'index'])->name('admin_company.leave.approvals');
+    Route::put('/leave/approvals/{leave}', [LeaveApprovalController::class, 'updateStatus'])->name('admin_company.leave.update');
+
 
 });
 
@@ -111,6 +120,8 @@ Route::middleware(['auth', 'admin_company'])->prefix('companyAdmin')->group(func
     Route::put('/leavetype/{leavetype}', [LeaveTypeController::class, 'update'])->name('admin_company.leavetypes.update');
     Route::delete('/leave-tiers/{tier}', [LeaveTypeController::class, 'destroy'])->name('admin_company.leave-tiers.destroy');
     Route::delete('/leavetype/{leavetype}', [LeaveTypeController::class, 'destroyLeaveType'])->name('admin_company.leavetypes.destroy');
+    
+   
     });
 
   

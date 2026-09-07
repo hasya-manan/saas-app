@@ -165,7 +165,7 @@ class LeaveApplicationController extends Controller
             return redirect()->back()->with('success', 'Leave application submitted successfully!');
         });
     } catch (\Exception $e) {
-        // Optional: delete uploaded file if transaction fails
+        //  delete uploaded file if transaction fails
         if ($attachmentPath && \Storage::disk('public')->exists($attachmentPath)) {
             \Storage::disk('public')->delete($attachmentPath);
         }

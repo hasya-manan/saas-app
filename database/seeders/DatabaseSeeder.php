@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             GlobalLookupSeeder::class,
             RoleSeeder::class,
+            StateWeekendConfigSeeder::class,
+            PublicHolidaySeeder::class,
         ]);
 
         // 2. Create your SuperAdmin account

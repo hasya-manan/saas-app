@@ -25,7 +25,7 @@ class HolidayCalculator
     {
         $cacheKey = "state_config_{$state}";
 
-        return Cache::remember($cacheKey, 3600, function() use ($state) {
+        return Cache::remember($cacheKey, 86400, function() use ($state) {
             $config = StateWeekendConfig::where('state', $state)
                 ->where('is_active', true)
                 ->first();
@@ -41,33 +41,40 @@ class HolidayCalculator
     /**
      * Calculate observed date based on state rules
      */
-    public function calculateObservedDate($date)
+  public function calculateObservedDate($date)
     {
         $date = Carbon::parse($date);
         $dayOfWeek = $date->dayOfWeek;
 
-        // Check primary rest day (Sunday or Friday)
+        // Check Primary Rest Day
         if ($dayOfWeek == $this->config->primary_rest_day) {
             if ($this->config->rollover_primary) {
-                $targetDay = (int) $this->config->rollover_target_primary;
-                $daysToAdd = $targetDay - $dayOfWeek;
-                return $date->copy()->addDays($daysToAdd);
+                $targetDay = (int) $this->config->rollover_target_primary; 
+                return $this->calculateRollover($date, $dayOfWeek, $targetDay);
             }
-            return $date;
+            return $date; 
         }
 
-        // Check secondary rest day (Saturday)
+        // Check Secondary Rest Day
         if ($dayOfWeek == $this->config->secondary_rest_day) {
             if ($this->config->rollover_secondary) {
-                $targetDay = (int) $this->config->rollover_target_secondary;
-                $daysToAdd = $targetDay - $dayOfWeek;
-                return $date->copy()->addDays($daysToAdd);
+                $targetDay = (int) $this->config->rollover_target_secondary; 
+                return $this->calculateRollover($date, $dayOfWeek, $targetDay);
             }
             return $date;
         }
 
-        // Weekday holiday - no substitution
         return $date;
+    }
+
+    // Helper function to keep code clean
+    private function calculateRollover($date, $dayOfWeek, $targetDay)
+    {
+        $daysToAdd = ($targetDay - $dayOfWeek + 7) % 7;
+        if ($daysToAdd === 0) {
+            $daysToAdd = 7;
+        }
+        return $date->copy()->addDays($daysToAdd);
     }
 
     /**

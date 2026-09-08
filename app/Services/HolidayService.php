@@ -94,31 +94,19 @@ class HolidayService
     /**
      * Check if a specific date is a holiday
      */
+    /**
+     */
     public function isHoliday($date, $tenantId, $companyState)
     {
         $dateKey = Carbon::parse($date)->format('Y-m-d');
+        $year = Carbon::parse($date)->year;
 
-        // Check public holidays
-        $publicHoliday = PublicHoliday::active()
-            ->where('country', 'Malaysia')
-            ->forState($companyState)
-            ->where(function($query) use ($dateKey) {
-                $query->where('date', $dateKey)
-                      ->orWhere('observed_date', $dateKey);
-            })
-            ->exists();
+        // Get all cached holidays for the year
+        $result = $this->getHolidaysForCompany($tenantId, $year, $companyState);
+        $holidays = $result['holidays'];
 
-        if ($publicHoliday) {
-            return true;
-        }
-
-        // Check company holidays
-        $companyHoliday = CompanyHoliday::active()
-            ->where('tenant_id', $tenantId)
-            ->where('date', $dateKey)
-            ->exists();
-
-        return $companyHoliday;
+        // Check if the date exists in our holiday list (as an observed date)
+        return $holidays->has($dateKey);
     }
 
     /**

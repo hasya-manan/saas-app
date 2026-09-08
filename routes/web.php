@@ -6,6 +6,7 @@ use App\Http\Controllers\Company\LeaveApprovalController;
 use App\Http\Controllers\Company\LeaveTypeController;
 use App\Http\Controllers\Company\StaffController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicHolidayController;
 use App\Http\Controllers\Staff\LeaveApplicationController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\TenantController;
@@ -40,7 +41,7 @@ Route::middleware(['auth'])->prefix('staff')->group(function () {
     })->name('staff.dashboard');
    
     Route::get('/applyLeave/index', [LeaveApplicationController::class, 'index'])->name('staff.applyLeave.index');
-    Route::post('/applyLeave/index', [LeaveApplicationController::class, 'store'])->name('staff.applyLeave.store');
+    Route::post('/applyLeave/index', [LeaveApplicationController::class, 'a'])->name('staff.applyLeave.store');
     Route::get('/applyLeave/show', [LeaveApplicationController::class, 'show'])->name('staff.applyLeave.show');
     Route::put('/applyLeave/{leave}', [LeaveApplicationController::class, 'update'])->name('staff.applyLeave.update');
     Route::delete('/applyLeave/{leave}', [LeaveApplicationController::class, 'destroy'])->name('staff.applyLeave.destroy');
@@ -61,6 +62,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave/approvals', [LeaveApprovalController::class, 'index'])->name('admin_company.leave.approvals');
     Route::put('/leave/approvals/{leave}', [LeaveApprovalController::class, 'updateStatus'])->name('admin_company.leave.update');
 
+    // Shared Holiday Calendar View (Accessible by Staff, Company Admin, & Super Admin)
+    Route::get('/holidays', [PublicHolidayController::class, 'index'])->name('holidays.index');
 
 });
 

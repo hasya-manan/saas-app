@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeTenantMail;
 use App\Models\Department;
 use App\Models\GlobalLookup;
 use App\Models\LeaveTier;
@@ -11,6 +12,9 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -25,58 +29,72 @@ class TenantController extends Controller
         return Inertia::render('SuperAdmin/Tenants/Create');
     }
 
-   public function store(Request $request)
+  public function store(Request $request)
     {
         $validated = $request->validate([
-            'uuid'      => (string) Str::uuid(),
-            'company_name' => 'required|string|max:255',
-            'admin_name'   => 'required|string|max:255',
-            'admin_email'  => 'required|email|unique:users,email',
-            'company_email' => 'required|email|unique:tenants,email', 
+            'company_name'  => 'required|string|max:255',
+            'admin_name'    => 'required|string|max:255',
+            'admin_email'   => 'required|email|unique:users,email',
+            'company_email' => 'required|email|unique:tenants,email',
         ]);
 
-        // 1. Start the Transaction
-        return DB::transaction(function () use ($validated) {
-            
-        
+        // Declare before the transaction so they're accessible after
+        $admin = null;
+        $customId = null;
+
+        DB::transaction(function () use ($validated, &$admin, &$customId) {
+
             do {
-                $numbers = rand(100, 999);
-                $letters = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
+                $numbers  = rand(100, 999);
+                $letters  = Str::lower(Str::random(3, 'abcdefghijklmnopqrstuvwxyz'));
                 $customId = "t-{$numbers}{$letters}";
             } while (Tenant::where('id', $customId)->exists());
 
-            // 2. Create Tenant
+            // 1. Create Tenant
             $tenant = Tenant::create([
                 'id'           => $customId,
                 'company_name' => $validated['company_name'],
                 'email'        => $validated['company_email'],
-                'status'       => 'active', 
+                'status'       => 'active',
             ]);
 
-            // 3. Create Default Leave Types
-                $this->provisionDefaultLeaveTypes($tenant->id);
+            // 2. Provision defaults
+            $this->provisionDefaultLeaveTypes($tenant->id);
+            $this->provisionDefaultDepartments($tenant->id);
 
-            // 4. Create Default Departments 
-                $this->provisionDefaultDepartments($tenant->id);
-
-            // 5. Create User Admin Account
-            User::create([
+            // 3. Create admin user
+            $admin = User::create([
                 'name'      => $validated['admin_name'],
                 'email'     => $validated['admin_email'],
-                'password'  => bcrypt('password123'),
+                'password'  => Hash::make(Str::random(64)),
                 'tenant_id' => $tenant->id,
-                'role_id'   => Role::where('name', 'admin_company')->firstOrFail()->id, 
-
-            
+                'role_id'   => Role::where('name', 'admin_company')->firstOrFail()->id,
             ]);
-
-            // 5. If everything above finishes without an error, the DB "commits"
-            return redirect()->back()
-                ->with('success', "Company $customId has been fully set up!");
-                
         });
-    }
 
+        // ✅ After the transaction commits — safe to queue email now.
+
+        if ($admin) {
+            $token = Password::broker()->createToken($admin);
+
+            $resetUrl = url(route('password.reset', [
+                'token' => $token,
+                'email' => $admin->email,
+            ], false));
+
+            Mail::to($admin->email)->queue(          // ← queue instead of send
+                new WelcomeTenantMail(
+                    companyName: $validated['company_name'],
+                    adminName:   $admin->name,
+                    adminEmail:  $admin->email,
+                    resetUrl:    $resetUrl,
+                )
+            );
+        }
+
+        return redirect()->back()
+            ->with('success', "Company $customId has been fully set up!");
+    }
         /**
      * Provision default departments for the new tenant.
      */

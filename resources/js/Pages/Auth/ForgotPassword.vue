@@ -56,12 +56,13 @@ const submit = () => {
             </div>
 
             <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
+                <BaseButton
+                    variant="primary"
+                    class="w-full py-4 rounded-xl shadow-lg shadow-primary/20"
                     :disabled="form.processing"
                 >
                     Email Password Reset Link
-                </PrimaryButton>
+            </BaseButton>
             </div>
         </form>
     </GuestLayout>

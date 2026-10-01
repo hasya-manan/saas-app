@@ -16,3 +16,12 @@
     - Check if current day `!isWeekend()`.
     - Query `public_holidays` table and check if the current date `!in_array()` of holiday dates.
     - Increment `totalDays` only if both conditions are met.
+
+
+inside tenant login
+- when onboarding :: explain user email will be send as welcome email and it will include the redirect URL to change password 
+
+inside apply leaves : staff login 
+- when apply leaves , double check if mc the pdf should be mandatory the words 
+
+email 

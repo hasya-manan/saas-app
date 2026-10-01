@@ -117,7 +117,7 @@ class User extends Authenticatable
     }
 
    // 2. Add this to automatically create the UUID when a user is born
-    protected static function boot()
+    protected static function booted()
     {
         parent::boot();
         static::creating(function ($model) {

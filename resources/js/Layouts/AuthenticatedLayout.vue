@@ -7,6 +7,7 @@ import {
     LayoutDashboard,
     CalendarDays,
     ClipboardList,
+    ClipboardCheck,
     Component,
     LogOut,
     ChevronLeft,
@@ -254,6 +255,14 @@ watch(
                             class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
                             <ClipboardList :size="20" />
                             <span v-if="!isCollapsed" class="text-sm font-medium">Manage Leave</span>
+                        </Link>
+                        <!-- 3. Approve Leave (HR and supervisors only) -->
+                        <Link v-if="$page.props.auth.user?.role_id === 2 || $page.props.auth.user?.is_supervisor"
+                            :href="route('admin_company.leave.approvals')"
+                            :class="[route().current('admin_company.leave.approvals') ? 'bg-primary-light text-primary-dark' : 'text-gray-500 hover:bg-primary-light hover:text-primary-dark']"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group relative">
+                            <ClipboardCheck :size="20" />
+                            <span v-if="!isCollapsed" class="text-sm font-medium">Approve Leave</span>
                         </Link>
 
                         <!-- 3. Leave Approvals (Only show if they are an Admin OR a Supervisor) -->

@@ -83,7 +83,7 @@ const submit = () => {
                                 <label
                                     class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2.5 ml-1">Phone
                                     Number</label>
-                                <input v-model="form.phone" type="text" placeholder="+6012-3456789"
+                                <input v-model="form.phone" type="text" placeholder="0123456789"
                                     class="w-full px-5 py-4 bg-white border border-gray-300 rounded-2xl shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)]  placeholder:text-gray-500 placeholder:font-mediumfocus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm text-gray-900 font-medium outline-none">
                             </div>
                             <div>

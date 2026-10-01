@@ -282,4 +282,21 @@ class LeaveApplicationController extends Controller
 
         return redirect()->back()->with('success', 'Leave application withdrawn successfully and balance restored.');
         }
+
+        private function canDecide(LeaveApplication $leave): bool
+    {
+        $user = auth()->user();
+
+        // Tenant isolation (also blocks super admin, whose tenant_id is null)
+        if (! $user->tenant_id || $leave->tenant_id !== $user->tenant_id) return false;
+
+        // No self-approval
+        if ($leave->user_id === $user->id) return false;
+
+        // HR can decide for anyone in the tenant
+        if ($user->role_id === 2) return true;
+
+        // Otherwise only the applicant's direct supervisor
+        return $leave->user->supervisor_id === $user->id;
+    }
 }

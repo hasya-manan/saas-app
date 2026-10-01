@@ -41,7 +41,7 @@ Route::middleware(['auth'])->prefix('staff')->group(function () {
     })->name('staff.dashboard');
    
     Route::get('/applyLeave/index', [LeaveApplicationController::class, 'index'])->name('staff.applyLeave.index');
-    Route::post('/applyLeave/index', [LeaveApplicationController::class, 'a'])->name('staff.applyLeave.store');
+    Route::post('/applyLeave/index', [LeaveApplicationController::class, 'store'])->name('staff.applyLeave.store');
     Route::get('/applyLeave/show', [LeaveApplicationController::class, 'show'])->name('staff.applyLeave.show');
     Route::put('/applyLeave/{leave}', [LeaveApplicationController::class, 'update'])->name('staff.applyLeave.update');
     Route::delete('/applyLeave/{leave}', [LeaveApplicationController::class, 'destroy'])->name('staff.applyLeave.destroy');
